@@ -71,6 +71,112 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Hexo博客搭建" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2025/10/13/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" class="article-date">
+  <time class="dt-published" datetime="2025-10-13T15:44:29.537Z" itemprop="datePublished">2025-10-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2025/10/13/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">搭建Hexo个人博客</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="搭建Hexo个人博客"><a href="#搭建Hexo个人博客" class="headerlink" title="搭建Hexo个人博客"></a>搭建Hexo个人博客</h1><h2 id="一、在本地安装Hexo框架"><a href="#一、在本地安装Hexo框架" class="headerlink" title="一、在本地安装Hexo框架"></a>一、在本地安装Hexo框架</h2><h3 id="1-检查是否安装Node-js"><a href="#1-检查是否安装Node-js" class="headerlink" title="1.检查是否安装Node.js"></a>1.检查是否安装Node.js</h3><p>检查是否安装Node.js，以管理员形式运行cmd</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013184923787.png" alt="image-20251013184923787"></p>
+<p>这里我已经之前安装好Node,js并配置好了环境变量就不再赘述，node.js安装参考</p>
+<h3 id="2-安装Hexo框架"><a href="#2-安装Hexo框架" class="headerlink" title="2.安装Hexo框架"></a>2.安装Hexo框架</h3><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013190119593.png" alt="image-20251013190119593"></p>
+<p>如果运行检查命令出现报错如下，即为未以管理员身份运行cmd：</p>
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013190726766.png" alt="image-20251013190726766"></p>
+<h3 id="3-初始化博客项目"><a href="#3-初始化博客项目" class="headerlink" title="3.初始化博客项目"></a>3.初始化博客项目</h3><p>选择一个文件夹，作为hexo基础目录，运行初始化命令，等待hexo项目的克隆完成：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013191840495.png" alt="image-20251013191840495"></p>
+<p>出现上图提示即为准备成功，再继续运行依赖安装命令：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo install</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013192145307.png" alt="image-20251013192145307"></p>
+<p>至此博客初项目就建立好了。</p>
+<h4 id="4-启动博客项目"><a href="#4-启动博客项目" class="headerlink" title="4.启动博客项目"></a>4.启动博客项目</h4><p>运行启动命令启动项目：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013192307938.png" alt="image-20251013192307938"></p>
+<p>在浏览器访问对应端口即可看见本地部署成功的博客。</p>
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013192403035.png" alt="image-20251013192403035"></p>
+<p>在目录的source&#x2F;_posts中即可上传自己的markdown文档，即为上传自己的博客文章。</p>
+<p>到此，就可以在本地使用hexo的博客服务，但是仅可在本地自己访问，接下来要部署在GitHub中即可让外网访问博客。</p>
+<h2 id="二、部署Hexo到GitHub"><a href="#二、部署Hexo到GitHub" class="headerlink" title="二、部署Hexo到GitHub"></a>二、部署Hexo到GitHub</h2><h3 id="1-创建仓库"><a href="#1-创建仓库" class="headerlink" title="1.创建仓库"></a>1.创建仓库</h3><p>登录GitHub，创建一个新的仓库，用于部署博客</p>
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013193252552.png" alt="image-20251013193252552"></p>
+<p>如果跟我一样之前没有在github上创建过仓库，根据github上的提示新建一个储存库或者等本地博客配置完后直接推送现有库。</p>
+<p>**遇到问题：**rename后推送无效，页面不变化</p>
+<p>**解决：**更新仓库链接</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 查看仓库链接</span><br><span class="line">git remote -v</span><br><span class="line"># 更新仓库链接</span><br><span class="line">git remote <span class="built_in">set</span>-url origin 新仓库链接</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-安装部署工具"><a href="#2-安装部署工具" class="headerlink" title="2.安装部署工具"></a>2.安装部署工具</h3><p>回到博客目录，运行命令安装部署工具</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-配置-config-yml文件"><a href="#3-配置-config-yml文件" class="headerlink" title="3.配置_config.yml文件"></a>3.配置_config.yml文件</h3><p>打开本地博客目录下的_config.yml文件，找到deploy部分，添加上传类型为git，贴上仓库链接，选择分支(master&#x2F;main)</p>
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013194502460.png" alt="image-20251013194502460"></p>
+<h3 id="4-部署博客"><a href="#4-部署博客" class="headerlink" title="4.部署博客"></a>4.部署博客</h3><p>生成静态文件：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo generate</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013194824830.png" alt="image-20251013194824830"></p>
+<p>然后执行部署，已有仓库的直接运行部署命令即可完成部署：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>没有仓库分支的则新建分支，或者直接推送现有库：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 将所有文件添加到暂存区</span><br><span class="line">git add .</span><br><span class="line"># 创建第一个提交</span><br><span class="line">git commit -m &quot;first commit&quot;</span><br><span class="line"># 重命名分支为master</span><br><span class="line">git branch -M master</span><br><span class="line"># 进行推送</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+
+<p>进行登陆认证后即可完成推送</p>
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013200308729.png" alt="image-20251013200308729"></p>
+<h4 id="更新博客"><a href="#更新博客" class="headerlink" title="更新博客"></a>更新博客</h4><figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-访问博客"><a href="#5-访问博客" class="headerlink" title="5.访问博客"></a>5.访问博客</h3><p>设置github page</p>
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013202532025.png" alt="image-20251013202532025"></p>
+<p>部署完成后就可以进行博客的访问了：https:&#x2F;&#x2F;用户名.github.io</p>
+<h2 id="三、在Hexo博客中插入图片——Typora"><a href="#三、在Hexo博客中插入图片——Typora" class="headerlink" title="三、在Hexo博客中插入图片——Typora"></a>三、在Hexo博客中插入图片——Typora</h2><h3 id="1-新建图片文件夹"><a href="#1-新建图片文件夹" class="headerlink" title="1.新建图片文件夹"></a>1.新建图片文件夹</h3><p>这里在source文件夹下创建了imgs用于存放图片</p>
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013232345372.png" alt="image-20251013232345372"></p>
+<h2 id="2-设置Typora偏好"><a href="#2-设置Typora偏好" class="headerlink" title="2.设置Typora偏好"></a>2.设置Typora偏好</h2><p>选中创建的文件夹，这样在写博客时，复制的图片会自动存到imgs中，generate博客时会自动生成图片资源</p>
+<p><img src="/./../../../../../Blog/hexo/source/imgs/image-20251013232545134.png" alt="image-20251013232545134"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Hexo 以 Node.js 为基础，结合 Markdown 文件生成静态网页，再通过 GitHub Pages 部署到公网，实现了<strong>从本地开发到线上展示</strong>的一体化流程。</p>
+<p>整个流程大致分为以下几个阶段：</p>
+<ol>
+<li><strong>本地环境搭建</strong>：<br> 通过安装 Node.js 和 Hexo CLI，成功在本地初始化并运行了博客框架，实现了本地预览功能。</li>
+<li><strong>GitHub 部署</strong>：<br> 创建 GitHub 仓库并使用 <code>hexo-deployer-git</code> 插件完成远程部署，使博客可以通过公网访问。通过配置 <code>_config.yml</code> 文件掌握了 Hexo 与 Git 的连接方式。</li>
+<li><strong>内容与图片管理</strong>：<br> 借助 Typora 编辑器进行 Markdown 写作，并设置图片资源路径，实现了图文内容的高效同步。</li>
+</ol>
+<p>通过以上步骤，不仅完成了个人博客的搭建，也掌握了网页部署的基本流程和常见问题的解决方法。Hexo 博客结构清晰、主题丰富、易于扩展，非常适合作为个人技术记录与展示的平台。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2025/10/13/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" data-id="cuidd9pmMGpM90F2OQLIUs5KU" data-title="搭建Hexo个人博客" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-计算机网络基础知识" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2025/10/13/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" class="article-date">
@@ -395,6 +501,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2025/10/13/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/">搭建Hexo个人博客</a>
+          </li>
         
           <li>
             <a href="/2025/10/13/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">计算机网络基础知识</a>
