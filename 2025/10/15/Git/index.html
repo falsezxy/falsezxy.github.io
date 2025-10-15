@@ -1,0 +1,264 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Felix的个人博客 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Git一、初识Git它允许您保存不同版本的作品，而无需创建多个文件。您可以轻松地回到任何以前的版本，或创建备用时间线（我们称之为“分支”）来尝试不同的想法。 1.1 git初始化初始化Git储存库 1git init   1.2 git的不同状态查看git状态 1git status     “分支主”：将分支想象成时间线。“主”是项目的主要时间线。 “尚未提交”：提交就像视频游戏中的保存点。我们">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Felix的个人博客">
+<meta property="og:url" content="http://example.com/2025/10/15/Git/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="Git一、初识Git它允许您保存不同版本的作品，而无需创建多个文件。您可以轻松地回到任何以前的版本，或创建备用时间线（我们称之为“分支”）来尝试不同的想法。 1.1 git初始化初始化Git储存库 1git init   1.2 git的不同状态查看git状态 1git status     “分支主”：将分支想象成时间线。“主”是项目的主要时间线。 “尚未提交”：提交就像视频游戏中的保存点。我们">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-10-15T00:50:55.980Z">
+<meta property="article:modified_time" content="2025-10-15T08:12:24.673Z">
+<meta property="article:author" content="Felix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "",
+  "url": "http://example.com/2025/10/15/Git/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-10-15T00:50:55.980Z",
+  "dateModified": "2025-10-15T08:12:24.673Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/10/15/Git/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Felix的个人博客',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Felix的个人博客</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Untitled</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-15T00:50:55.980Z" title="Created 2025-10-15 08:50:55">2025-10-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-15T08:12:24.673Z" title="Updated 2025-10-15 16:12:24">2025-10-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h1><h2 id="一、初识Git"><a href="#一、初识Git" class="headerlink" title="一、初识Git"></a>一、初识Git</h2><p>它允许您保存不同版本的作品，而无需创建多个文件。您可以轻松地回到任何以前的版本，或创建备用时间线（我们称之为“分支”）来尝试不同的想法。</p>
+<h3 id="1-1-git初始化"><a href="#1-1-git初始化" class="headerlink" title="1.1 git初始化"></a>1.1 git初始化</h3><p>初始化Git储存库</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251015085116836.png" alt="image-20251015085116836"></p>
+<h3 id="1-2-git的不同状态"><a href="#1-2-git的不同状态" class="headerlink" title="1.2 git的不同状态"></a>1.2 git的不同状态</h3><p>查看git状态</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251015085122860.png" alt="image-20251015085122860"></p>
+<blockquote>
+<ul>
+<li>“分支主”：将分支想象成时间线。“主”是项目的主要时间线。</li>
+<li>“尚未提交”：提交就像视频游戏中的保存点。我们还没有做出任何保存点。</li>
+<li>“nothing to commit”：Git 没有要记录的更改，因为我们还没有创建任何文件。</li>
+</ul>
+</blockquote>
+<p><img src="/./../imgs/image-20251015085138169.png" alt="image-20251015085138169"></p>
+<blockquote>
+<p>添加文件后会显示文件未跟踪</p>
+</blockquote>
+<p>使用add命令后告诉git我需要保存这个文件时间点，即git开始跟踪文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add message.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251015085148097.png" alt="image-20251015085148097"></p>
+<p>执行提交commit后，git暂存区清空，文件传输到git仓库中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git commit -m <span class="string">&quot;send a message to the future&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251015085154942.png" alt="image-20251015085154942"></p>
+<h3 id="1-3-查看git日志"><a href="#1-3-查看git日志" class="headerlink" title="1.3 查看git日志"></a>1.3 查看git日志</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">log</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251015085257010.png" alt="image-20251015085257010"></p>
+<blockquote>
+<p>展示的几条信息：</p>
+<ul>
+<li>提交的唯一标识符（一长串字母和数字）</li>
+<li>谁提交了</li>
+<li>提交时间</li>
+<li>我们编写的提交消息</li>
+</ul>
+</blockquote>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>通过上述的内容，需要了解：</p>
+<ol>
+<li>如何使用<code>git init</code></li>
+<li>如何使用<code>git status</code></li>
+<li>如何使用<code>git add</code></li>
+<li>如何使用<code>git commit</code></li>
+<li>如何使用<code>git log</code></li>
+</ol>
+<p>同时需要了解，<strong>为什么要使用Git?</strong></p>
+<ol>
+<li><strong>详细历史记录</strong>：使用 Git，您可以拥有项目的完整历史记录。您可以看到发生了什么变化、何时发生了变化以及为什么发生了变化。</li>
+<li><strong>实验</strong>：Git 允许您自由实验。您可以创建项目的不同版本，而不必担心丢失您的原始作品。</li>
+<li><strong>协作</strong>：在团队中工作时，Git 可以轻松查看谁进行了哪些更改以及为什么进行了更改。</li>
+<li><strong>备份</strong>：每个 Git 存储库都是项目的完整备份，包括其整个历史记录。</li>
+</ol>
+<h2 id="二、Git配置管理"><a href="#二、Git配置管理" class="headerlink" title="二、Git配置管理"></a>二、Git配置管理</h2><h3 id="2-1-查看Git的当前设置"><a href="#2-1-查看Git的当前设置" class="headerlink" title="2.1 查看Git的当前设置"></a>2.1 查看Git的当前设置</h3><p>Git的配置具有三个级别：</p>
+<ol>
+<li>系统级别：应用于此维度的所有时间机器</li>
+<li>全局级别：您所有时间旅行的个人设置</li>
+<li>本地级别：特定于此特定时间实验</li>
+</ol>
+<p>要查看Git的所有设置–list</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --list</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251015090646354.png" alt="image-20251015090646354"></p>
+<p>也可以单查看需要查看的配置，比如名称</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config user.name</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-设置Git的用户信息-身份"><a href="#2-2-设置Git的用户信息-身份" class="headerlink" title="2.2 设置Git的用户信息(身份)"></a>2.2 设置Git的用户信息(身份)</h3><p>最重要的配置之一是Git的身份，这对于协作至关重要，因为它允许人看到谁对时间线进行了具体更改。</p>
+<p>全局设置</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置名称</span></span><br><span class="line">git config --global user.name <span class="string">&quot;Your Name&quot;</span></span><br><span class="line"><span class="comment"># 设置通讯地址</span></span><br><span class="line">git config --global user.email <span class="string">&quot;your.email@example.com&quot;</span></span><br><span class="line"><span class="comment"># 验证设置</span></span><br><span class="line">git config --global user.name</span><br><span class="line">git config --global user.email</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-Git的其他设置—美化等"><a href="#2-3-Git的其他设置—美化等" class="headerlink" title="2.3 Git的其他设置—美化等"></a>2.3 Git的其他设置—美化等</h3><h4 id="色彩显示设置"><a href="#色彩显示设置" class="headerlink" title="色彩显示设置"></a>色彩显示设置</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global color.ui auto</span><br></pre></td></tr></table></figure>
+
+<h4 id="设置编辑器—比如这里是nano"><a href="#设置编辑器—比如这里是nano" class="headerlink" title="设置编辑器—比如这里是nano"></a>设置编辑器—比如这里是nano</h4><p>有nano emacs gedit nano等</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global core.editor nano</span><br></pre></td></tr></table></figure>
+
+<h4 id="设置Git的换行符处理"><a href="#设置Git的换行符处理" class="headerlink" title="设置Git的换行符处理"></a>设置Git的换行符处理</h4><p><strong>问题背景：</strong> 不同操作系统处理文本文件换行的方式不一样：</p>
+<ul>
+<li><strong>Windows</strong>：用两个字符换行（回车+换行，简称 CRLF）</li>
+<li><strong>Linux&#x2F;macOS</strong>：只用一个字符换行（换行符，简称 LF）</li>
+</ul>
+<p>当你和使用不同操作系统的人一起协作开发项目时，这种差异可能会导致文件格式混乱，Git 会误以为文件被修改了。</p>
+<p><strong>解决方法：</strong> 因为你用的是 Ubuntu（Linux 系统），运行这个命令：  如果是windows—则core.autocrlf true</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global core.autocrlf input</span><br></pre></td></tr></table></figure>
+
+<p><strong>这个命令的作用：</strong></p>
+<ul>
+<li>当你<strong>提交代码</strong>时：自动把 CRLF 转换成 LF（统一格式）</li>
+<li>当你<strong>拉取代码</strong>时：保持原样不变（因为你的系统本来就用 LF）</li>
+</ul>
+<p>这样可以保证代码仓库里的文件都使用统一的换行符格式（LF），避免因为换行符不同而产生的问题。</p>
+<h4 id="创建别名-快捷方式"><a href="#创建别名-快捷方式" class="headerlink" title="创建别名&#x2F;快捷方式"></a>创建别名&#x2F;快捷方式</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global alias.st status</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251015093644198.png" alt="image-20251015093644198"></p>
+<p>举例，设置更复杂的别名，快捷美化查看提交历史</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config --global alias.lg <span class="string">&quot;log --color --graph --pretty=format:&#x27;%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)&lt;%an&gt;%Creset&#x27; --abbrev-commit&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-Git对于个别仓库进行局部配置"><a href="#2-4-Git对于个别仓库进行局部配置" class="headerlink" title="2.4 Git对于个别仓库进行局部配置"></a>2.4 Git对于个别仓库进行局部配置</h3><p>对于上面的操作，去掉–global</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git config user.name <span class="string">&quot;Lab User&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251015095210692.png" alt="image-20251015095210692"></p>
+<h3 id="小结-1"><a href="#小结-1" class="headerlink" title="小结"></a>小结</h3><p>上述的配置，能为Git项目提供良好的服务，尤其是在与其他同事合作或跨不同时间维度工作时带来便利。</p>
+<h2 id="三、"><a href="#三、" class="headerlink" title="三、"></a>三、</h2></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/10/15/Git/">http://example.com/2025/10/15/Git/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width no-desc" href="/2025/10/14/%E4%BA%91%E8%AE%A1%E7%AE%97%E9%9D%A2%E8%AF%95%E9%A2%98%E6%95%B4%E7%90%86%E2%80%94%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/" title="云计算面试题整理—持续更新"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">云计算面试题整理—持续更新</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">6</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Git"><span class="toc-number">1.</span> <span class="toc-text">Git</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%88%9D%E8%AF%86Git"><span class="toc-number">1.1.</span> <span class="toc-text">一、初识Git</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-git%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 git初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-git%E7%9A%84%E4%B8%8D%E5%90%8C%E7%8A%B6%E6%80%81"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 git的不同状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%9F%A5%E7%9C%8Bgit%E6%97%A5%E5%BF%97"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3 查看git日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">1.1.4.</span> <span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Git%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86"><span class="toc-number">1.2.</span> <span class="toc-text">二、Git配置管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%9F%A5%E7%9C%8BGit%E7%9A%84%E5%BD%93%E5%89%8D%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1 查看Git的当前设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E8%AE%BE%E7%BD%AEGit%E7%9A%84%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF-%E8%BA%AB%E4%BB%BD"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2 设置Git的用户信息(身份)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-Git%E7%9A%84%E5%85%B6%E4%BB%96%E8%AE%BE%E7%BD%AE%E2%80%94%E7%BE%8E%E5%8C%96%E7%AD%89"><span class="toc-number">1.2.3.</span> <span class="toc-text">2.3 Git的其他设置—美化等</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%89%B2%E5%BD%A9%E6%98%BE%E7%A4%BA%E8%AE%BE%E7%BD%AE"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">色彩显示设置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E7%BC%96%E8%BE%91%E5%99%A8%E2%80%94%E6%AF%94%E5%A6%82%E8%BF%99%E9%87%8C%E6%98%AFnano"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">设置编辑器—比如这里是nano</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AEGit%E7%9A%84%E6%8D%A2%E8%A1%8C%E7%AC%A6%E5%A4%84%E7%90%86"><span class="toc-number">1.2.3.3.</span> <span class="toc-text">设置Git的换行符处理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%88%AB%E5%90%8D-%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F"><span class="toc-number">1.2.3.4.</span> <span class="toc-text">创建别名&#x2F;快捷方式</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-Git%E5%AF%B9%E4%BA%8E%E4%B8%AA%E5%88%AB%E4%BB%93%E5%BA%93%E8%BF%9B%E8%A1%8C%E5%B1%80%E9%83%A8%E9%85%8D%E7%BD%AE"><span class="toc-number">1.2.4.</span> <span class="toc-text">2.4 Git对于个别仓库进行局部配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93-1"><span class="toc-number">1.2.5.</span> <span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81"><span class="toc-number">1.3.</span> <span class="toc-text">三、</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/15/Git/" title="Untitled">Untitled</a><time datetime="2025-10-15T00:50:55.980Z" title="Created 2025-10-15 08:50:55">2025-10-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/14/%E4%BA%91%E8%AE%A1%E7%AE%97%E9%9D%A2%E8%AF%95%E9%A2%98%E6%95%B4%E7%90%86%E2%80%94%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/" title="云计算面试题整理—持续更新">云计算面试题整理—持续更新</a><time datetime="2025-10-14T05:41:59.000Z" title="Created 2025-10-14 13:41:59">2025-10-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/14/Linux%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4/" title="Linux常见命令">Linux常见命令</a><time datetime="2025-10-14T05:27:44.000Z" title="Created 2025-10-14 13:27:44">2025-10-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/13/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" title="搭建Hexo个人博客">搭建Hexo个人博客</a><time datetime="2025-10-13T15:44:29.537Z" title="Created 2025-10-13 23:44:29">2025-10-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/13/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" title="计算机网络基础知识">计算机网络基础知识</a><time datetime="2025-10-13T12:30:54.033Z" title="Created 2025-10-13 20:30:54">2025-10-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
