@@ -1,0 +1,295 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Linux Centos7配置本地yum仓库 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux Centos7配置本地yum仓库引言本地yum仓库是什么？yum是Linux中常用的包管理工具，它通过访问”软件仓库“来下载、安装、更新、卸载软件包。 yun本地仓库就是把软件包(.rpm)和仓库的元数据都存放在本地磁盘(或者局域网服务器)上，而不是从外网获取的仓库。 yum仓库是干什么的? 离线环境安装软件，例如不能联网的服务器（内网机房、保密环境）。 节省带宽和时间，局域网里多台机">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux Centos7配置本地yum仓库">
+<meta property="og:url" content="http://example.com/2025/10/16/Linux-Centos7%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="Linux Centos7配置本地yum仓库引言本地yum仓库是什么？yum是Linux中常用的包管理工具，它通过访问”软件仓库“来下载、安装、更新、卸载软件包。 yun本地仓库就是把软件包(.rpm)和仓库的元数据都存放在本地磁盘(或者局域网服务器)上，而不是从外网获取的仓库。 yum仓库是干什么的? 离线环境安装软件，例如不能联网的服务器（内网机房、保密环境）。 节省带宽和时间，局域网里多台机">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-10-16T08:26:04.000Z">
+<meta property="article:modified_time" content="2025-10-16T11:21:18.782Z">
+<meta property="article:author" content="Felix">
+<meta property="article:tag" content="Linux创建本地yum仓库——&gt;迁移知识点，到企业服务器仓库等">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Linux Centos7配置本地yum仓库",
+  "url": "http://example.com/2025/10/16/Linux-Centos7%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-10-16T08:26:04.000Z",
+  "dateModified": "2025-10-16T11:21:18.782Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/10/16/Linux-Centos7%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Linux Centos7配置本地yum仓库',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Linux Centos7配置本地yum仓库</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Linux Centos7配置本地yum仓库</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-16T08:26:04.000Z" title="Created 2025-10-16 16:26:04">2025-10-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-16T11:21:18.782Z" title="Updated 2025-10-16 19:21:18">2025-10-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Linux-Centos7配置本地yum仓库"><a href="#Linux-Centos7配置本地yum仓库" class="headerlink" title="Linux Centos7配置本地yum仓库"></a>Linux Centos7配置本地yum仓库</h1><h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><h3 id="本地yum仓库是什么？"><a href="#本地yum仓库是什么？" class="headerlink" title="本地yum仓库是什么？"></a>本地yum仓库是什么？</h3><p>yum是Linux中常用的包管理工具，它通过访问”软件仓库“来下载、安装、更新、卸载软件包。</p>
+<p>yun本地仓库就是把软件包(.rpm)和仓库的元数据都存放在本地磁盘(或者局域网服务器)上，而不是从外网获取的仓库。</p>
+<h3 id="yum仓库是干什么的"><a href="#yum仓库是干什么的" class="headerlink" title="yum仓库是干什么的?"></a>yum仓库是干什么的?</h3><ol>
+<li>离线环境安装软件，例如不能联网的服务器（内网机房、保密环境）。</li>
+<li>节省带宽和时间，局域网里多台机器都要装软件时，可以共用一个本地仓库，避免每台都从外网重复下载，速度更快。</li>
+<li>稳定可控，外网源可能更新、下线或变更版本。本地仓库内容是固定的，适合企业环境中<strong>版本可控、可追溯</strong>的管理。</li>
+<li>自定义仓库，可以自己选择要放哪些包，甚至自己编译 <code>.rpm</code> 包后放进去，形成企业内部定制仓库。</li>
+</ol>
+<h3 id="为什么要用本地yum仓库？"><a href="#为什么要用本地yum仓库？" class="headerlink" title="为什么要用本地yum仓库？"></a>为什么要用本地yum仓库？</h3><p>简而言之：因为某些场景下，不能或不方便使用外部网络源。</p>
+<table>
+<thead>
+<tr>
+<th>使用场景</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>服务器无外网访问权限</td>
+<td>无法连接公网源，只能用本地仓库</td>
+</tr>
+<tr>
+<td>局域网多台机器部署</td>
+<td>提高效率，共享本地仓库</td>
+</tr>
+<tr>
+<td>企业安全与版本控制</td>
+<td>防止自动升级造成不兼容</td>
+</tr>
+<tr>
+<td>离线环境（如实验室、军工内网）</td>
+<td>没有互联网，只能靠U盘等介质导入仓库</td>
+</tr>
+</tbody></table>
+<h2 id="配置流程"><a href="#配置流程" class="headerlink" title="配置流程"></a>配置流程</h2><h3 id="①确定本地yum仓库"><a href="#①确定本地yum仓库" class="headerlink" title="①确定本地yum仓库"></a>①确定本地yum仓库</h3><p>Centos7的yum配置文件存放在&#x2F;etc&#x2F;yum.repos.d目录中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/yum.repos.d</span><br><span class="line"><span class="built_in">ls</span> -a</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251016185552969.png" alt="image-20251016185552969"></p>
+<h3 id="②改写指向的yum仓库位置"><a href="#②改写指向的yum仓库位置" class="headerlink" title="②改写指向的yum仓库位置"></a>②改写指向的yum仓库位置</h3><p>从上图可见，我的电脑中使用的镜像源(仓库)是阿里云的，要建立本地的仓库，得建立个人的rpm仓库，这里假定rpm包从镜像ISO9660中获取，其镜像文件是&#x2F;dev&#x2F;sr0</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ls</span> -l /dev/sr0</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251016185958245.png" alt="image-20251016185958245"></p>
+<p>可以看见，该文件是block文件，即块设备文件（Block Device File）</p>
+<p><strong>简单介绍下什么是是Block文件</strong></p>
+<p><strong>Block 文件</strong> 是指能以「块（block）」为单位进行数据读写的设备文件。<br> 这些文件通常位于 <code>/dev</code> 目录下，用于与硬件设备进行交互。</p>
+<p><strong>块设备</strong>则是<strong>以固定大小的数据块（通常是512字节或4KB）为单位进行随机读写</strong>的设备，比如：</p>
+<table>
+<thead>
+<tr>
+<th>设备类型</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>硬盘</td>
+<td><code>/dev/sda</code>, <code>/dev/nvme0n1</code></td>
+</tr>
+<tr>
+<td>U盘</td>
+<td><code>/dev/sdb</code></td>
+</tr>
+<tr>
+<td>光驱</td>
+<td><code>/dev/sr0</code></td>
+</tr>
+<tr>
+<td>RAID阵列</td>
+<td><code>/dev/md0</code></td>
+</tr>
+<tr>
+<td>分区</td>
+<td><code>/dev/sda1</code>, <code>/dev/sda2</code></td>
+</tr>
+</tbody></table>
+<h3 id="③挂载设备文件"><a href="#③挂载设备文件" class="headerlink" title="③挂载设备文件"></a>③挂载设备文件</h3><p>确定好rpm包来源—sr0后，我们需要挂载块设备，才能对其进行访问。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 将sr0挂载到mnt目录下</span><br><span class="line">mount /dev/sr0 /mnt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251016191247451.png" alt="image-20251016191247451"></p>
+<p>挂载设备后即可访问块设备中的内容。</p>
+<blockquote>
+<p><strong>为什么要涉及挂载？</strong></p>
+<p>一般情况下，在搭建本地 YUM 仓库时，很多时候我们会：</p>
+<p>挂载一个 ISO 镜像（如 CentOS 安装镜像）</p>
+<p>或者一个外部硬盘、U盘</p>
+</blockquote>
+<h3 id="④改写配置文件"><a href="#④改写配置文件" class="headerlink" title="④改写配置文件"></a>④改写配置文件</h3><p>为了让yum工具可以识别到本地Yum仓库的位置，我们需要改写配置文件，参考下图阿里云镜像源的配置。</p>
+<p><img src="/./imgs/image-20251016185704449.png" alt="image-20251016185704449"></p>
+<p>需要先删除&#x2F;etc&#x2F;yum.repos.d目录中其他的配置文件</p>
+<p>创建本地yum仓库的.repo配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi local.repo</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251016191546473.png" alt="image-20251016191546473"></p>
+<blockquote>
+<p>[local]<br>name&#x3D;local<br>#申明到哪找rpm包（申明本地yum仓库的路径）<br>baseurl&#x3D;file:&#x2F;&#x2F;&#x2F;mnt<br>#申明启用这个仓库配置参数<br>enabled&#x3D;1<br>#申明不进行健康检查&#x2F;加密访问<br>gpgcheck&#x3D;0</p>
+</blockquote>
+<h3 id="⑤清除缓存并更新缓存"><a href="#⑤清除缓存并更新缓存" class="headerlink" title="⑤清除缓存并更新缓存"></a>⑤清除缓存并更新缓存</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 清空yum的缓存</span></span><br><span class="line">yum clean all</span><br><span class="line"><span class="comment"># 把仓库的元数据（metadata）下载到本地缓存，加快后续安装和搜索软件包的速度。</span></span><br><span class="line">yum makecache fast</span><br></pre></td></tr></table></figure>
+
+<p>补充:</p>
+<p><strong>什么是元数据？</strong></p>
+<p>在每个 YUM 仓库里，除了 <code>.rpm</code> 软件包外，还有一组描述这些包信息的文件，比如：</p>
+<ul>
+<li>软件包的名称、版本、依赖关系</li>
+<li>软件包的位置（在哪个路径下）</li>
+<li>更新信息等</li>
+</ul>
+<p>这些信息统称为 <strong>仓库元数据</strong>。<br> YUM 在安装、搜索、更新软件时，都要先读取这些数据。</p>
+<p><strong>makecache的作用是什么？</strong></p>
+<ol>
+<li>去各个启用的仓库（包括本地源、网络源）下载元数据；</li>
+<li>把元数据存放到 <code>/var/cache/yum/</code> 目录；</li>
+<li>下次再执行 <code>yum install</code>、<code>yum search</code> 时，就不用重新联网解析仓库，大大加快速度。</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本地Yum仓库：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>定义</strong></td>
+<td>存放在本地磁盘或局域网服务器上的 RPM 软件包仓库</td>
+</tr>
+<tr>
+<td><strong>作用</strong></td>
+<td>离线安装、节省带宽、提高速度、版本控制</td>
+</tr>
+<tr>
+<td><strong>适用场景</strong></td>
+<td>无外网环境、内网部署、企业定制源</td>
+</tr>
+</tbody></table>
+<p>通过搭建本地 Yum 仓库，我们可以在没有外网连接的情况下高效地管理和安装软件包。它不仅能显著减少重复下载带来的带宽消耗，还能保证软件版本的可控与一致，避免因外部仓库更新导致系统环境不稳定的情况。同时，在企业内部或实验教学等局域网环境中，本地仓库还能作为统一的软件源，方便集中维护与部署，提升系统管理的安全性与可靠性。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/10/16/Linux-Centos7%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93/">http://example.com/2025/10/16/Linux-Centos7%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93%E2%80%94%E2%80%94-%E8%BF%81%E7%A7%BB%E7%9F%A5%E8%AF%86%E7%82%B9%EF%BC%8C%E5%88%B0%E4%BC%81%E4%B8%9A%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BB%93%E5%BA%93%E7%AD%89/">Linux创建本地yum仓库——&gt;迁移知识点，到企业服务器仓库等</a></div><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/10/15/Git/" title="Git的学习与使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Git的学习与使用</div></div><div class="info-2"><div class="info-item-1">Git一、初识Git它允许您保存不同版本的作品，而无需创建多个文件。您可以轻松地回到任何以前的版本，或创建备用时间线（我们称之为“分支”）来尝试不同的想法。 1.1 git初始化初始化Git储存库 1git init   1.2 git的不同状态查看git状态 1git status     “分支主”：将分支想象成时间线。“主”是项目的主要时间线。 “尚未提交”：提交就像视频游戏中的保存点。我们还没有做出任何保存点。 “nothing to commit”：Git 没有要记录的更改，因为我们还没有创建任何文件。     添加文件后会显示文件未跟踪  使用add命令后告诉git我需要保存这个文件时间点，即git开始跟踪文件 1git add message.txt   执行提交commit后，git暂存区清空，文件传输到git仓库中 1git commit -m &quot;send a message to the future&quot;   1.3 查看git日志1git log    展示的几条信息：  提交的唯一标识符（一长串字母和数字） 谁提交了 提交时间 我们编写的...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Linux-Centos7%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93"><span class="toc-number">1.</span> <span class="toc-text">Linux Centos7配置本地yum仓库</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">1.1.</span> <span class="toc-text">引言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.1.1.</span> <span class="toc-text">本地yum仓库是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#yum%E4%BB%93%E5%BA%93%E6%98%AF%E5%B9%B2%E4%BB%80%E4%B9%88%E7%9A%84"><span class="toc-number">1.1.2.</span> <span class="toc-text">yum仓库是干什么的?</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93%EF%BC%9F"><span class="toc-number">1.1.3.</span> <span class="toc-text">为什么要用本地yum仓库？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">配置流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%91%A0%E7%A1%AE%E5%AE%9A%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93"><span class="toc-number">1.2.1.</span> <span class="toc-text">①确定本地yum仓库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%91%A1%E6%94%B9%E5%86%99%E6%8C%87%E5%90%91%E7%9A%84yum%E4%BB%93%E5%BA%93%E4%BD%8D%E7%BD%AE"><span class="toc-number">1.2.2.</span> <span class="toc-text">②改写指向的yum仓库位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%91%A2%E6%8C%82%E8%BD%BD%E8%AE%BE%E5%A4%87%E6%96%87%E4%BB%B6"><span class="toc-number">1.2.3.</span> <span class="toc-text">③挂载设备文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%91%A3%E6%94%B9%E5%86%99%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">1.2.4.</span> <span class="toc-text">④改写配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%91%A4%E6%B8%85%E9%99%A4%E7%BC%93%E5%AD%98%E5%B9%B6%E6%9B%B4%E6%96%B0%E7%BC%93%E5%AD%98"><span class="toc-number">1.2.5.</span> <span class="toc-text">⑤清除缓存并更新缓存</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/16/Linux-Centos7%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93/" title="Linux Centos7配置本地yum仓库">Linux Centos7配置本地yum仓库</a><time datetime="2025-10-16T08:26:04.000Z" title="Created 2025-10-16 16:26:04">2025-10-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/15/Git/" title="Git的学习与使用">Git的学习与使用</a><time datetime="2025-10-15T00:50:55.980Z" title="Created 2025-10-15 08:50:55">2025-10-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/14/%E4%BA%91%E8%AE%A1%E7%AE%97%E9%9D%A2%E8%AF%95%E9%A2%98%E6%95%B4%E7%90%86%E2%80%94%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/" title="云计算面试题整理—持续更新">云计算面试题整理—持续更新</a><time datetime="2025-10-14T05:41:59.000Z" title="Created 2025-10-14 13:41:59">2025-10-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/14/Linux%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4/" title="Linux常见命令">Linux常见命令</a><time datetime="2025-10-14T05:27:44.000Z" title="Created 2025-10-14 13:27:44">2025-10-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/13/Hexo%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA/" title="搭建Hexo个人博客">搭建Hexo个人博客</a><time datetime="2025-10-13T15:44:29.537Z" title="Created 2025-10-13 23:44:29">2025-10-13</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
