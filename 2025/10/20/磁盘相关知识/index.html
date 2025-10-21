@@ -1,0 +1,636 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>磁盘相关知识 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="磁盘相关知识1 磁盘分区1.1 首先需要了解，什么是磁盘分区？为什么要进行磁盘分区？1、磁盘存储空间无法直接使用，需要先进行分区（划分存储空间）才能使用磁盘容量。分区的主要目的是将一块完整的磁盘逻辑地分割成多个独立的存储区域。2、主分区只能创建4个（&#x2F;dev&#x2F;sda1 &#x2F;dev&#x2F;sda2 &#x2F;dev&#x2F;sda3 &#x2F;dev&#x2F;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="磁盘相关知识">
+<meta property="og:url" content="http://example.com/2025/10/20/%E7%A3%81%E7%9B%98%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="磁盘相关知识1 磁盘分区1.1 首先需要了解，什么是磁盘分区？为什么要进行磁盘分区？1、磁盘存储空间无法直接使用，需要先进行分区（划分存储空间）才能使用磁盘容量。分区的主要目的是将一块完整的磁盘逻辑地分割成多个独立的存储区域。2、主分区只能创建4个（&#x2F;dev&#x2F;sda1 &#x2F;dev&#x2F;sda2 &#x2F;dev&#x2F;sda3 &#x2F;dev&#x2F;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-10-20T11:48:15.500Z">
+<meta property="article:modified_time" content="2025-10-21T12:01:31.105Z">
+<meta property="article:author" content="Felix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "磁盘相关知识",
+  "url": "http://example.com/2025/10/20/%E7%A3%81%E7%9B%98%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-10-20T11:48:15.500Z",
+  "dateModified": "2025-10-21T12:01:31.105Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/10/20/%E7%A3%81%E7%9B%98%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '磁盘相关知识',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">磁盘相关知识</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">磁盘相关知识</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-20T11:48:15.500Z" title="Created 2025-10-20 19:48:15">2025-10-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-21T12:01:31.105Z" title="Updated 2025-10-21 20:01:31">2025-10-21</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="磁盘相关知识"><a href="#磁盘相关知识" class="headerlink" title="磁盘相关知识"></a>磁盘相关知识</h1><h2 id="1-磁盘分区"><a href="#1-磁盘分区" class="headerlink" title="1 磁盘分区"></a>1 磁盘分区</h2><h3 id="1-1-首先需要了解，什么是磁盘分区？为什么要进行磁盘分区？"><a href="#1-1-首先需要了解，什么是磁盘分区？为什么要进行磁盘分区？" class="headerlink" title="1.1 首先需要了解，什么是磁盘分区？为什么要进行磁盘分区？"></a>1.1 首先需要了解，什么是磁盘分区？为什么要进行磁盘分区？</h3><p>1、磁盘存储空间无法直接使用，需要先进行分区（划分存储空间）才能使用磁盘容量。分区的主要目的是将一块完整的磁盘逻辑地分割成多个独立的存储区域。<br>2、<strong>主分区</strong>只能创建<strong>4个</strong>（&#x2F;dev&#x2F;sda1 &#x2F;dev&#x2F;sda2 &#x2F;dev&#x2F;sda3 &#x2F;dev&#x2F;sda4）磁盘分区创建好后，需要<strong>格式化</strong>就能使用其空间了。</p>
+<blockquote>
+<p>主分区，主要存储 ： ① 系统文件 ② 程序文件 ③ 用户数据</p>
+</blockquote>
+<p>3、剩余的空间可以自定义控制，但是得先化分<strong>扩展分区</strong><br>比如，一块磁盘一共有1000G，主分区用了400G，还剩余600，此时我想使用剩余的600G空间，需要先把600G的空间定义为<strong>扩展分区</strong>（扩展分区不能直接存储数据），需要把扩展分区中的存储空间，进一步创建为1个或多个<strong>逻辑空间</strong>之后，才能作为存储设备使用。</p>
+<h3 id="1-2-主分区（Primary-Partition）"><a href="#1-2-主分区（Primary-Partition）" class="headerlink" title="1.2 主分区（Primary Partition）"></a>1.2 主分区（Primary Partition）</h3><ul>
+<li>主要存储系统文件、程序文件、用户数据</li>
+<li>Linux系统最多只能创建<strong>4个主分区</strong></li>
+<li>命名规则：<code>/dev/sda1</code>、<code>/dev/sda2</code>、<code>/dev/sda3</code>、<code>/dev/sda4</code></li>
+<li>需要格式化后才能挂载使用</li>
+</ul>
+<h3 id="1-3-扩展分区（Extended-Partition）"><a href="#1-3-扩展分区（Extended-Partition）" class="headerlink" title="1.3 扩展分区（Extended Partition）"></a>1.3 扩展分区（Extended Partition）</h3><ul>
+<li>用于分割主分区之外的剩余磁盘空间</li>
+<li><strong>无法直接存储数据</strong>，仅用于分割存储空间</li>
+<li>一块磁盘最多只能有1个扩展分区</li>
+<li>扩展分区中的空间需进一步划分为逻辑分区</li>
+</ul>
+<h3 id="1-4-逻辑分区（Logical-Partition）"><a href="#1-4-逻辑分区（Logical-Partition）" class="headerlink" title="1.4 逻辑分区（Logical Partition）"></a>1.4 逻辑分区（Logical Partition）</h3><ul>
+<li>从扩展分区分割出来的实际存储分区</li>
+<li>可用于用户自定义用途</li>
+<li>编号从5开始：<code>/dev/sda5</code>、<code>/dev/sda6</code>等</li>
+<li>需要格式化后才能挂载使用</li>
+</ul>
+<h3 id="1-5-⭐交换分区（SWAP）"><a href="#1-5-⭐交换分区（SWAP）" class="headerlink" title="1.5 ⭐交换分区（SWAP）"></a>1.5 ⭐交换分区（SWAP）</h3><ul>
+<li>临时作为内存的存储空间使用</li>
+<li>当物理内存不足时，系统会使用SWAP分区</li>
+<li>一般只用于内存数据的读取</li>
+<li>建议大小为物理内存的1.5～2倍</li>
+<li>对于物理内存充足（8GB以上）的服务器可不设置</li>
+</ul>
+<p>简单来说，SWAP分区临时作为内存的存储空间使用，一般只用于内存数据的读取</p>
+<h3 id="拓展"><a href="#拓展" class="headerlink" title="拓展"></a>拓展</h3><h4 id="磁盘存储容量计算"><a href="#磁盘存储容量计算" class="headerlink" title="磁盘存储容量计算"></a>磁盘存储容量计算</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">硬盘存储容量 = 磁头数 × 磁道（柱面）数 × 每道扇区数 × 每扇区字节数</span><br><span class="line">1柱面 = 512 × 扇区数/磁头数 × 磁道 = 512 × 63 × 255 = 7.84MB</span><br></pre></td></tr></table></figure>
+
+<p>可以用柱面&#x2F;磁头&#x2F;扇区来唯一定位磁盘上每一个区域。</p>
+<h4 id="Linux设备文件命名规则"><a href="#Linux设备文件命名规则" class="headerlink" title="Linux设备文件命名规则"></a>Linux设备文件命名规则</h4><p>Linux将硬盘、分区等设备均表示为文件，设备文件位于<code>/dev/</code>目录下。</p>
+<p>磁盘接口模式 SCSI IDE SATA ——》表现为文件时的命名规则有区别</p>
+<p><strong>命名规则</strong></p>
+<p>以<code>/dev/sdb5</code>为例：</p>
+<ul>
+<li><strong>sd</strong>：表示SCSI设备（hd表示IDE设备）</li>
+<li><strong>b</strong>：硬盘的顺序号，以字母a、b、c…表示</li>
+<li><strong>5</strong>：分区的顺序号，以数字1、2、3…表示<ul>
+<li>主分区编号：1-4</li>
+<li>第一个逻辑分区始终从5开始</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-文件系统的概念"><a href="#2-文件系统的概念" class="headerlink" title="2.文件系统的概念"></a>2.文件系统的概念</h2><p>文件系统的基本功能是管理文件的生命周期。不同类型的文件系统在应用特性上会有区别。</p>
+<p>常用的文件系统：XFS、EXT4、SWAP</p>
+<h3 id="2-1-XFS文件系统"><a href="#2-1-XFS文件系统" class="headerlink" title="2.1 XFS文件系统"></a>2.1 XFS文件系统</h3><ul>
+<li>高性能日志文件系统</li>
+<li>特别擅长处理大文件</li>
+<li>支持上百万TB的存储空间</li>
+<li>开启日志功能，宕机时数据不易损坏</li>
+<li>可根据日志记录快速恢复数据</li>
+<li><strong>CentOS 7默认使用XFS</strong></li>
+</ul>
+<h3 id="3-2-EXT4文件系统"><a href="#3-2-EXT4文件系统" class="headerlink" title="3.2 EXT4文件系统"></a>3.2 EXT4文件系统</h3><ul>
+<li>第4代扩展文件系统</li>
+<li>用于存放文件和目录数据的分区</li>
+<li>典型的日志型文件系统</li>
+<li>保存磁盘存取记录的日志数据，便于恢复</li>
+<li>存取性能和稳定性出色</li>
+<li>CentOS 6及更早版本的默认文件系统</li>
+</ul>
+<h3 id="3-3-SWAP文件系统"><a href="#3-3-SWAP文件系统" class="headerlink" title="3.3 SWAP文件系统"></a>3.3 SWAP文件系统</h3><ul>
+<li>交换文件系统</li>
+<li>建立交换分区供Linux系统使用</li>
+<li>作用相当于虚拟内存</li>
+<li>在一定程度上缓解物理内存不足的问题</li>
+<li>不用于直接存储用户文件和目录数据</li>
+</ul>
+<h3 id="3-4-其他文件系统"><a href="#3-4-其他文件系统" class="headerlink" title="3.4 其他文件系统"></a>3.4 其他文件系统</h3><ul>
+<li><strong>JFS</strong>：多用于商业版本UNIX系统，性能表现出色</li>
+<li><strong>FAT16&#x2F;FAT32</strong>：较老的文件系统</li>
+<li><strong>NTFS</strong>：微软公司的专有文件系统，Linux默认仅支持读取，需结合NTFS-3G等辅助软件才能写入</li>
+</ul>
+<h2 id="3-磁盘分区操作"><a href="#3-磁盘分区操作" class="headerlink" title="3.磁盘分区操作"></a>3.磁盘分区操作</h2><p>磁盘想要给目录使用（共享存储空间）<br>通常需要经过：① 分区 –》② 格式化 –》③ 挂载<br>    ① 分区命令： fdisk 磁盘设备（例如：&#x2F;dev&#x2F;sdb）<br>    ② 格式化命令：mkfs -t xfs&#x2F;ext4 设备文件（例如分区）<br>    ③ 挂载命令： mount 设备文件 目录位置  （命令的挂载通常，都是<strong>临时性</strong>的）<br>         永久挂载：写入到<strong>配置文件中 &#x2F;etc&#x2F;fstab</strong><br>方式: ① 直接使用设备文件名字进行挂载<br>          ② 使用设备<strong>UUID</strong>进行挂载（blkid）</p>
+<h3 id="3-1-查看磁盘分区情况"><a href="#3-1-查看磁盘分区情况" class="headerlink" title="3.1 查看磁盘分区情况"></a>3.1 查看磁盘分区情况</h3><p><strong>fdisk -l命令</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fdisk -l</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021090732335.png" alt="image-20251021090732335"></p>
+<blockquote>
+<p>输出信息说明：</p>
+<ul>
+<li><strong>Device</strong>：分区的设备文件名</li>
+<li><strong>Boot</strong>：是否是引导分区（*表示是）</li>
+<li><strong>Start</strong>：分区在硬盘中的起始位置（柱面数）</li>
+<li><strong>End</strong>：分区在硬盘中的结束位置（柱面数）</li>
+<li><strong>Blocks</strong>：分区大小（块为单位，默认1024字节）</li>
+<li><strong>Id</strong>：分区系统ID号<ul>
+<li>83：XFS或EXT4分区</li>
+<li>8e：LVM逻辑卷</li>
+<li>82：Linux swap分区</li>
+</ul>
+</li>
+<li><strong>System</strong>：分区类型</li>
+</ul>
+</blockquote>
+<p><strong>lsblk命令</strong></p>
+<p>以树形结构查看磁盘分区：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lsblk</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021090842162.png" alt="image-20251021090842162"></p>
+<h3 id="3-2-磁盘分区"><a href="#3-2-磁盘分区" class="headerlink" title="3.2 磁盘分区"></a>3.2 磁盘分区</h3><p>使用fdisk进行分区（MBR分区表）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fdisk /dev/sdb</span><br></pre></td></tr></table></figure>
+
+<p>交互命令说明：</p>
+<p><img src="/./../imgs/image-20251021090936182.png" alt="image-20251021090936182"></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>m</td>
+<td>显示帮助菜单</td>
+</tr>
+<tr>
+<td>n</td>
+<td>增加一个新的分区</td>
+</tr>
+<tr>
+<td>p</td>
+<td>显示磁盘当前分区表</td>
+</tr>
+<tr>
+<td>d</td>
+<td>删除一个分区</td>
+</tr>
+<tr>
+<td>t</td>
+<td>改变分区的系统号码</td>
+</tr>
+<tr>
+<td>l</td>
+<td>显示已知的分区类型</td>
+</tr>
+<tr>
+<td>w</td>
+<td>保存修改并退出</td>
+</tr>
+<tr>
+<td>q</td>
+<td>退出而不保存</td>
+</tr>
+<tr>
+<td>a</td>
+<td>设置可引导标记</td>
+</tr>
+<tr>
+<td>v</td>
+<td>验证分区表</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 新增分区</span></span><br><span class="line">n</span><br><span class="line"><span class="comment"># 创建主分区p	创建扩展分区e</span></span><br><span class="line">p	或者	e</span><br><span class="line"><span class="comment">#保存并退出</span></span><br><span class="line">w</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021091134495.png" alt="image-20251021091134495"></p>
+<h3 id="3-3-文件格式初始化"><a href="#3-3-文件格式初始化" class="headerlink" title="3.3 文件格式初始化"></a>3.3 文件格式初始化</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 初始化为xfs文件格式</span></span><br><span class="line">mkfs -t xfs /dev/sdb1</span><br><span class="line"><span class="comment"># 或</span></span><br><span class="line">mkfs.xfs /dev/sdb1</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021091342151.png" alt="image-20251021091342151"></p>
+<h3 id="3-4-磁盘挂载并使用"><a href="#3-4-磁盘挂载并使用" class="headerlink" title="3.4 磁盘挂载并使用"></a>3.4 磁盘挂载并使用</h3><h4 id="临时挂载"><a href="#临时挂载" class="headerlink" title="临时挂载"></a>临时挂载</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将格式化后的磁盘挂载到data文件夹</span></span><br><span class="line">mount /dev/sdb1 /data</span><br><span class="line"><span class="comment"># 查看是否挂载成功</span></span><br><span class="line"><span class="built_in">df</span> -hT</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021091700095.png" alt="image-20251021091700095"></p>
+<h4 id="永久挂载（UUID或者设备名称进行挂载）"><a href="#永久挂载（UUID或者设备名称进行挂载）" class="headerlink" title="永久挂载（UUID或者设备名称进行挂载）"></a>永久挂载（UUID或者设备名称进行挂载）</h4><p>准备好分区，即3.1-3.3的操作，并准备好挂载点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用blkid查询UUID</span></span><br><span class="line">blkid /dev/sdb2</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021164916768.png" alt="image-20251021164916768"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加至fstab配置文件中，进行永久挂载</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;/dev/sdb2 /data xfs defaults 0 0&quot;</span> &gt;&gt; /etc/fstab</span><br><span class="line"><span class="comment"># vim 编辑器添加</span></span><br><span class="line">UUID 挂载设备 挂载点 文件类型 权限选项（默认defaults） 是否备份(0/1) 是否自检(0/1)</span><br></pre></td></tr></table></figure>
+
+<p><strong>六个字段说明</strong></p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>第1字段</td>
+<td>设备名或UUID</td>
+</tr>
+<tr>
+<td>第2字段</td>
+<td>挂载点目录位置</td>
+</tr>
+<tr>
+<td>第3字段</td>
+<td>文件系统类型（如XFS、EXT4、SWAP）</td>
+</tr>
+<tr>
+<td>第4字段</td>
+<td>挂载参数（defaults、rw、ro、noexec等）</td>
+</tr>
+<tr>
+<td>第5字段</td>
+<td>是否需要dump备份（1&#x3D;需要，0&#x3D;不需要）</td>
+</tr>
+<tr>
+<td>第6字段</td>
+<td>磁盘检查顺序（0&#x3D;不检查，1&#x3D;优先，2&#x3D;其次）</td>
+</tr>
+</tbody></table>
+<p><img src="/./../imgs/image-20251021164925624.png" alt="image-20251021164925624"></p>
+<h2 id="4-LVM磁盘管理"><a href="#4-LVM磁盘管理" class="headerlink" title="4.LVM磁盘管理"></a>4.LVM磁盘管理</h2><h3 id="4-1-什么是LVM？作用是什么？"><a href="#4-1-什么是LVM？作用是什么？" class="headerlink" title="4.1 什么是LVM？作用是什么？"></a>4.1 什么是LVM？作用是什么？</h3><p>LVM（Logical Volume Manager，逻辑卷管理）是 Linux 系统中一种灵活的磁盘管理技术。</p>
+<ul>
+<li><strong>灵活性高</strong>：传统磁盘分区后大小固定，而 LVM 的逻辑卷可以动态扩展或缩小，无需重新分区或重启系统。例如当某个分区空间不足时，可以直接从其他物理卷扩容。</li>
+<li><strong>便于管理</strong>：可以动态添加或移除物理卷，将多块硬盘统一管理。比如需要扩容时，只需添加新硬盘并加入卷组，再扩展逻辑卷即可。</li>
+<li><strong>提高效率</strong>：PE（物理扩展块）的灵活大小设置可以优化硬盘利用率。PE 越小利用率越高，但同时也限制了卷组最大规模。</li>
+<li><strong>空间利用率优化</strong>：避免了传统分区时预留过多空间或空间浪费的问题，可以根据实际需求动态调整各逻辑卷的大小。</li>
+<li><strong>防止磁盘满</strong>：可以结合磁盘配额功能限制用户使用空间，防止某个用户占用过多磁盘资源导致系统故障。</li>
+</ul>
+<p>简单来说，<strong>LVM 就像给硬盘加了一个”中间商”，让你可以更灵活地分配和管理存储空间</strong>，特别是在服务器环境中非常实用。</p>
+<h3 id="4-2-LVM三层结构介绍"><a href="#4-2-LVM三层结构介绍" class="headerlink" title="4.2 LVM三层结构介绍"></a>4.2 LVM三层结构介绍</h3><h4 id="PV（物理卷-Physical-Volume）"><a href="#PV（物理卷-Physical-Volume）" class="headerlink" title="PV（物理卷 - Physical Volume）"></a>PV（物理卷 - Physical Volume）</h4><p>物理卷是 LVM 机制的基本存储设备，通常对应一个普通分区或整个硬盘。</p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>创建物理卷时，会在分区或硬盘头部创建保留区块，记录 LVM 属性</li>
+<li>存储空间分割成默认大小为 4MB 的基本单元（PE - Physical Extent）</li>
+<li><strong>PE存储单元</strong>是磁盘中一个固定大小的存储块 ，可选值：4、8、16、32、64 MB</li>
+<li>PE 越小硬盘利用率高，但每个 VG 最多只有 65534 个块，所以 PE 大小决定了 VG 卷组大小</li>
+</ul>
+<p><strong>示例：</strong> <code>/dev/sdb1</code>、<code>/dev/sdc1</code></p>
+<h4 id="VG（卷组-Volume-Group）"><a href="#VG（卷组-Volume-Group）" class="headerlink" title="VG（卷组 - Volume Group）"></a>VG（卷组 - Volume Group）</h4><p>由一个或多个<strong>物理卷组成</strong>的整体，可以动态地添加或移除物理卷。</p>
+<h4 id="LV（逻辑卷-Logical-Volume）"><a href="#LV（逻辑卷-Logical-Volume）" class="headerlink" title="LV（逻辑卷 - Logical Volume）"></a>LV（逻辑卷 - Logical Volume）</h4><p>逻辑卷建立在卷组之上，从卷组中”切出”一小块空间，作为创建文件系统的基础。</p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>与物理卷没有直接关系</li>
+<li>对于逻辑卷来说，每个卷组就是一个整体</li>
+<li>使用 mkfs 等工具在逻辑卷上创建文件系统</li>
+</ul>
+<h3 id="4-3-LVM相关管理命令"><a href="#4-3-LVM相关管理命令" class="headerlink" title="4.3 LVM相关管理命令"></a>4.3 LVM相关管理命令</h3><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>PV 管理命令</th>
+<th>VG 管理命令</th>
+<th>LV 管理命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>扫描（Scan）</td>
+<td><code>pvscan</code></td>
+<td><code>vgscan</code></td>
+<td><code>lvscan</code></td>
+</tr>
+<tr>
+<td>建立（Create）</td>
+<td><code>pvcreate</code></td>
+<td><code>vgcreate</code></td>
+<td><code>lvcreate</code></td>
+</tr>
+<tr>
+<td>显示（Display）</td>
+<td><code>pvdisplay</code></td>
+<td><code>vgdisplay</code></td>
+<td><code>lvdisplay</code></td>
+</tr>
+<tr>
+<td>移除（Remove）</td>
+<td><code>pvremove</code></td>
+<td><code>vgremove</code></td>
+<td><code>lvremove</code></td>
+</tr>
+<tr>
+<td>扩展（Extend）</td>
+<td>-</td>
+<td><code>vgextend</code></td>
+<td><code>lvextend</code></td>
+</tr>
+<tr>
+<td>减少（Reduce）</td>
+<td>-</td>
+<td><code>vgreduce</code></td>
+<td><code>lvreduce</code></td>
+</tr>
+</tbody></table>
+<h3 id="4-4-LVM创建与扩容操作"><a href="#4-4-LVM创建与扩容操作" class="headerlink" title="4.4 LVM创建与扩容操作"></a>4.4 LVM创建与扩容操作</h3><p>题目：创建两个60G物理卷，并设置逻辑卷20G挂载到&#x2F;opt下</p>
+<h4 id="4-4-1-扫描新增磁盘"><a href="#4-4-1-扫描新增磁盘" class="headerlink" title="4.4.1 扫描新增磁盘"></a>4.4.1 扫描新增磁盘</h4><p>① 关闭主机，添加新硬盘后重启</p>
+<p>② 不用重启，执行以下命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;- - -&quot;</span> &gt; /sys/class/scsi_host/host0/sacn</span><br><span class="line"><span class="comment"># 查看所有块设备</span></span><br><span class="line">lsblk</span><br><span class="line"><span class="comment"># 列出所有磁盘和分区</span></span><br><span class="line">fdisk -l</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>说明：</p>
+<ul>
+<li>向 <code>/sys/class/scsi_host/host0/scan</code> 文件写入 <code>- - - </code> 三个参数</li>
+<li>三个参数分别表示：通道、目标 ID、LUN（逻辑单元号），用 <code>-</code> 表示自动扫描</li>
+<li>系统会自动识别新添加的磁盘设备</li>
+</ul>
+</blockquote>
+<h4 id="4-4-2-修改磁盘分区标记"><a href="#4-4-2-修改磁盘分区标记" class="headerlink" title="4.4.2 修改磁盘分区标记"></a>4.4.2 修改磁盘分区标记</h4><p>使用fdisk工具将磁盘设备划分主分区，并把分区类型的ID标记好改为<strong>8e(LVM 类型)</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建磁盘分区</span></span><br><span class="line">fdisk /dev/sdb</span><br><span class="line">n -&gt;默认操作创建完主分区sdb1</span><br><span class="line">t 8e -&gt;修改分区类型为8e</span><br><span class="line">w</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021185603081.png" alt="image-20251021185603081"></p>
+<p><img src="/./../imgs/image-20251021185620662.png" alt="image-20251021185620662"></p>
+<h4 id="4-4-3-创建物理卷-pvcreate"><a href="#4-4-3-创建物理卷-pvcreate" class="headerlink" title="4.4.3 创建物理卷 pvcreate"></a>4.4.3 创建物理卷 pvcreate</h4><p><strong>pvcreate语法：pvcreate device1 device2 …</strong></p>
+<p>将设置好的分区初始化为物理卷</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将sdb1 sdc1创建为物理卷</span></span><br><span class="line">pvcreate /dev/sdb1 /dev/sdc1</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021185922578.png" alt="image-20251021185922578"></p>
+<h4 id="4-4-4-创建卷组-vgcreate"><a href="#4-4-4-创建卷组-vgcreate" class="headerlink" title="4.4.4 创建卷组 vgcreate"></a>4.4.4 创建卷组 vgcreate</h4><p><strong>vgcreate语法：vgcreate vg_name pv1 pv2 …</strong></p>
+<p>将物理卷sdb1和sdb2创建入一个卷组vgname1</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vgcreate vgname1 /dev/sdb1 /dev/sdc1</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021190030163.png" alt="image-20251021190030163"></p>
+<h4 id="4-4-5-创建逻辑卷-lvcreate"><a href="#4-4-5-创建逻辑卷-lvcreate" class="headerlink" title="4.4.5 创建逻辑卷 lvcreate"></a>4.4.5 创建逻辑卷 lvcreate</h4><p><strong>lvcreate语法：lvcreate -L <lv_size> <vg_name> -n <lv_name></strong></p>
+<p>使用卷组创建逻辑卷lvname1——》生成路径为&#x2F;dev&#x2F;vgname1&#x2F;lvname1</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lvcreate -L 15G -n lvname1 vgname1</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021190609037.png" alt="image-20251021190609037"></p>
+<h4 id="4-4-6-格式化和挂载"><a href="#4-4-6-格式化和挂载" class="headerlink" title="4.4.6 格式化和挂载"></a>4.4.6 格式化和挂载</h4><p>格式化逻辑卷为xfs系统文件，挂载到挂载点即可正常使用(这里为&#x2F;opt)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 格式化</span></span><br><span class="line">mkfs -t xfs /dev/vgname1/lvname1</span><br><span class="line"><span class="comment"># 挂载</span></span><br><span class="line">mount /dev/vgname1/lvname1 /opt</span><br><span class="line"><span class="comment"># 检验</span></span><br><span class="line"><span class="built_in">df</span> -hT</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021190831813.png" alt="image-20251021190831813"></p>
+<p><img src="/./../imgs/image-20251021190853296.png" alt="image-20251021190853296"></p>
+<h4 id="4-4-7-扩容-⭐面试题可能问"><a href="#4-4-7-扩容-⭐面试题可能问" class="headerlink" title="4.4.7 扩容 ⭐面试题可能问"></a>4.4.7 扩容 ⭐面试题可能问</h4><p>准备好分区sdc2设置为物理卷</p>
+<p><strong>① 首先扩展卷组</strong> vgextand</p>
+<p>vgextand语法：vgextend vg_name pv1 …</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将sdc2加入到卷组vgname1</span></span><br><span class="line">vgextend vgname1 /dev/sdc2</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021191243835.png" alt="image-20251021191243835"></p>
+<p><strong>② 逻辑卷扩展</strong> lvextend</p>
+<p>lvextend语法：lvextend -L <extend_size> <lv_path></p>
+<p>在当前卷组已有空间的情况下继续拓展</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 拓展逻辑卷lvname1</span></span><br><span class="line">lvextend +10G /dev/vgname1/lvname1</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021191449453.png" alt="image-20251021191449453"></p>
+<p><strong>③ 刷新文件系统容量</strong></p>
+<p>xfs为xfs_growfs</p>
+<p>ext4为resize2fs</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 刷新xfs文件系统容量</span></span><br><span class="line">xfs_growfs /dev/vgname1/lvname1</span><br><span class="line"><span class="comment"># 刷新ext4类型文件系统容量</span></span><br><span class="line">resize2fs   /dev/vgname1/lvname1  </span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021191625897.png" alt="image-20251021191625897"></p>
+<h2 id="5-RAID"><a href="#5-RAID" class="headerlink" title="5.RAID"></a>5.RAID</h2><h3 id="5-1-什么是RAID？作用是什么？"><a href="#5-1-什么是RAID？作用是什么？" class="headerlink" title="5.1 什么是RAID？作用是什么？"></a>5.1 什么是RAID？作用是什么？</h3><p>RAID（Redundant Array of Independent Disks，独立磁盘冗余阵列）是一种通过组合多个磁盘驱动器，以实现数据冗余存储和性能提升的技术。</p>
+<p>简单来说，<strong>RAID 就是将多块硬盘组织在一起，通过某种方式工作，使得这个硬盘组合在容量、速度或安全性方面都优于单块硬盘。</strong></p>
+<p>RAID的作用：1+1&gt;2</p>
+<ul>
+<li><strong>提高读写性能</strong>：多块硬盘可以并行读写，大幅提升 I&#x2F;O 性能，是单个硬盘性能的多倍。</li>
+<li><strong>数据冗余保护</strong>：通过校验机制或备份，当某块硬盘故障时，数据不会丢失，提高了系统的可靠性和容错能力。</li>
+<li><strong>增加存储容量</strong>：多块硬盘组合可以提供更大的总存储空间。</li>
+<li><strong>提高系统可用性</strong>：在硬盘故障时，系统可以继续运行，无需中断服务，特别重要的是在生产环境中。</li>
+</ul>
+<h3 id="5-2-主要RAID级别介绍"><a href="#5-2-主要RAID级别介绍" class="headerlink" title="5.2 主要RAID级别介绍"></a>5.2 主要RAID级别介绍</h3><table>
+<thead>
+<tr>
+<th>RAID 级别</th>
+<th>硬盘数量</th>
+<th>磁盘利用率</th>
+<th>是否有校验</th>
+<th>保护能力</th>
+<th>写性能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>RAID 0</td>
+<td>N</td>
+<td>N</td>
+<td>无</td>
+<td>无保护</td>
+<td>单个硬盘的 N 倍</td>
+</tr>
+<tr>
+<td>RAID 1</td>
+<td>N（偶数）</td>
+<td>N&#x2F;2(50%)</td>
+<td>无</td>
+<td>允许一个设备故障</td>
+<td>需写两份存储设备，互为主备</td>
+</tr>
+<tr>
+<td>RAID 5</td>
+<td>N≥3</td>
+<td>(N-1)&#x2F;N</td>
+<td>有</td>
+<td>允许一个设备故障</td>
+<td>需写计算校验</td>
+</tr>
+<tr>
+<td>RAID 6</td>
+<td>N≥4</td>
+<td>(N-2)&#x2F;N</td>
+<td>有</td>
+<td>允许两个设备故障</td>
+<td>需双重写计算校验</td>
+</tr>
+<tr>
+<td>RAID 10</td>
+<td>N≥4（偶数）</td>
+<td>N&#x2F;2(50%)</td>
+<td>无</td>
+<td>允许两个基组中各坏一个</td>
+<td>N&#x2F;2 块盘同时写入</td>
+</tr>
+</tbody></table>
+<h4 id="RAID-0（N块盘组成，条带化——同时读写）"><a href="#RAID-0（N块盘组成，条带化——同时读写）" class="headerlink" title="RAID 0（N块盘组成，条带化——同时读写）"></a>RAID 0（N块盘组成，条带化——同时读写）</h4><p><strong>特点</strong>：</p>
+<ul>
+<li><p>高性能读写(I&#x2F;O)最好，速度是单硬盘的 N 倍(有几块就几倍)</p>
+</li>
+<li><p>数据分散存储在多块硬盘上，没有冗余，硬盘利用率最高（100%）</p>
+</li>
+</ul>
+<p><strong>风险</strong>：</p>
+<ul>
+<li>无备份，任何一块硬盘故障，整个 RAID 数据全部丢失</li>
+<li>不适合存储重要数据</li>
+</ul>
+<p><strong>适用场景</strong>：临时数据、缓存、对容错无要求的场景</p>
+<h4 id="RAID-1（N-2偶数块组成，镜像——相互备份）"><a href="#RAID-1（N-2偶数块组成，镜像——相互备份）" class="headerlink" title="RAID 1（N&#x2F;2偶数块组成，镜像——相互备份）"></a>RAID 1（N&#x2F;2偶数块组成，镜像——相互备份）</h4><p><strong>特点</strong>：</p>
+<ul>
+<li>数据完全备份，互为主备（允许坏任意一块）</li>
+<li>每次写操作需要写两份数据，写的性能是一块盘，读的性能是接近N块盘</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>磁盘利用率低，占用空间是N块盘的空间，成本高</li>
+</ul>
+<p><strong>适用场景</strong>：系统盘、数据库、对数据安全要求极高的场景</p>
+<h4 id="RAID-5（N-3块组成，N-1块做条带化-留一个做校验盘-用户数据恢复-）"><a href="#RAID-5（N-3块组成，N-1块做条带化-留一个做校验盘-用户数据恢复-）" class="headerlink" title="RAID 5（N&gt;&#x3D;3块组成，N-1块做条带化 + 留一个做校验盘[用户数据恢复]）"></a>RAID 5（N&gt;&#x3D;3块组成，N-1块做条带化 + 留一个做校验盘[用户数据恢复]）</h4><p><strong>特点</strong>：</p>
+<ul>
+<li>读写性能，写的性能稍弱，因为有校验盘的原因，读的性能很高（N-1块盘的性能）</li>
+<li>有一块盘备份（允许损坏任意一块）</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>写性能需要计算校验盘，比 RAID 0 低</li>
+<li>整体更贵了一点，整体的磁盘利用率是N-1&#x2F;N的性能</li>
+</ul>
+<p><strong>适用场景</strong>：大多数生产环境的首选方案</p>
+<h4 id="RAID-6（N-4块组成，双校验）"><a href="#RAID-6（N-4块组成，双校验）" class="headerlink" title="RAID 6（N&gt;&#x3D;4块组成，双校验）"></a>RAID 6（N&gt;&#x3D;4块组成，双校验）</h4><p><strong>特点</strong>：</p>
+<ul>
+<li>使用双重校验机制，把N-2块盘做条带，剩下两个做校验盘（用户数据恢复的）称之为奇偶校验</li>
+<li>有两块校验盘，允许两块硬盘同时故障</li>
+<li>读写性能，写的性能相较RAID 5 更弱一点，因为有2块校验盘的原因，读的性能很高（N-2块盘的性能）</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>计算校验时间长，写性能受影响</li>
+<li>整体比RAID还贵，整体的磁盘利用率是N-2&#x2F;N的性能</li>
+</ul>
+<p><strong>适用场景</strong>：超大规模存储系统、对数据极度重视的场景</p>
+<h3 id="5-3-创建软RAID5操作"><a href="#5-3-创建软RAID5操作" class="headerlink" title="5.3 创建软RAID5操作"></a>5.3 创建软RAID5操作</h3><h4 id="5-3-1-检查是否已安装mdadm-软件包"><a href="#5-3-1-检查是否已安装mdadm-软件包" class="headerlink" title="5.3.1 检查是否已安装mdadm 软件包"></a>5.3.1 检查是否已安装mdadm 软件包</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 相关操作涉及mdadm软件包</span></span><br><span class="line">yum install -y mdadm</span><br></pre></td></tr></table></figure>
+
+<h4 id="5-3-2-修改磁盘分区标记fd"><a href="#5-3-2-修改磁盘分区标记fd" class="headerlink" title="5.3.2 修改磁盘分区标记fd"></a>5.3.2 修改磁盘分区标记fd</h4><p>准备好磁盘并进行分区，修改标记为fd（Linux RAID 自动检测）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">fdisk /dev/sdb</span><br><span class="line">fdisk /dev/sdc</span><br><span class="line"><span class="comment"># 执行相关操作，参考4.4</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021194916963.png" alt="image-20251021194916963"></p>
+<h4 id="5-3-3-创建-RAID-设备"><a href="#5-3-3-创建-RAID-设备" class="headerlink" title="5.3.3 创建 RAID 设备"></a>5.3.3 创建 RAID 设备</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建RAID5</span></span><br><span class="line">mdadm -C -v /dev/md5 [-a <span class="built_in">yes</span>] -l5 -n3 /dev/sd[bcd]1 -x1 /dev/sde1</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>-C：表示新建；<br>-v：显示创建过程中的详细信息。<br>&#x2F;dev&#x2F;md0：创建 RAID5 的名称。<br>-a yes：–auto，表示如果有什么设备文件没有存在的话就自动创建，可省略。<br>-l：指定 RAID 的级别，l5 表示创建 RAID5。<br>-n：指定使用几块硬盘创建 RAID，n3 表示使用 3 块硬盘创建 RAID。<br>&#x2F;dev&#x2F;sd[bcd]1：指定使用这3块磁盘分区去创建 RAID。<br>-x：指定使用几块硬盘做RAID的热备用盘，x1表示保留1块空闲的硬盘作备用<br>&#x2F;dev&#x2F;sde1：指定用作于备用的磁盘</p>
+</blockquote>
+<p><img src="/./../imgs/image-20251021194959777.png" alt="image-20251021194959777"></p>
+<h4 id="5-3-4-查看RAID磁盘详细信息-三种"><a href="#5-3-4-查看RAID磁盘详细信息-三种" class="headerlink" title="5.3.4 查看RAID磁盘详细信息(三种)"></a>5.3.4 查看RAID磁盘详细信息(三种)</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看 RAID 状态和创建进度</span></span><br><span class="line"><span class="built_in">cat</span> /proc/mdstat</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021195122196.png" alt="image-20251021195122196"></p>
+<blockquote>
+<p><code>[UUU_]</code> 表示硬盘状态（U 表示在线，_ 表示离线或热备）</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 或使用 mdadm 命令查看详细信息</span></span><br><span class="line">mdadm -D /dev/md5</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021195204392.png" alt="image-20251021195204392"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用watch命令来每隔一段时间刷新 /proc/mdstat 的输出</span></span><br><span class="line">watch -n 10 <span class="string">&#x27;cat /proc/mdstat&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021195227338.png" alt="image-20251021195227338"></p>
+<h4 id="5-3-5-创建文件系统并挂载"><a href="#5-3-5-创建文件系统并挂载" class="headerlink" title="5.3.5 创建文件系统并挂载"></a>5.3.5 创建文件系统并挂载</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 格式化为 XFS 文件系统</span></span><br><span class="line">mkfs -t xfs /dev/md5</span><br><span class="line"><span class="comment"># 创建挂载点</span></span><br><span class="line"><span class="built_in">mkdir</span> /myraid</span><br><span class="line"><span class="comment"># 挂载</span></span><br><span class="line">mount /dev/md5 /myraid/</span><br><span class="line"><span class="comment"># 查看挂载情况</span></span><br><span class="line"><span class="built_in">df</span> -Th</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021195412843.png" alt="image-20251021195412843"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对配置文件备份</span></span><br><span class="line"><span class="built_in">cp</span> /etc/fstab /etc/fstab.bak</span><br><span class="line"><span class="comment"># vim编辑器修改配置文件实现永久挂载</span></span><br><span class="line">vim /etc/fstab</span><br><span class="line">/dev/md5      /myraid        xfs   	 defaults   0  0</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./../imgs/image-20251021195542965.png" alt="image-20251021195542965"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>首先，讲述了磁盘相关知识，磁盘管理从分区开始，主分区最多 4 个（分区 ID：<code>83</code> Linux、<code>8e</code> LVM、<code>fd</code> RAID、<code>82</code> Swap），扩展磁盘需要创建逻辑磁盘后才能进行正常使用。</p>
+<p>其次，从文件系统入手，磁盘要通过格式化文件系统、挂载（&#x2F;etc&#x2F;fstab 实现永久挂载）、配置后才能进行使用。</p>
+<p>然后讲述了，LVM相关知识，LVM 提供 PV→VG→LV 三层结构，支持动态扩容（vgextend→lvextend→xfs_growfs）等。</p>
+<p>最后又介绍了RAID，RAID 主要用于数据保护和性能提升，生产环境通常选 RAID 5（3+ 硬盘、容错 1 个、利用率 (N-1)&#x2F;N），RAID 1 成本高安全性最高，RAID 0 性能最快但无容错能力。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/10/20/%E7%A3%81%E7%9B%98%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/">http://example.com/2025/10/20/%E7%A3%81%E7%9B%98%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/10/16/Linux-Centos7%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93/" title="Linux Centos7配置本地yum仓库"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Linux Centos7配置本地yum仓库</div></div><div class="info-2"><div class="info-item-1">Linux Centos7配置本地yum仓库引言本地yum仓库是什么？yum是Linux中常用的包管理工具，它通过访问”软件仓库“来下载、安装、更新、卸载软件包。 yun本地仓库就是把软件包(.rpm)和仓库的元数据都存放在本地磁盘(或者局域网服务器)上，而不是从外网获取的仓库。 yum仓库是干什么的? 离线环境安装软件，例如不能联网的服务器（内网机房、保密环境）。 节省带宽和时间，局域网里多台机器都要装软件时，可以共用一个本地仓库，避免每台都从外网重复下载，速度更快。 稳定可控，外网源可能更新、下线或变更版本。本地仓库内容是固定的，适合企业环境中版本可控、可追溯的管理。 自定义仓库，可以自己选择要放哪些包，甚至自己编译 .rpm 包后放进去，形成企业内部定制仓库。  为什么要用本地yum仓库？简而言之：因为某些场景下，不能或不方便使用外部网络源。    使用场景 原因    服务器无外网访问权限 无法连接公网源，只能用本地仓库   局域网多台机器部署 提高效率，共享本地仓库   企业安全与版本控制 防止自动升级造成不兼容   离线环境（如实验室、军工内网） 没有互联网，只能靠U...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86"><span class="toc-number">1.</span> <span class="toc-text">磁盘相关知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA"><span class="toc-number">1.1.</span> <span class="toc-text">1 磁盘分区</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E9%A6%96%E5%85%88%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%EF%BC%8C%E4%BB%80%E4%B9%88%E6%98%AF%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA%EF%BC%9F%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%BF%9B%E8%A1%8C%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA%EF%BC%9F"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 首先需要了解，什么是磁盘分区？为什么要进行磁盘分区？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E4%B8%BB%E5%88%86%E5%8C%BA%EF%BC%88Primary-Partition%EF%BC%89"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 主分区（Primary Partition）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%89%A9%E5%B1%95%E5%88%86%E5%8C%BA%EF%BC%88Extended-Partition%EF%BC%89"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3 扩展分区（Extended Partition）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-4-%E9%80%BB%E8%BE%91%E5%88%86%E5%8C%BA%EF%BC%88Logical-Partition%EF%BC%89"><span class="toc-number">1.1.4.</span> <span class="toc-text">1.4 逻辑分区（Logical Partition）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-5-%E2%AD%90%E4%BA%A4%E6%8D%A2%E5%88%86%E5%8C%BA%EF%BC%88SWAP%EF%BC%89"><span class="toc-number">1.1.5.</span> <span class="toc-text">1.5 ⭐交换分区（SWAP）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%93%E5%B1%95"><span class="toc-number">1.1.6.</span> <span class="toc-text">拓展</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A3%81%E7%9B%98%E5%AD%98%E5%82%A8%E5%AE%B9%E9%87%8F%E8%AE%A1%E7%AE%97"><span class="toc-number">1.1.6.1.</span> <span class="toc-text">磁盘存储容量计算</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Linux%E8%AE%BE%E5%A4%87%E6%96%87%E4%BB%B6%E5%91%BD%E5%90%8D%E8%A7%84%E5%88%99"><span class="toc-number">1.1.6.2.</span> <span class="toc-text">Linux设备文件命名规则</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-number">1.2.</span> <span class="toc-text">2.文件系统的概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-XFS%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1 XFS文件系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-EXT4%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.2.2.</span> <span class="toc-text">3.2 EXT4文件系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-SWAP%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.2.3.</span> <span class="toc-text">3.3 SWAP文件系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%85%B6%E4%BB%96%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.2.4.</span> <span class="toc-text">3.4 其他文件系统</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA%E6%93%8D%E4%BD%9C"><span class="toc-number">1.3.</span> <span class="toc-text">3.磁盘分区操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%9F%A5%E7%9C%8B%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA%E6%83%85%E5%86%B5"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 查看磁盘分区情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 磁盘分区</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.3 文件格式初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E7%A3%81%E7%9B%98%E6%8C%82%E8%BD%BD%E5%B9%B6%E4%BD%BF%E7%94%A8"><span class="toc-number">1.3.4.</span> <span class="toc-text">3.4 磁盘挂载并使用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%B4%E6%97%B6%E6%8C%82%E8%BD%BD"><span class="toc-number">1.3.4.1.</span> <span class="toc-text">临时挂载</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B0%B8%E4%B9%85%E6%8C%82%E8%BD%BD%EF%BC%88UUID%E6%88%96%E8%80%85%E8%AE%BE%E5%A4%87%E5%90%8D%E7%A7%B0%E8%BF%9B%E8%A1%8C%E6%8C%82%E8%BD%BD%EF%BC%89"><span class="toc-number">1.3.4.2.</span> <span class="toc-text">永久挂载（UUID或者设备名称进行挂载）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-LVM%E7%A3%81%E7%9B%98%E7%AE%A1%E7%90%86"><span class="toc-number">1.4.</span> <span class="toc-text">4.LVM磁盘管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E4%BB%80%E4%B9%88%E6%98%AFLVM%EF%BC%9F%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.4.1.</span> <span class="toc-text">4.1 什么是LVM？作用是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-LVM%E4%B8%89%E5%B1%82%E7%BB%93%E6%9E%84%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.4.2.</span> <span class="toc-text">4.2 LVM三层结构介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PV%EF%BC%88%E7%89%A9%E7%90%86%E5%8D%B7-Physical-Volume%EF%BC%89"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">PV（物理卷 - Physical Volume）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#VG%EF%BC%88%E5%8D%B7%E7%BB%84-Volume-Group%EF%BC%89"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">VG（卷组 - Volume Group）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LV%EF%BC%88%E9%80%BB%E8%BE%91%E5%8D%B7-Logical-Volume%EF%BC%89"><span class="toc-number">1.4.2.3.</span> <span class="toc-text">LV（逻辑卷 - Logical Volume）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-LVM%E7%9B%B8%E5%85%B3%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4"><span class="toc-number">1.4.3.</span> <span class="toc-text">4.3 LVM相关管理命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-LVM%E5%88%9B%E5%BB%BA%E4%B8%8E%E6%89%A9%E5%AE%B9%E6%93%8D%E4%BD%9C"><span class="toc-number">1.4.4.</span> <span class="toc-text">4.4 LVM创建与扩容操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-1-%E6%89%AB%E6%8F%8F%E6%96%B0%E5%A2%9E%E7%A3%81%E7%9B%98"><span class="toc-number">1.4.4.1.</span> <span class="toc-text">4.4.1 扫描新增磁盘</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-2-%E4%BF%AE%E6%94%B9%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA%E6%A0%87%E8%AE%B0"><span class="toc-number">1.4.4.2.</span> <span class="toc-text">4.4.2 修改磁盘分区标记</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-3-%E5%88%9B%E5%BB%BA%E7%89%A9%E7%90%86%E5%8D%B7-pvcreate"><span class="toc-number">1.4.4.3.</span> <span class="toc-text">4.4.3 创建物理卷 pvcreate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-4-%E5%88%9B%E5%BB%BA%E5%8D%B7%E7%BB%84-vgcreate"><span class="toc-number">1.4.4.4.</span> <span class="toc-text">4.4.4 创建卷组 vgcreate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-5-%E5%88%9B%E5%BB%BA%E9%80%BB%E8%BE%91%E5%8D%B7-lvcreate"><span class="toc-number">1.4.4.5.</span> <span class="toc-text">4.4.5 创建逻辑卷 lvcreate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-6-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%92%8C%E6%8C%82%E8%BD%BD"><span class="toc-number">1.4.4.6.</span> <span class="toc-text">4.4.6 格式化和挂载</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-4-7-%E6%89%A9%E5%AE%B9-%E2%AD%90%E9%9D%A2%E8%AF%95%E9%A2%98%E5%8F%AF%E8%83%BD%E9%97%AE"><span class="toc-number">1.4.4.7.</span> <span class="toc-text">4.4.7 扩容 ⭐面试题可能问</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-RAID"><span class="toc-number">1.5.</span> <span class="toc-text">5.RAID</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%BB%80%E4%B9%88%E6%98%AFRAID%EF%BC%9F%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.5.1.</span> <span class="toc-text">5.1 什么是RAID？作用是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E4%B8%BB%E8%A6%81RAID%E7%BA%A7%E5%88%AB%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.5.2.</span> <span class="toc-text">5.2 主要RAID级别介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#RAID-0%EF%BC%88N%E5%9D%97%E7%9B%98%E7%BB%84%E6%88%90%EF%BC%8C%E6%9D%A1%E5%B8%A6%E5%8C%96%E2%80%94%E2%80%94%E5%90%8C%E6%97%B6%E8%AF%BB%E5%86%99%EF%BC%89"><span class="toc-number">1.5.2.1.</span> <span class="toc-text">RAID 0（N块盘组成，条带化——同时读写）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RAID-1%EF%BC%88N-2%E5%81%B6%E6%95%B0%E5%9D%97%E7%BB%84%E6%88%90%EF%BC%8C%E9%95%9C%E5%83%8F%E2%80%94%E2%80%94%E7%9B%B8%E4%BA%92%E5%A4%87%E4%BB%BD%EF%BC%89"><span class="toc-number">1.5.2.2.</span> <span class="toc-text">RAID 1（N&#x2F;2偶数块组成，镜像——相互备份）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RAID-5%EF%BC%88N-3%E5%9D%97%E7%BB%84%E6%88%90%EF%BC%8CN-1%E5%9D%97%E5%81%9A%E6%9D%A1%E5%B8%A6%E5%8C%96-%E7%95%99%E4%B8%80%E4%B8%AA%E5%81%9A%E6%A0%A1%E9%AA%8C%E7%9B%98-%E7%94%A8%E6%88%B7%E6%95%B0%E6%8D%AE%E6%81%A2%E5%A4%8D-%EF%BC%89"><span class="toc-number">1.5.2.3.</span> <span class="toc-text">RAID 5（N&gt;&#x3D;3块组成，N-1块做条带化 + 留一个做校验盘[用户数据恢复]）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#RAID-6%EF%BC%88N-4%E5%9D%97%E7%BB%84%E6%88%90%EF%BC%8C%E5%8F%8C%E6%A0%A1%E9%AA%8C%EF%BC%89"><span class="toc-number">1.5.2.4.</span> <span class="toc-text">RAID 6（N&gt;&#x3D;4块组成，双校验）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E5%88%9B%E5%BB%BA%E8%BD%AFRAID5%E6%93%8D%E4%BD%9C"><span class="toc-number">1.5.3.</span> <span class="toc-text">5.3 创建软RAID5操作</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-1-%E6%A3%80%E6%9F%A5%E6%98%AF%E5%90%A6%E5%B7%B2%E5%AE%89%E8%A3%85mdadm-%E8%BD%AF%E4%BB%B6%E5%8C%85"><span class="toc-number">1.5.3.1.</span> <span class="toc-text">5.3.1 检查是否已安装mdadm 软件包</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-2-%E4%BF%AE%E6%94%B9%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA%E6%A0%87%E8%AE%B0fd"><span class="toc-number">1.5.3.2.</span> <span class="toc-text">5.3.2 修改磁盘分区标记fd</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-3-%E5%88%9B%E5%BB%BA-RAID-%E8%AE%BE%E5%A4%87"><span class="toc-number">1.5.3.3.</span> <span class="toc-text">5.3.3 创建 RAID 设备</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-4-%E6%9F%A5%E7%9C%8BRAID%E7%A3%81%E7%9B%98%E8%AF%A6%E7%BB%86%E4%BF%A1%E6%81%AF-%E4%B8%89%E7%A7%8D"><span class="toc-number">1.5.3.4.</span> <span class="toc-text">5.3.4 查看RAID磁盘详细信息(三种)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-3-5-%E5%88%9B%E5%BB%BA%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%B9%B6%E6%8C%82%E8%BD%BD"><span class="toc-number">1.5.3.5.</span> <span class="toc-text">5.3.5 创建文件系统并挂载</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.6.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/20/%E7%A3%81%E7%9B%98%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="磁盘相关知识">磁盘相关知识</a><time datetime="2025-10-20T11:48:15.500Z" title="Created 2025-10-20 19:48:15">2025-10-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/16/Linux-Centos7%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93/" title="Linux Centos7配置本地yum仓库">Linux Centos7配置本地yum仓库</a><time datetime="2025-10-16T08:26:04.000Z" title="Created 2025-10-16 16:26:04">2025-10-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/15/Git/" title="Git的学习与使用">Git的学习与使用</a><time datetime="2025-10-15T00:50:55.980Z" title="Created 2025-10-15 08:50:55">2025-10-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/14/%E4%BA%91%E8%AE%A1%E7%AE%97%E9%9D%A2%E8%AF%95%E9%A2%98%E6%95%B4%E7%90%86%E2%80%94%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/" title="云计算面试题整理—持续更新">云计算面试题整理—持续更新</a><time datetime="2025-10-14T05:41:59.000Z" title="Created 2025-10-14 13:41:59">2025-10-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/14/Linux%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4/" title="Linux常见命令">Linux常见命令</a><time datetime="2025-10-14T05:27:44.000Z" title="Created 2025-10-14 13:27:44">2025-10-14</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
