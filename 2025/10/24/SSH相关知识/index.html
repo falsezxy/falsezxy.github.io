@@ -1,0 +1,268 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>SSH相关知识 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="SSH相关知识一、DNS1.1 DNS是什么？什么作用？DNS（Domain Name System）是互联网的一项服务，它作用于OSI七层模型的第7层（L7应用层）。DNS的核心功能是将域名解析为IP地址（翻译官），使用户可以通过易记的域名访问网络资源。 1.2 DNS记录类型—面试问① A记录（主机记录）将域名解析为IP地址 例如：example.com → 192.168.110.140 ②">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SSH相关知识">
+<meta property="og:url" content="http://example.com/2025/10/24/SSH%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="SSH相关知识一、DNS1.1 DNS是什么？什么作用？DNS（Domain Name System）是互联网的一项服务，它作用于OSI七层模型的第7层（L7应用层）。DNS的核心功能是将域名解析为IP地址（翻译官），使用户可以通过易记的域名访问网络资源。 1.2 DNS记录类型—面试问① A记录（主机记录）将域名解析为IP地址 例如：example.com → 192.168.110.140 ②">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-10-24T12:26:06.000Z">
+<meta property="article:modified_time" content="2025-10-25T12:45:31.373Z">
+<meta property="article:author" content="Felix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "SSH相关知识",
+  "url": "http://example.com/2025/10/24/SSH%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-10-24T12:26:06.000Z",
+  "dateModified": "2025-10-25T12:45:31.373Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/10/24/SSH%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SSH相关知识',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">SSH相关知识</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">SSH相关知识</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-24T12:26:06.000Z" title="Created 2025-10-24 20:26:06">2025-10-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-10-25T12:45:31.373Z" title="Updated 2025-10-25 20:45:31">2025-10-25</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="SSH相关知识"><a href="#SSH相关知识" class="headerlink" title="SSH相关知识"></a>SSH相关知识</h1><h2 id="一、DNS"><a href="#一、DNS" class="headerlink" title="一、DNS"></a>一、DNS</h2><h3 id="1-1-DNS是什么？什么作用？"><a href="#1-1-DNS是什么？什么作用？" class="headerlink" title="1.1 DNS是什么？什么作用？"></a>1.1 DNS是什么？什么作用？</h3><p>DNS（Domain Name System）是互联网的一项服务，它作用于OSI七层模型的<strong>第7层</strong>（L7应用层）。DNS的核心功能是<strong>将域名解析为IP地址</strong>（翻译官），使用户可以通过易记的域名访问网络资源。</p>
+<h3 id="1-2-DNS记录类型—面试问"><a href="#1-2-DNS记录类型—面试问" class="headerlink" title="1.2 DNS记录类型—面试问"></a>1.2 DNS记录类型—面试问</h3><h4 id="①-A记录（主机记录）"><a href="#①-A记录（主机记录）" class="headerlink" title="① A记录（主机记录）"></a>① A记录（主机记录）</h4><p>将域名解析为IP地址</p>
+<p>例如：example.com → 192.168.110.140</p>
+<h4 id="②-P记录（指针记录）"><a href="#②-P记录（指针记录）" class="headerlink" title="② P记录（指针记录）"></a>② P记录（指针记录）</h4><p>反向解析IP到域名，将IP地址转换回对应的域名</p>
+<p>例如：192.168.110.140 → example.com</p>
+<h3 id="1-3-DNS解析配置"><a href="#1-3-DNS解析配置" class="headerlink" title="1.3 DNS解析配置"></a>1.3 DNS解析配置</h3><table>
+<thead>
+<tr>
+<th>配置文件</th>
+<th>位置</th>
+<th>主要用途</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&#x2F;etc&#x2F;hosts</td>
+<td>本地主机文件</td>
+<td>内部IP-主机名&#x2F;域名映射</td>
+<td>最高</td>
+</tr>
+<tr>
+<td>&#x2F;etc&#x2F;resolv.conf</td>
+<td>DNS解析配置</td>
+<td>指定DNS服务器地址</td>
+<td>中</td>
+</tr>
+<tr>
+<td>&#x2F;etc&#x2F;sysconfig&#x2F;network-scripts&#x2F;ifcfg-ens33</td>
+<td>网卡配置</td>
+<td>网卡级别DNS配置</td>
+<td>中</td>
+</tr>
+</tbody></table>
+<p><strong>① &#x2F;etc&#x2F;hosts</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ip1 server1</span><br><span class="line">ip2 server2</span><br></pre></td></tr></table></figure>
+
+<p><strong>② &#x2F;etc&#x2F;resolv.conf</strong></p>
+<p><img src="/./imgs/image-20251025194026171.png" alt="image-20251025194026171"></p>
+<p><strong>③ &#x2F;etc&#x2F;sysconfig&#x2F;network-scripts&#x2F;ifcfg-ens33</strong></p>
+<p><img src="/./imgs/image-20251025193932868.png" alt="image-20251025193932868"></p>
+<h2 id="二、DHCP"><a href="#二、DHCP" class="headerlink" title="二、DHCP"></a>二、DHCP</h2><p>DHCP是一种<strong>网络协议</strong>，用于<strong>动态分配</strong>IP地址和网络配置。当新设备加入网络时：</p>
+<ol>
+<li><strong>广播寻址</strong> - 新设备发送DHCP DISCOVER报文，寻找DHCP服务器</li>
+<li><strong>IP分配</strong> - DHCP服务器从地址池中选择可用IP地址</li>
+<li><strong>地址确认</strong> - 服务器回复DHCP OFFER报文，告知可分配的IP地址范围</li>
+<li><strong>租期设定</strong> - 分配的IP地址有租期限制，通常为2小时</li>
+</ol>
+<p>工作原理图：</p>
+<p><img src="/./imgs/image-20251025202518874.png" alt="image-20251025202518874"></p>
+<h2 id="三、SSH"><a href="#三、SSH" class="headerlink" title="三、SSH"></a>三、SSH</h2><h3 id="3-1-SSH是什么，什么作用？"><a href="#3-1-SSH是什么，什么作用？" class="headerlink" title="3.1 SSH是什么，什么作用？"></a>3.1 SSH是什么，什么作用？</h3><p>SSH（Secure Shell）是一种<strong>远程连接工具</strong>，同时也是一种<strong>网络协议</strong>。它提供了安全的远程登录和文件传输功能，采用密码认证或密钥认证两种方式。</p>
+<h3 id="3-2-SSH远程登录"><a href="#3-2-SSH远程登录" class="headerlink" title="3.2 SSH远程登录"></a>3.2 SSH远程登录</h3><p><strong>语法:ssh [-p 端口] 目标IP</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ssh远程连接至灵异主机</span></span><br><span class="line">ssh 192.168.110.140</span><br><span class="line"><span class="comment"># 使用自定义端口</span></span><br><span class="line">ssh -p 2222 192.168.110.140</span><br></pre></td></tr></table></figure>
+
+<p>注:首次连接需要输入目标主机的登录密码。</p>
+<p>如果有在hosts文件中设置对应主机名的解析记录，也可以使用主机名连接</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 直接使用主机名连接</span></span><br><span class="line">ssh server1</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-跨主机文件传输-scp"><a href="#3-3-跨主机文件传输-scp" class="headerlink" title="3.3 跨主机文件传输 scp"></a>3.3 跨主机文件传输 scp</h3><p>SSH进行跨主机传输文件是通过scp（ssh+copy）来实现的。</p>
+<p><strong>scp:scp 需要复制的文件路径 需要复制到的目标路径</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从本机上传文件到远程主机</span></span><br><span class="line">scp ./a.tar.gz root@192.168.110.140:/opt</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>参数说明：<br>root - 申明登录权限<br>@ - 连接符号<br>192.168.110.140 - 目标IP<br>:&#x2F;opt - 目标主机的路径</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从远程主机下载文件到本机，同理</span></span><br><span class="line">scp root@192.168.110.140:/opt/1.sh ./</span><br><span class="line"><span class="comment"># 传输目录</span></span><br><span class="line">scp -r root@192.168.110.140:/opt/mydir ./</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251025195821117.png" alt="image-20251025195821117"></p>
+<p>⭐面试可能问：</p>
+<p>内网服务器下很慢，怎么办？</p>
+<p>借其他电脑如windows下载，再传过去(scp)。比如堡垒机</p>
+<h2 id="四、SSH密钥对的应用"><a href="#四、SSH密钥对的应用" class="headerlink" title="四、SSH密钥对的应用"></a>四、SSH密钥对的应用</h2><h3 id="密钥对认证原理"><a href="#密钥对认证原理" class="headerlink" title="密钥对认证原理"></a>密钥对认证原理</h3><p>SSH密钥对认证相比密码认证更加安全，采用非对称加密算法，包含两个密钥：</p>
+<p><strong>公钥（Public Key）</strong></p>
+<ul>
+<li>类比：门锁</li>
+<li>存放位置：需要发送给远程服务器</li>
+<li>文件名：id_rsa.pub</li>
+<li>作用：用于加密，公开分享</li>
+</ul>
+<p><strong>私钥（Private Key）</strong></p>
+<ul>
+<li>类比：配套的钥匙</li>
+<li>存放位置：保存在本地，严格保密</li>
+<li>文件名：id_rsa</li>
+<li>作用：用于解密，仅自己持有</li>
+<li>权限：必须设置为600</li>
+</ul>
+<h3 id="密钥对生成与配置"><a href="#密钥对生成与配置" class="headerlink" title="密钥对生成与配置"></a>密钥对生成与配置</h3><p><strong>① 生成RSA密钥对</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251025203207835.png" alt="image-20251025203207835"></p>
+<p>执行成功后会生成两个文件：</p>
+<ul>
+<li><code>/root/.ssh/id_rsa</code> - 私钥</li>
+<li><code>/root/.ssh/id_rsa.pub</code> - 公钥</li>
+</ul>
+<p><strong>② 推送公钥到目标主机</strong></p>
+<p><strong>语法：ssh-copy-id 目标IP</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 推送到目标IP</span></span><br><span class="line">ssh-copy-id 192.168.110.140</span><br><span class="line"><span class="comment"># 或指定用户</span></span><br><span class="line">ssh-copy-id root@192.168.110.140</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251025203458395.png" alt="image-20251025203458395"></p>
+<p><strong>③ 免密登录</strong></p>
+<p><strong>语法：ssh 目标主机名称</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 直接登录，无需输入密码</span></span><br><span class="line">ssh 192.168.110.140</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>DHCP</strong> - 自动分配IP地址，通过DISCOVER → OFFER → REQUEST → ACK四步完成，IP有租期限制。</p>
+<p><strong>DNS</strong> - 进行域名解析，优先级为：&#x2F;etc&#x2F;hosts（本地，优先级最高）→ &#x2F;etc&#x2F;resolv.conf（DNS服务器）→ 其他。&#x2F;etc&#x2F;hosts用于内网映射，&#x2F;etc&#x2F;resolv.conf用于外网查询。</p>
+<p><strong>SSH</strong> - 远程连接工具。密码认证需每次输入密码；密钥对认证（公钥+私钥）更安全且可免密登录，是生产环境首选。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/10/24/SSH%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/">http://example.com/2025/10/24/SSH%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/10/24/Shell%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="Shell相关知识"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Shell相关知识</div></div><div class="info-2"><div class="info-item-1">Shell相关知识一、Shell 基础概念1.1 什么是 Shell？Shell 是一种弱类型的小脚本语言，最简单的 Shell 脚本就是把多条命令组合在一起，一次性执行。 Shell 的核心作用：  命令解释器：解释并执行用户输入的命令 脚本执行器：批量执行预定义的命令序列  1.2 Shell 解释器类型   解释器 路径 说明    Bash /bin/bash CentOS 7 默认解释器   Sh /bin/sh CentOS 7 之前的默认解释器   Csh /bin/csh C 语言风格的 Shell   1.3 Shell 应用场景 ✅ 重复性操作自动化 ✅ 交互性任务处理 ✅ 批量事务处理 ✅ 服务运行状态监控（巡检） ✅ 定时任务执行  1.4 学习路径1掌握基本语法 → 培养清晰逻辑 → 大量实践练习   二、Shell 脚本编写规范2.1 脚本基本结构12345678#!/bin/bash# 功能描述：这是一个示例脚本# 作者：Your Name# 创建时间：2024-10-24# 版本：v1.0# 这里是具体的命令echo &quot;Hello, Sh...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#SSH%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86"><span class="toc-number">1.</span> <span class="toc-text">SSH相关知识</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81DNS"><span class="toc-number">1.1.</span> <span class="toc-text">一、DNS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-DNS%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%EF%BC%9F"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 DNS是什么？什么作用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-DNS%E8%AE%B0%E5%BD%95%E7%B1%BB%E5%9E%8B%E2%80%94%E9%9D%A2%E8%AF%95%E9%97%AE"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 DNS记录类型—面试问</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%91%A0-A%E8%AE%B0%E5%BD%95%EF%BC%88%E4%B8%BB%E6%9C%BA%E8%AE%B0%E5%BD%95%EF%BC%89"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">① A记录（主机记录）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%91%A1-P%E8%AE%B0%E5%BD%95%EF%BC%88%E6%8C%87%E9%92%88%E8%AE%B0%E5%BD%95%EF%BC%89"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">② P记录（指针记录）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-DNS%E8%A7%A3%E6%9E%90%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.3.</span> <span class="toc-text">1.3 DNS解析配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81DHCP"><span class="toc-number">1.2.</span> <span class="toc-text">二、DHCP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81SSH"><span class="toc-number">1.3.</span> <span class="toc-text">三、SSH</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-SSH%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%EF%BC%9F"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 SSH是什么，什么作用？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-SSH%E8%BF%9C%E7%A8%8B%E7%99%BB%E5%BD%95"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 SSH远程登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E8%B7%A8%E4%B8%BB%E6%9C%BA%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93-scp"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.3 跨主机文件传输 scp</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81SSH%E5%AF%86%E9%92%A5%E5%AF%B9%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">1.4.</span> <span class="toc-text">四、SSH密钥对的应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E5%AF%B9%E8%AE%A4%E8%AF%81%E5%8E%9F%E7%90%86"><span class="toc-number">1.4.1.</span> <span class="toc-text">密钥对认证原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E9%92%A5%E5%AF%B9%E7%94%9F%E6%88%90%E4%B8%8E%E9%85%8D%E7%BD%AE"><span class="toc-number">1.4.2.</span> <span class="toc-text">密钥对生成与配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.5.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/24/SSH%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="SSH相关知识">SSH相关知识</a><time datetime="2025-10-24T12:26:06.000Z" title="Created 2025-10-24 20:26:06">2025-10-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/24/Shell%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="Shell相关知识">Shell相关知识</a><time datetime="2025-10-24T12:20:28.000Z" title="Created 2025-10-24 20:20:28">2025-10-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/20/%E7%A3%81%E7%9B%98%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="磁盘相关知识">磁盘相关知识</a><time datetime="2025-10-20T11:48:15.500Z" title="Created 2025-10-20 19:48:15">2025-10-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/16/Linux-Centos7%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0yum%E4%BB%93%E5%BA%93/" title="Linux Centos7配置本地yum仓库">Linux Centos7配置本地yum仓库</a><time datetime="2025-10-16T08:26:04.000Z" title="Created 2025-10-16 16:26:04">2025-10-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/15/Git/" title="Git的学习与使用">Git的学习与使用</a><time datetime="2025-10-15T00:50:55.980Z" title="Created 2025-10-15 08:50:55">2025-10-15</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
