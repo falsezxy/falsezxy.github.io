@@ -1,11 +1,13 @@
-<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>LVS负载均衡集群 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta property="og:type" content="article">
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>LVS负载均衡集群 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="LVS负载均衡集群一、什么是LVS？LVS（Linux Virtual Server）是一个开源的负载均衡软件，由阿里巴巴前技术总监章文嵩博士开发。它在Linux操作系统内核层实现负载均衡功能，可以将来自客户端的大量请求分散到多台后端服务器，使得单个服务器的压力被均衡分担。 简单来说，LVS就像一个”交通指挥官”，当用户请求到达时，它根据预设的规则把请求分配给不同的服务器处理，避免某个服务器过载，">
+<meta property="og:type" content="article">
 <meta property="og:title" content="LVS负载均衡集群">
 <meta property="og:url" content="http://example.com/2025/11/08/LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4/index.html">
 <meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="LVS负载均衡集群一、什么是LVS？LVS（Linux Virtual Server）是一个开源的负载均衡软件，由阿里巴巴前技术总监章文嵩博士开发。它在Linux操作系统内核层实现负载均衡功能，可以将来自客户端的大量请求分散到多台后端服务器，使得单个服务器的压力被均衡分担。 简单来说，LVS就像一个”交通指挥官”，当用户请求到达时，它根据预设的规则把请求分配给不同的服务器处理，避免某个服务器过载，">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/imgs/adater.jpg">
 <meta property="article:published_time" content="2025-11-08T11:56:26.000Z">
-<meta property="article:modified_time" content="2025-11-08T02:14:39.523Z">
+<meta property="article:modified_time" content="2025-11-08T11:31:36.189Z">
 <meta property="article:author" content="Felix">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
@@ -15,7 +17,7 @@
   "url": "http://example.com/2025/11/08/LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4/",
   "image": "http://example.com/imgs/adater.jpg",
   "datePublished": "2025-11-08T11:56:26.000Z",
-  "dateModified": "2025-11-08T02:14:39.523Z",
+  "dateModified": "2025-11-08T11:31:36.189Z",
   "author": [
     {
       "@type": "Person",
@@ -154,6 +156,324 @@
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
   title: 'LVS负载均衡集群',
   isHighlightShrink: false,
-  isToc: false,
+  isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">LVS负载均衡集群</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">LVS负载均衡集群</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-08T11:56:26.000Z" title="Created 2025-11-08 19:56:26">2025-11-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-08T02:14:39.523Z" title="Updated 2025-11-08 10:14:39">2025-11-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/11/08/LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4/">http://example.com/2025/11/08/LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/11/07/Kubernetes/" title="Kubernetes"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Kubernetes</div></div><div class="info-2"><div class="info-item-1">Kubernetes一、初识Kubernetes1.1 启动 Kubernetes 集群使用 Minikube 启动并验证本地 Kubernetes 集群。Minikube 提供了一种简单方式来设置用于学习和开发的单节点 Kubernetes 环境。 启动minikube 1minikube start   查看集群状态 1minikube status   检查集群节点 1kubectl get nodes     Minikube 启动成功 本地 Kubernetes 集群正在运行 集群已准备就绪 您有一个具有控制平面功能的单节点集群   Minikube 集群在本地机器上提供了完整的 Kubernetes 环境，允许在不需要多节点集群的情况下开发和测试应用程序。 1.2 Kubernetes架构概述核心模型Kubernetes 采用客户端-服务器模型运行：  开发者 通过 kubectl 命令行工具与集群交互 控制平面 是集群的大脑，做出决策和管理状态 工作节点 运行实际的应用程序容器   控制平面（集群的”大脑”）控制平面由四个关键组件组成：    组件 简称 职责   ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/08/LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4/" title="LVS负载均衡集群">LVS负载均衡集群</a><time datetime="2025-11-08T11:56:26.000Z" title="Created 2025-11-08 19:56:26">2025-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/07/Kubernetes/" title="Kubernetes">Kubernetes</a><time datetime="2025-11-07T06:03:15.000Z" title="Created 2025-11-07 14:03:15">2025-11-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/03/web%E6%9C%8D%E5%8A%A1%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="Web服务相关知识">Web服务相关知识</a><time datetime="2025-11-03T10:17:19.000Z" title="Created 2025-11-03 18:17:19">2025-11-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/29/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8C%E6%96%87%E6%9C%AC%E4%B8%89%E5%89%91%E5%AE%A2/" title="正则表达式和文本三剑客">正则表达式和文本三剑客</a><time datetime="2025-10-29T01:27:22.000Z" title="Created 2025-10-29 09:27:22">2025-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/28/docker/" title="docker">docker</a><time datetime="2025-10-28T00:54:40.000Z" title="Created 2025-10-28 08:54:40">2025-10-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">LVS负载均衡集群</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">LVS负载均衡集群</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-08T11:56:26.000Z" title="Created 2025-11-08 19:56:26">2025-11-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-08T11:31:36.189Z" title="Updated 2025-11-08 19:31:36">2025-11-08</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="LVS负载均衡集群"><a href="#LVS负载均衡集群" class="headerlink" title="LVS负载均衡集群"></a>LVS负载均衡集群</h1><h2 id="一、什么是LVS？"><a href="#一、什么是LVS？" class="headerlink" title="一、什么是LVS？"></a>一、什么是LVS？</h2><p>LVS（Linux Virtual Server）是一个开源的负载均衡软件，由阿里巴巴前技术总监章文嵩博士开发。它在Linux操作系统内核层实现负载均衡功能，可以<strong>将来自客户端的大量请求分散到多台后端服务器</strong>，使得单个服务器的<strong>压力被均衡分担</strong>。</p>
+<p>简单来说，LVS就像一个”交通指挥官”，当用户请求到达时，它根据预设的规则把请求分配给不同的服务器处理，避免某个服务器过载，其他服务器闲置的情况。</p>
+<h2 id="二、LVS的工作原理"><a href="#二、LVS的工作原理" class="headerlink" title="二、LVS的工作原理"></a>二、LVS的工作原理</h2><h3 id="2-1-基本架构"><a href="#2-1-基本架构" class="headerlink" title="2.1 基本架构"></a>2.1 基本架构</h3><p>LVS集群由三部分组成：</p>
+<ul>
+<li><strong>负载均衡器（Director）</strong>：运行LVS的Linux服务器，接收所有客户端请求</li>
+<li><strong>真实服务器&#x2F;服务器池（Real Server&#x2F;Server Pool）</strong>：处理实际业务的后端服务器</li>
+<li><strong>共享存储（可选）</strong>：存储应用数据的存储设备</li>
+</ul>
+<p><img src="/./imgs/image-20251108141302490.png" alt="image-20251108141302490"></p>
+<h3 id="2-2-三种负载均衡模式"><a href="#2-2-三种负载均衡模式" class="headerlink" title="2.2 三种负载均衡模式"></a>2.2 三种负载均衡模式</h3><h4 id="NAT模式（Network-Address-Translation）"><a href="#NAT模式（Network-Address-Translation）" class="headerlink" title="NAT模式（Network Address Translation）"></a>NAT模式（Network Address Translation）</h4><ul>
+<li>负载均衡器修改请求的目标地址为真实服务器地址</li>
+<li>真实服务器的响应通过负载均衡器回传给客户端</li>
+<li>所有流量都经过负载均衡器，可能成为性能瓶颈</li>
+<li>真实服务器可以使用私有IP，便于管理</li>
+</ul>
+<p><strong>优点</strong>：配置简单，真实服务器对集群无感知 <strong>缺点</strong>：负载均衡器压力大，性能受限</p>
+<p><img src="/./imgs/image-20251108141437830.png" alt="image-20251108141437830"></p>
+<h4 id="DR模式（Direct-Routing）"><a href="#DR模式（Direct-Routing）" class="headerlink" title="DR模式（Direct Routing）"></a>DR模式（Direct Routing）</h4><ul>
+<li>负载均衡器只修改请求的MAC地址，将请求转发到真实服务器</li>
+<li>真实服务器直接将响应发送给客户端，绕过负载均衡器</li>
+<li>大大提高吞吐量，适合高并发场景</li>
+<li>负载均衡器和真实服务器必须在同一局域网内</li>
+</ul>
+<p><strong>优点</strong>：性能最优，负载均衡器压力小 <strong>缺点</strong>：需要特殊配置，真实服务器需要支持</p>
+<p><img src="/./imgs/image-20251108142054913.png" alt="image-20251108142054913"></p>
+<h4 id="TUN模式（IP-Tunneling）"><a href="#TUN模式（IP-Tunneling）" class="headerlink" title="TUN模式（IP Tunneling）"></a>TUN模式（IP Tunneling）</h4><ul>
+<li>负载均衡器将请求包封装在新的IP包中，发送给真实服务器</li>
+<li>真实服务器解封后处理请求，直接响应客户端</li>
+<li>允许负载均衡器和真实服务器在不同网络</li>
+</ul>
+<p><strong>优点</strong>：适合跨域部署，性能良好 <strong>缺点</strong>：配置复杂，对网络要求高</p>
+<p><img src="/./imgs/image-20251108142044359.png" alt="image-20251108142044359"></p>
+<h3 id="2-3-工作流程"><a href="#2-3-工作流程" class="headerlink" title="2.3 工作流程"></a>2.3 工作流程</h3><p><strong>NAT模式</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">客户端请求 (源IP:客户端IP, 目标IP:VIP)</span><br><span class="line">        ↓</span><br><span class="line">  负载均衡器接收</span><br><span class="line">        ↓</span><br><span class="line">   修改目标IP为真实服务器IP</span><br><span class="line">        ↓</span><br><span class="line">  转发请求到真实服务器</span><br><span class="line">        ↓</span><br><span class="line"> 真实服务器处理请求</span><br><span class="line">        ↓</span><br><span class="line">  真实服务器发送响应(源IP:真实服务器IP)</span><br><span class="line">        ↓</span><br><span class="line">  负载均衡器修改源IP为VIP</span><br><span class="line">        ↓</span><br><span class="line">   响应返回给客户端(源IP:VIP)</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键点</strong>：请求和响应<strong>都必须</strong>经过负载均衡器，负载均衡器需要修改目标IP和源IP。</p>
+<p><strong>DR模式</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">客户端请求 (源IP:客户端IP, 目标IP:VIP)</span><br><span class="line">        ↓</span><br><span class="line">  负载均衡器接收</span><br><span class="line">        ↓</span><br><span class="line">   修改目标MAC地址为真实服务器MAC</span><br><span class="line">        ↓</span><br><span class="line">  转发请求到真实服务器(IP不变)</span><br><span class="line">        ↓</span><br><span class="line"> 真实服务器接收(目标IP是VIP，自己配置了VIP)</span><br><span class="line">        ↓</span><br><span class="line"> 真实服务器处理请求</span><br><span class="line">        ↓</span><br><span class="line">  真实服务器直接发送响应</span><br><span class="line">   (源IP:VIP, 目标IP:客户端IP)</span><br><span class="line">        ↓</span><br><span class="line">  响应直接返回给客户端(绕过负载均衡器)</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键点</strong>：只修改MAC地址，IP保持不变。响应<strong>直接</strong>从真实服务器返回给客户端，<strong>绕过</strong>负载均衡器。</p>
+<p><strong>TUN模式</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">客户端请求 (源IP:客户端IP, 目标IP:VIP)</span><br><span class="line">        ↓</span><br><span class="line">  负载均衡器接收</span><br><span class="line">        ↓</span><br><span class="line">  将整个请求包作为数据，用新IP头封装</span><br><span class="line">  (新外层IP: 源IP=Director, 目标IP=真实服务器IP)</span><br><span class="line">        ↓</span><br><span class="line">  转发隧道包到真实服务器</span><br><span class="line">        ↓</span><br><span class="line"> 真实服务器解封包得到原始请求</span><br><span class="line">        ↓</span><br><span class="line"> 真实服务器处理请求</span><br><span class="line">        ↓</span><br><span class="line">  真实服务器直接发送响应</span><br><span class="line">   (源IP:VIP, 目标IP:客户端IP)</span><br><span class="line">        ↓</span><br><span class="line">  响应直接返回给客户端(绕过负载均衡器)</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键点</strong>：原始请求被完整封装成新的IP包。响应也直接从真实服务器返回。真实服务器需要配置隧道接口。</p>
+<p><img src="/./imgs/image-20251108142604957.png" alt="image-20251108142604957"></p>
+<p><img src="/./imgs/image-20251108142619546.png" alt="image-20251108142619546"></p>
+<h2 id="三、LVS能做什么？"><a href="#三、LVS能做什么？" class="headerlink" title="三、LVS能做什么？"></a>三、LVS能做什么？</h2><h3 id="3-1-高性能负载均衡"><a href="#3-1-高性能负载均衡" class="headerlink" title="3.1 高性能负载均衡"></a>3.1 高性能负载均衡</h3><p>在内核层实现，性能远优于应用层的负载均衡器（如Nginx）。可以处理数百万级别的并发连接。</p>
+<h3 id="3-2-高可用部署"><a href="#3-2-高可用部署" class="headerlink" title="3.2 高可用部署"></a>3.2 高可用部署</h3><p>通过配置多个负载均衡器和健康检查机制，确保服务持续可用。当某个真实服务器宕机时，自动将流量转移到其他正常服务器。</p>
+<h3 id="3-3-多种调度算法支持"><a href="#3-3-多种调度算法支持" class="headerlink" title="3.3 多种调度算法支持"></a>3.3 多种调度算法支持</h3><p>LVS提供多种调度算法供不同场景选择，包括轮询、加权轮询、最少连接、加权最少连接、基于目标地址的哈希等。</p>
+<h3 id="3-4-适应多种应用场景"><a href="#3-4-适应多种应用场景" class="headerlink" title="3.4 适应多种应用场景"></a>3.4 适应多种应用场景</h3><p>可用于Web服务、数据库集群、缓存集群、API网关、CDN等多种应用领域。</p>
+<h3 id="3-5-与Keepalived结合实现高可用"><a href="#3-5-与Keepalived结合实现高可用" class="headerlink" title="3.5 与Keepalived结合实现高可用"></a>3.5 与Keepalived结合实现高可用</h3><p>Keepalived提供虚拟IP（VIP）和故障转移功能，与LVS结合可实现完整的高可用解决方案。</p>
+<h2 id="四、如何搭建LVS集群？"><a href="#四、如何搭建LVS集群？" class="headerlink" title="四、如何搭建LVS集群？"></a>四、如何搭建LVS集群？</h2><p>以NAT模式为例，搭建一个包含1个负载均衡器和2个真实服务器的集群。</p>
+<h3 id="4-1-环境准备"><a href="#4-1-环境准备" class="headerlink" title="4.1 环境准备"></a>4.1 环境准备</h3><p><strong>网络拓扑</strong>：上3 vmnet1仅主机模式 下1作为外网</p>
+<ul>
+<li>负载均衡器（Director）：192.168.73.90</li>
+<li>真实服务器1（RS1）：192.168.73.91</li>
+<li>真实服务器2（RS2）：192.168.73.92</li>
+<li>虚拟IP（VIP）：192.168.118.90</li>
+</ul>
+<p>LVS服务器</p>
+<p><img src="/./imgs/image-20251108190504764.png" alt="image-20251108190504764"></p>
+<p><img src="/./imgs/image-20251108190437936.png" alt="image-20251108190437936"></p>
+<p>2台服务器</p>
+<p><img src="/./imgs/image-20251108145311256.png" alt="image-20251108145311256"></p>
+<p><img src="/./imgs/image-20251108145953232.png" alt="image-20251108145953232"></p>
+<p><img src="/./imgs/image-20251108150005561.png" alt="image-20251108150005561"></p>
+<p><strong>所有服务器</strong>：</p>
+<ul>
+<li>操作系统：CentOS 7或以上</li>
+<li>都在同一局域网内</li>
+</ul>
+<h3 id="4-2-在负载均衡器上安装并配置LVS"><a href="#4-2-在负载均衡器上安装并配置LVS" class="headerlink" title="4.2 在负载均衡器上安装并配置LVS"></a>4.2 在负载均衡器上安装并配置LVS</h3><h4 id="4-2-1-启用IP转发功能"><a href="#4-2-1-启用IP转发功能" class="headerlink" title="4.2.1 启用IP转发功能"></a>4.2.1 启用IP转发功能</h4><p><strong>为什么这么做？</strong> LVS需要在多个网络接口之间转发数据包。LVS服务器作为中间网关，负责接收来自外网的请求，然后转发给内网的Web服务器，并将响应转发回客户端。因此需要启用内核的IP转发功能。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 编辑内核参数配置文件</span></span><br><span class="line">vim /etc/sysctl.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 找到以下行，确保值为1（启用IP转发）</span></span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使配置立即生效</span></span><br><span class="line">sysctl -p</span><br><span class="line"></span><br><span class="line"><span class="comment"># 或者直接写入内核参数（临时生效，重启后失效）</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;1&#x27;</span> &gt; /proc/sys/net/ipv4/ip_forward</span><br></pre></td></tr></table></figure>
+
+<p><strong>作用说明：</strong></p>
+<ul>
+<li><code>net.ipv4.ip_forward = 1</code>：启用IPv4转发，允许系统在接口间路由数据包</li>
+<li>这是LVS工作的基础，没有它LVS无法转发流量</li>
+</ul>
+<p><img src="/./imgs/image-20251108191930813.png" alt="image-20251108191930813"></p>
+<h4 id="4-2-2-配置SNAT转发规则"><a href="#4-2-2-配置SNAT转发规则" class="headerlink" title="4.2.2 配置SNAT转发规则"></a>4.2.2 配置SNAT转发规则</h4><p><strong>为什么这么做？</strong> LVS采用NAT（Network Address Translation）模式工作。当内网Web服务器响应客户端请求时，响应包需要通过LVS转发回去。为了使响应包正确路由回客户端（外网），需要将所有来自内网的响应包的源IP地址改为LVS的外网IP（192.168.110.128），这样客户端才能正确接收到回应。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置SNAT规则，将内网流量的源地址转换为LVS的外网地址</span></span><br><span class="line">iptables -t nat -A POSTROUTING -s 192.168.73.0/24 -o ens33 -j SNAT --to-source 192.168.118.90</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251108192615738.png" alt="image-20251108192615738"></p>
+<p><strong>规则解析：</strong></p>
+<ul>
+<li><code>-t nat</code>：使用NAT表</li>
+<li><code>-A POSTROUTING</code>：在POSTROUTING链上追加规则（数据包离开系统时执行）</li>
+<li><code>-s 192.168.73.0/24</code>：匹配源地址为内网网段的数据包</li>
+<li><code>-o ens33</code>：匹配从ens33网卡出去的数据包</li>
+<li><code>-j SNAT</code>：执行SNAT操作</li>
+<li><code>--to-source 192.168.118.90</code>：将源地址转换为LVS的外网IP</li>
+</ul>
+<p><strong>工作流程示例：</strong></p>
+<ol>
+<li>客户端访问 192.168.118.90:80</li>
+<li>LVS将请求转发给 192.168.73.91:80（Web服务器1）</li>
+<li>Web服务器响应时，SNAT规则将响应包的源地址改为 192.168.118.90</li>
+<li>客户端收到来自 192.168.118.90 的响应，连接保持正常</li>
+</ol>
+<h4 id="4-2-3-清除原有防火墙规则"><a href="#4-2-3-清除原有防火墙规则" class="headerlink" title="4.2.3 清除原有防火墙规则"></a>4.2.3 清除原有防火墙规则</h4><p><strong>为什么这么做？</strong> 清除之前可能残留的iptables规则，避免与新配置的LVS规则产生冲突，确保配置的纯净性和可预测性。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 清除NAT表中的所有规则</span></span><br><span class="line">iptables -t nat -F</span><br><span class="line"></span><br><span class="line"><span class="comment"># 清除filter表（默认）中的所有规则</span></span><br><span class="line">iptables -F</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-4-安装ipvsadm管理工具"><a href="#4-2-4-安装ipvsadm管理工具" class="headerlink" title="4.2.4 安装ipvsadm管理工具"></a>4.2.4 安装ipvsadm管理工具</h4><p><strong>为什么这么做？</strong> ipvsadm是LVS的用户空间管理工具，通过它可以配置和管理LVS的虚拟服务和真实服务器，是管理LVS必不可少的工具。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装ipvsadm</span></span><br><span class="line">yum -y install ipvsadm</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-2-5-配置负载分配策略"><a href="#4-2-5-配置负载分配策略" class="headerlink" title="4.2.5 配置负载分配策略"></a>4.2.5 配置负载分配策略</h4><p><strong>为什么这么做？</strong> 配置LVS的虚拟服务（VIP）和真实服务器，以及负载均衡算法，使LVS开始发挥作用。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 清空之前的LVS配置</span></span><br><span class="line">ipvsadm -C</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建虚拟服务</span></span><br><span class="line"><span class="comment"># -A: 添加虚拟服务</span></span><br><span class="line"><span class="comment"># -t: 指定TCP服务</span></span><br><span class="line"><span class="comment"># 192.168.118.90:80: 虚拟服务的IP和端口</span></span><br><span class="line"><span class="comment"># -s rr: 调度算法为轮询（round-robin）</span></span><br><span class="line">ipvsadm -A -t 192.168.118.90:80 -s rr</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加第一个真实服务器</span></span><br><span class="line"><span class="comment"># -a: 添加真实服务器到虚拟服务</span></span><br><span class="line"><span class="comment"># -r: 指定真实服务器的IP和端口</span></span><br><span class="line"><span class="comment"># -m: 使用NAT模式（Masquerade）</span></span><br><span class="line">ipvsadm -a -t 192.168.118.90:80 -r 192.168.73.91:80 -m</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加第二个真实服务器</span></span><br><span class="line">ipvsadm -a -t 192.168.118.90:80 -r 192.168.73.92:80 -m</span><br><span class="line"></span><br><span class="line"><span class="comment"># 列出已配置的LVS规则</span></span><br><span class="line">ipvsadm -<span class="built_in">ln</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251108192144277.png" alt="image-20251108192144277"></p>
+<p><strong>参数说明：</strong></p>
+<ul>
+<li><code>-A</code>：添加虚拟服务</li>
+<li><code>-a</code>：添加真实服务器到虚拟服务</li>
+<li><code>-t</code>：指定虚拟服务为TCP类型</li>
+<li><code>-s rr</code>：调度算法为轮询（Round Robin），依次分配请求给每个服务器</li>
+<li><code>-m</code>：NAT模式转发</li>
+<li><code>-r</code>：真实服务器的地址和端口</li>
+<li><code>-ln</code>：以简洁格式显示LVS规则</li>
+</ul>
+<p><strong>调度算法对比：</strong></p>
+<table>
+<thead>
+<tr>
+<th>算法</th>
+<th>简称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Round-Robin</td>
+<td>rr</td>
+<td>轮询，依次分配</td>
+</tr>
+<tr>
+<td>Least-Connection</td>
+<td>lc</td>
+<td>最少连接</td>
+</tr>
+<tr>
+<td>Destination Hashing</td>
+<td>dh</td>
+<td>目标哈希</td>
+</tr>
+<tr>
+<td>Source Hashing</td>
+<td>sh</td>
+<td>源哈希</td>
+</tr>
+<tr>
+<td>Weighted Round-Robin</td>
+<td>wrr</td>
+<td>加权轮询</td>
+</tr>
+<tr>
+<td>Weighted Least-Connection</td>
+<td>wlc</td>
+<td>加权最少连接</td>
+</tr>
+</tbody></table>
+<h4 id="4-2-6-保存LVS配置"><a href="#4-2-6-保存LVS配置" class="headerlink" title="4.2.6 保存LVS配置"></a>4.2.6 保存LVS配置</h4><p><strong>为什么这么做？</strong> 保存配置使其在系统重启后仍然有效，避免每次重启都需要手动重新配置。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 保存当前的LVS配置到系统配置文件</span></span><br><span class="line">ipvsadm-save &gt; /etc/sysconfig/ipvsadm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 或使用以下方式</span></span><br><span class="line">ipvsadm --save &gt; /etc/sysconfig/ipvsadm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动ipvsadm服务使配置持久化</span></span><br><span class="line">systemctl start ipvsadm.service</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251108192202291.png" alt="image-20251108192202291"></p>
+<h4 id="4-2-7-验证配置"><a href="#4-2-7-验证配置" class="headerlink" title="4.2.7 验证配置"></a>4.2.7 验证配置</h4><p><strong>如何查看LVS工作状态？</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看LVS规则（简洁格式）</span></span><br><span class="line">ipvsadm -<span class="built_in">ln</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出示例：</span></span><br><span class="line"><span class="comment"># IP Virtual Server version 1.2.1 (size=4096)</span></span><br><span class="line"><span class="comment"># Prot LocalAddress:Port Scheduler Flags</span></span><br><span class="line"><span class="comment"># -&gt; RemoteAddress:Port Forward Weight ActiveConn InactConn</span></span><br><span class="line"><span class="comment"># TCP 192.168.118.90:80 rr</span></span><br><span class="line"><span class="comment"># -&gt; 192.168.73.91:80 Masq 1 0 0</span></span><br><span class="line"><span class="comment"># -&gt; 192.168.73.92:80 Masq 1 0 0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看LVS详细信息</span></span><br><span class="line">ipvsadm -Ln</span><br></pre></td></tr></table></figure>
+
+<p><strong>输出字段说明：</strong></p>
+<ul>
+<li><code>Prot</code>：协议类型（TCP&#x2F;UDP）</li>
+<li><code>LocalAddress:Port</code>：虚拟服务的地址和端口</li>
+<li><code>Scheduler</code>：调度算法（rr表示轮询）</li>
+<li><code>RemoteAddress:Port</code>：真实服务器的地址和端口</li>
+<li><code>Forward</code>：转发方式（Masq表示NAT模式）</li>
+<li><code>Weight</code>：权重值</li>
+<li><code>ActiveConn</code>：活跃连接数</li>
+<li><code>InactConn</code>：非活跃连接数</li>
+</ul>
+<h3 id="4-3-LVS工作原理（NAT模式）"><a href="#4-3-LVS工作原理（NAT模式）" class="headerlink" title="4.3 LVS工作原理（NAT模式）"></a>4.3 LVS工作原理（NAT模式）</h3><h4 id="请求流程"><a href="#请求流程" class="headerlink" title="请求流程"></a>请求流程</h4><ol>
+<li>客户端发送请求到 192.168.118.90:80</li>
+<li>LVS接收请求，查看连接表</li>
+<li>根据调度算法（轮询）选择一个真实服务器（如192.168.73.91）</li>
+<li>LVS修改请求的目标地址，转发给真实服务器</li>
+<li>真实服务器处理请求并生成响应</li>
+</ol>
+<h4 id="响应流程"><a href="#响应流程" class="headerlink" title="响应流程"></a>响应流程</h4><ol>
+<li>真实服务器发送响应</li>
+<li>SNAT规则将响应的源地址改为 192.168.118.90</li>
+<li>LVS修改响应的源端口（从真实服务器的源端口改回虚拟服务的源端口）</li>
+<li>响应返回给客户端</li>
+</ol>
+<h3 id="4-4-测试验证"><a href="#4-4-测试验证" class="headerlink" title="4.4 测试验证"></a>4.4 测试验证</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在Windows宿主机上使用浏览器访问</span></span><br><span class="line">http://192.168.118.90</span><br><span class="line"></span><br><span class="line"><span class="comment"># 或使用curl命令测试</span></span><br><span class="line">curl http://192.168.118.90</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注意：相隔至少20秒再重复访问，以观察轮询效果</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 在LVS服务器上监控连接状态</span></span><br><span class="line">watch -n 1 <span class="string">&#x27;ipvsadm -ln&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看LVS统计信息</span></span><br><span class="line">ipvsadm -Ln --stats</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251108192246452.png" alt="image-20251108192246452"></p>
+<h3 id="4-5-常见问题排查"><a href="#4-5-常见问题排查" class="headerlink" title="4.5 常见问题排查"></a>4.5 常见问题排查</h3><h4 id="问题1：Web服务器无法访问"><a href="#问题1：Web服务器无法访问" class="headerlink" title="问题1：Web服务器无法访问"></a>问题1：Web服务器无法访问</h4><p><strong>检查步骤：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 检查网络连接</span></span><br><span class="line">ping 192.168.73.91</span><br><span class="line">ping 192.168.73.92</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 检查防火墙</span></span><br><span class="line">systemctl status firewalld</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 检查httpd服务</span></span><br><span class="line">systemctl status httpd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 检查LVS配置</span></span><br><span class="line">ipvsadm -<span class="built_in">ln</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="问题2：响应缓慢或超时"><a href="#问题2：响应缓慢或超时" class="headerlink" title="问题2：响应缓慢或超时"></a>问题2：响应缓慢或超时</h4><p><strong>检查步骤：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查IP转发是否启用</span></span><br><span class="line"><span class="built_in">cat</span> /proc/sys/net/ipv4/ip_forward</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查SNAT规则</span></span><br><span class="line">iptables -t nat -L -n</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看LVS连接统计</span></span><br><span class="line">ipvsadm -Ln --stats</span><br></pre></td></tr></table></figure>
+
+<h4 id="问题3：某个服务器收不到请求"><a href="#问题3：某个服务器收不到请求" class="headerlink" title="问题3：某个服务器收不到请求"></a>问题3：某个服务器收不到请求</h4><p><strong>可能原因和解决：</strong></p>
+<ul>
+<li>真实服务器防火墙未关闭：<code>systemctl disable firewalld --now</code></li>
+<li>Web服务器的默认网关不正确：检查网卡配置中是否有GATEWAY项</li>
+<li>LVS配置中的权重不对：检查 <code>Weight</code> 值是否为0</li>
+</ul>
+<h2 id="五、LVS的调度算法"><a href="#五、LVS的调度算法" class="headerlink" title="五、LVS的调度算法"></a>五、LVS的调度算法</h2><table>
+<thead>
+<tr>
+<th>算法</th>
+<th>说明</th>
+<th>适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>rr</td>
+<td>轮询，依次分配请求</td>
+<td>服务器性能相同</td>
+</tr>
+<tr>
+<td>wrr</td>
+<td>加权轮询，按权重分配</td>
+<td>服务器性能不同</td>
+</tr>
+<tr>
+<td>lc</td>
+<td>最少连接，优先分配给连接少的服务器</td>
+<td>长连接应用</td>
+</tr>
+<tr>
+<td>wlc</td>
+<td>加权最少连接</td>
+<td>长连接且性能不同</td>
+</tr>
+<tr>
+<td>lblc</td>
+<td>基于目标地址的最少连接</td>
+<td>缓存服务器</td>
+</tr>
+<tr>
+<td>dh</td>
+<td>目标地址哈希，同一源IP始终访问同一服务器</td>
+<td>需要会话保持</td>
+</tr>
+<tr>
+<td>sh</td>
+<td>源地址哈希</td>
+<td>需要会话保持</td>
+</tr>
+</tbody></table>
+<h2 id="六、为什么需要LVS技术？"><a href="#六、为什么需要LVS技术？" class="headerlink" title="六、为什么需要LVS技术？"></a>六、为什么需要LVS技术？</h2><h3 id="6-1-性能角度"><a href="#6-1-性能角度" class="headerlink" title="6.1 性能角度"></a>6.1 性能角度</h3><p>LVS在内核层实现负载均衡，相比应用层的Nginx、HAProxy等方案，性能提升10倍以上，可轻松处理数百万并发连接。对于超大规模互联网应用，这种性能优势至关重要。</p>
+<h3 id="6-2-可扩展性角度"><a href="#6-2-可扩展性角度" class="headerlink" title="6.2 可扩展性角度"></a>6.2 可扩展性角度</h3><p>通过添加真实服务器数量，可以线性扩展系统容量。单个负载均衡器理论上可支持数千台真实服务器，极大降低了扩展成本。</p>
+<h3 id="6-3-可靠性角度"><a href="#6-3-可靠性角度" class="headerlink" title="6.3 可靠性角度"></a>6.3 可靠性角度</h3><p>结合Keepalived提供的虚拟IP转移和故障检测，当某个真实服务器故障时，自动将其移出集群，用户无感知。真正实现”7×24小时”不间断服务。</p>
+<h3 id="6-4-成本角度"><a href="#6-4-成本角度" class="headerlink" title="6.4 成本角度"></a>6.4 成本角度</h3><p>LVS是开源免费软件，无许可费用。使用廉价的x86服务器就可以构建高性能集群，相比专业负载均衡硬件便宜数倍。</p>
+<h3 id="6-5-运维角度"><a href="#6-5-运维角度" class="headerlink" title="6.5 运维角度"></a>6.5 运维角度</h3><p>配置相对稳定，一旦部署完成，日常维护工作量小。故障转移自动化，减轻运维负担。</p>
+<h3 id="6-6-业务角度"><a href="#6-6-业务角度" class="headerlink" title="6.6 业务角度"></a>6.6 业务角度</h3><p>支持多种调度算法和会话保持机制，能够满足各类业务需求。不限制后端服务类型，可用于Web、数据库、缓存等任何服务。</p>
+<h3 id="6-7-业界应用角度"><a href="#6-7-业界应用角度" class="headerlink" title="6.7 业界应用角度"></a>6.7 业界应用角度</h3><p>被阿里巴巴、腾讯、百度等互联网大厂广泛采用，经过百万级流量验证，生产级别稳定性已得到充分验证。</p>
+<h2 id="七、LVS-vs-Nginx-vs-HAProxy"><a href="#七、LVS-vs-Nginx-vs-HAProxy" class="headerlink" title="七、LVS vs Nginx vs HAProxy"></a>七、LVS vs Nginx vs HAProxy</h2><table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>LVS</th>
+<th>Nginx</th>
+<th>HAProxy</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实现层次</td>
+<td>内核层</td>
+<td>应用层</td>
+<td>应用层</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>最高</td>
+<td>高</td>
+<td>高</td>
+</tr>
+<tr>
+<td>配置复杂度</td>
+<td>中等</td>
+<td>低</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>功能丰富度</td>
+<td>一般</td>
+<td>丰富</td>
+<td>丰富</td>
+</tr>
+<tr>
+<td>内存占用</td>
+<td>低</td>
+<td>中</td>
+<td>中</td>
+</tr>
+<tr>
+<td>学习曲线</td>
+<td>陡峭</td>
+<td>平缓</td>
+<td>中等</td>
+</tr>
+<tr>
+<td>应用场景</td>
+<td>超大规模并发</td>
+<td>通用</td>
+<td>通用</td>
+</tr>
+</tbody></table>
+<p><strong>选择建议</strong>：</p>
+<ul>
+<li>追求极致性能和承载海量并发：选LVS</li>
+<li>需要丰富功能和简单配置：选Nginx</li>
+<li>需要强大的会话管理和复杂规则：选HAProxy</li>
+<li>实际应用中通常组合使用：LVS + Nginx&#x2F;HAProxy双层架构</li>
+</ul>
+<h2 id="八、总结"><a href="#八、总结" class="headerlink" title="八、总结"></a>八、总结</h2><p>LVS是一项经过十多年历史验证、在互联网大规模应用中屹立不倒的技术。它以简洁的设计、卓越的性能和强大的稳定性，在超大规模高并发场景中展现出无与伦比的优势。</p>
+<p>虽然在小规模应用中不如Nginx灵活，但在构建支撑数千万用户的互联网平台时，LVS是实现高可用、高性能集群的最佳选择。掌握LVS的原理和部署方式，对于成长为高级运维工程师或架构师来说，是必备的技能。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/11/08/LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4/">http://example.com/2025/11/08/LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/11/07/Kubernetes/" title="Kubernetes"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Kubernetes</div></div><div class="info-2"><div class="info-item-1">Kubernetes一、初识Kubernetes1.1 启动 Kubernetes 集群使用 Minikube 启动并验证本地 Kubernetes 集群。Minikube 提供了一种简单方式来设置用于学习和开发的单节点 Kubernetes 环境。 启动minikube 1minikube start   查看集群状态 1minikube status   检查集群节点 1kubectl get nodes     Minikube 启动成功 本地 Kubernetes 集群正在运行 集群已准备就绪 您有一个具有控制平面功能的单节点集群   Minikube 集群在本地机器上提供了完整的 Kubernetes 环境，允许在不需要多节点集群的情况下开发和测试应用程序。 1.2 Kubernetes架构概述核心模型Kubernetes 采用客户端-服务器模型运行：  开发者 通过 kubectl 命令行工具与集群交互 控制平面 是集群的大脑，做出决策和管理状态 工作节点 运行实际的应用程序容器   控制平面（集群的”大脑”）控制平面由四个关键组件组成：    组件 简称 职责   ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4"><span class="toc-number">1.</span> <span class="toc-text">LVS负载均衡集群</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AFLVS%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">一、什么是LVS？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81LVS%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">1.2.</span> <span class="toc-text">二、LVS的工作原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%9F%BA%E6%9C%AC%E6%9E%B6%E6%9E%84"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1 基本架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E4%B8%89%E7%A7%8D%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%A8%A1%E5%BC%8F"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2 三种负载均衡模式</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NAT%E6%A8%A1%E5%BC%8F%EF%BC%88Network-Address-Translation%EF%BC%89"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">NAT模式（Network Address Translation）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#DR%E6%A8%A1%E5%BC%8F%EF%BC%88Direct-Routing%EF%BC%89"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">DR模式（Direct Routing）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#TUN%E6%A8%A1%E5%BC%8F%EF%BC%88IP-Tunneling%EF%BC%89"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">TUN模式（IP Tunneling）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">1.2.3.</span> <span class="toc-text">2.3 工作流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81LVS%E8%83%BD%E5%81%9A%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.3.</span> <span class="toc-text">三、LVS能做什么？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E9%AB%98%E6%80%A7%E8%83%BD%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 高性能负载均衡</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E9%AB%98%E5%8F%AF%E7%94%A8%E9%83%A8%E7%BD%B2"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 高可用部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%A4%9A%E7%A7%8D%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95%E6%94%AF%E6%8C%81"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.3 多种调度算法支持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E9%80%82%E5%BA%94%E5%A4%9A%E7%A7%8D%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.3.4.</span> <span class="toc-text">3.4 适应多种应用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E4%B8%8EKeepalived%E7%BB%93%E5%90%88%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="toc-number">1.3.5.</span> <span class="toc-text">3.5 与Keepalived结合实现高可用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BALVS%E9%9B%86%E7%BE%A4%EF%BC%9F"><span class="toc-number">1.4.</span> <span class="toc-text">四、如何搭建LVS集群？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">1.4.1.</span> <span class="toc-text">4.1 环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%9C%A8%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%99%A8%E4%B8%8A%E5%AE%89%E8%A3%85%E5%B9%B6%E9%85%8D%E7%BD%AELVS"><span class="toc-number">1.4.2.</span> <span class="toc-text">4.2 在负载均衡器上安装并配置LVS</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-1-%E5%90%AF%E7%94%A8IP%E8%BD%AC%E5%8F%91%E5%8A%9F%E8%83%BD"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">4.2.1 启用IP转发功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-%E9%85%8D%E7%BD%AESNAT%E8%BD%AC%E5%8F%91%E8%A7%84%E5%88%99"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">4.2.2 配置SNAT转发规则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-3-%E6%B8%85%E9%99%A4%E5%8E%9F%E6%9C%89%E9%98%B2%E7%81%AB%E5%A2%99%E8%A7%84%E5%88%99"><span class="toc-number">1.4.2.3.</span> <span class="toc-text">4.2.3 清除原有防火墙规则</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-4-%E5%AE%89%E8%A3%85ipvsadm%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7"><span class="toc-number">1.4.2.4.</span> <span class="toc-text">4.2.4 安装ipvsadm管理工具</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-5-%E9%85%8D%E7%BD%AE%E8%B4%9F%E8%BD%BD%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5"><span class="toc-number">1.4.2.5.</span> <span class="toc-text">4.2.5 配置负载分配策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-6-%E4%BF%9D%E5%AD%98LVS%E9%85%8D%E7%BD%AE"><span class="toc-number">1.4.2.6.</span> <span class="toc-text">4.2.6 保存LVS配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-7-%E9%AA%8C%E8%AF%81%E9%85%8D%E7%BD%AE"><span class="toc-number">1.4.2.7.</span> <span class="toc-text">4.2.7 验证配置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-LVS%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86%EF%BC%88NAT%E6%A8%A1%E5%BC%8F%EF%BC%89"><span class="toc-number">1.4.3.</span> <span class="toc-text">4.3 LVS工作原理（NAT模式）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AF%B7%E6%B1%82%E6%B5%81%E7%A8%8B"><span class="toc-number">1.4.3.1.</span> <span class="toc-text">请求流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%93%8D%E5%BA%94%E6%B5%81%E7%A8%8B"><span class="toc-number">1.4.3.2.</span> <span class="toc-text">响应流程</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E6%B5%8B%E8%AF%95%E9%AA%8C%E8%AF%81"><span class="toc-number">1.4.4.</span> <span class="toc-text">4.4 测试验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="toc-number">1.4.5.</span> <span class="toc-text">4.5 常见问题排查</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%97%AE%E9%A2%981%EF%BC%9AWeb%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%97%A0%E6%B3%95%E8%AE%BF%E9%97%AE"><span class="toc-number">1.4.5.1.</span> <span class="toc-text">问题1：Web服务器无法访问</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%97%AE%E9%A2%982%EF%BC%9A%E5%93%8D%E5%BA%94%E7%BC%93%E6%85%A2%E6%88%96%E8%B6%85%E6%97%B6"><span class="toc-number">1.4.5.2.</span> <span class="toc-text">问题2：响应缓慢或超时</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%97%AE%E9%A2%983%EF%BC%9A%E6%9F%90%E4%B8%AA%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%94%B6%E4%B8%8D%E5%88%B0%E8%AF%B7%E6%B1%82"><span class="toc-number">1.4.5.3.</span> <span class="toc-text">问题3：某个服务器收不到请求</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81LVS%E7%9A%84%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95"><span class="toc-number">1.5.</span> <span class="toc-text">五、LVS的调度算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81LVS%E6%8A%80%E6%9C%AF%EF%BC%9F"><span class="toc-number">1.6.</span> <span class="toc-text">六、为什么需要LVS技术？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E6%80%A7%E8%83%BD%E8%A7%92%E5%BA%A6"><span class="toc-number">1.6.1.</span> <span class="toc-text">6.1 性能角度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%8F%AF%E6%89%A9%E5%B1%95%E6%80%A7%E8%A7%92%E5%BA%A6"><span class="toc-number">1.6.2.</span> <span class="toc-text">6.2 可扩展性角度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%8F%AF%E9%9D%A0%E6%80%A7%E8%A7%92%E5%BA%A6"><span class="toc-number">1.6.3.</span> <span class="toc-text">6.3 可靠性角度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-%E6%88%90%E6%9C%AC%E8%A7%92%E5%BA%A6"><span class="toc-number">1.6.4.</span> <span class="toc-text">6.4 成本角度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-5-%E8%BF%90%E7%BB%B4%E8%A7%92%E5%BA%A6"><span class="toc-number">1.6.5.</span> <span class="toc-text">6.5 运维角度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-6-%E4%B8%9A%E5%8A%A1%E8%A7%92%E5%BA%A6"><span class="toc-number">1.6.6.</span> <span class="toc-text">6.6 业务角度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-7-%E4%B8%9A%E7%95%8C%E5%BA%94%E7%94%A8%E8%A7%92%E5%BA%A6"><span class="toc-number">1.6.7.</span> <span class="toc-text">6.7 业界应用角度</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81LVS-vs-Nginx-vs-HAProxy"><span class="toc-number">1.7.</span> <span class="toc-text">七、LVS vs Nginx vs HAProxy</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">八、总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/08/LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4/" title="LVS负载均衡集群">LVS负载均衡集群</a><time datetime="2025-11-08T11:56:26.000Z" title="Created 2025-11-08 19:56:26">2025-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/07/Kubernetes/" title="Kubernetes">Kubernetes</a><time datetime="2025-11-07T06:03:15.000Z" title="Created 2025-11-07 14:03:15">2025-11-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/03/web%E6%9C%8D%E5%8A%A1%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="Web服务相关知识">Web服务相关知识</a><time datetime="2025-11-03T10:17:19.000Z" title="Created 2025-11-03 18:17:19">2025-11-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/29/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%92%8C%E6%96%87%E6%9C%AC%E4%B8%89%E5%89%91%E5%AE%A2/" title="正则表达式和文本三剑客">正则表达式和文本三剑客</a><time datetime="2025-10-29T01:27:22.000Z" title="Created 2025-10-29 09:27:22">2025-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/10/28/docker/" title="docker">docker</a><time datetime="2025-10-28T00:54:40.000Z" title="Created 2025-10-28 08:54:40">2025-10-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
