@@ -1,0 +1,430 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Keepalived | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="KeepalivedKeepalived是什么？Keepalived是一个基于VRRP（Virtual Router Redundancy Protocol）协议的高可用解决方案。它可以在服务故障时自动进行故障转移，确保服务的连续性。 keepalived怎么实现高可用？ 1、需要定义一个热备组(⭐)2、确定主-备关系（通过优先级（100 - 90）来确定）3、该怎么分辨MASTER能否正常工作呢">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Keepalived">
+<meta property="og:url" content="http://example.com/2025/11/11/Keepalived/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="KeepalivedKeepalived是什么？Keepalived是一个基于VRRP（Virtual Router Redundancy Protocol）协议的高可用解决方案。它可以在服务故障时自动进行故障转移，确保服务的连续性。 keepalived怎么实现高可用？ 1、需要定义一个热备组(⭐)2、确定主-备关系（通过优先级（100 - 90）来确定）3、该怎么分辨MASTER能否正常工作呢">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-11-11T03:14:12.000Z">
+<meta property="article:modified_time" content="2025-11-12T07:29:18.200Z">
+<meta property="article:author" content="Felix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Keepalived",
+  "url": "http://example.com/2025/11/11/Keepalived/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-11-11T03:14:12.000Z",
+  "dateModified": "2025-11-12T07:29:18.200Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/11/11/Keepalived/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Keepalived',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Keepalived</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Keepalived</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-11T03:14:12.000Z" title="Created 2025-11-11 11:14:12">2025-11-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-12T07:29:18.200Z" title="Updated 2025-11-12 15:29:18">2025-11-12</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Keepalived"><a href="#Keepalived" class="headerlink" title="Keepalived"></a>Keepalived</h1><h2 id="Keepalived是什么？"><a href="#Keepalived是什么？" class="headerlink" title="Keepalived是什么？"></a>Keepalived是什么？</h2><p>Keepalived是一个基于VRRP（Virtual Router Redundancy Protocol）协议的高可用解决方案。它可以在服务故障时自动进行故障转移，确保服务的连续性。</p>
+<p><strong>keepalived怎么实现高可用？</strong></p>
+<p>1、需要定义一个热备组(⭐)<br>2、确定主-备关系（通过优先级（100 - 90）来确定）<br>3、该怎么分辨MASTER能否正常工作呢？？<br>   健康检查（icmp 协议—ping 检测存活）这是默认的检查方式<br>   其他：例如 脚本检测服务的存活性<br>4、VIP的特性：<br>     ① VIP 是作为访问入口的IP地址（用于外网域名解析的 IP记录）<br>     ② VIP 只会存在于优先级最高的节点<br>5、怎么让VIP 漂移呢？<br>     ① keepalived 当发现master节点状态异常了，则会把master的优先级进行降级<br>例如：从100 -》80<br>以上机制建立完成后，Nginx 就可以与keepalived 组合实现HA 高可用了</p>
+<h3 id="Keepalived的核心功能"><a href="#Keepalived的核心功能" class="headerlink" title="Keepalived的核心功能"></a>Keepalived的核心功能</h3><h4 id="1-VRRP虚拟路由器功能"><a href="#1-VRRP虚拟路由器功能" class="headerlink" title="1. VRRP虚拟路由器功能"></a>1. VRRP虚拟路由器功能</h4><p>VRRP允许多个路由器（或服务器）共享一个虚拟IP地址（VIP），形成一个虚拟路由器组。</p>
+<p><strong>工作原理：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">物理拓扑：</span><br><span class="line">┌─────────────┐         ┌─────────────┐</span><br><span class="line">│   Master    │         │   Backup    │</span><br><span class="line">│ 192.168.1.10│         │ 192.168.1.11│</span><br><span class="line">└─────────────┘         └─────────────┘</span><br><span class="line">         │                      │</span><br><span class="line">         └──────────┬───────────┘</span><br><span class="line">              虚拟IP: 192.168.1.100</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Master持有虚拟IP，优先级较高</li>
+<li>Backup监听Master的心跳包</li>
+<li>如果Master故障，Backup自动接管虚拟IP</li>
+</ul>
+<h4 id="2-故障检测与自动转移"><a href="#2-故障检测与自动转移" class="headerlink" title="2. 故障检测与自动转移"></a>2. 故障检测与自动转移</h4><p>Keepalived定期检测应用层服务的状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查方式</span></span><br><span class="line">- 进程是否存在</span><br><span class="line">- 端口是否开放</span><br><span class="line">- 自定义脚本检查</span><br></pre></td></tr></table></figure>
+
+<p>如果主服务故障，自动切换到备服务。</p>
+<h4 id="3-抢占式与非抢占式"><a href="#3-抢占式与非抢占式" class="headerlink" title="3. 抢占式与非抢占式"></a>3. 抢占式与非抢占式</h4><ul>
+<li><strong>抢占式</strong>：Master恢复后立即抢回VIP</li>
+<li><strong>非抢占式</strong>：Master恢复后不抢回VIP，保持Backup为主</li>
+</ul>
+<h4 id="4-多播与单播通信"><a href="#4-多播与单播通信" class="headerlink" title="4. 多播与单播通信"></a>4. 多播与单播通信</h4><ul>
+<li><strong>多播</strong>：向多播地址224.0.0.18发送VRRP包，效率高</li>
+<li><strong>单播</strong>：直接与对端通信，穿越防火墙更好</li>
+</ul>
+<h2 id="Nginx-Keepalived配置流程"><a href="#Nginx-Keepalived配置流程" class="headerlink" title="Nginx+Keepalived配置流程"></a>Nginx+Keepalived配置流程</h2><p>环境准备</p>
+<p>两台nginx主备</p>
+<p>两台web服务器httpd</p>
+<p><img src="/./imgs/image-20251111195645850.png" alt="image-20251111195645850"></p>
+<h3 id="配置流程"><a href="#配置流程" class="headerlink" title="配置流程"></a>配置流程</h3><p><strong>关闭防火墙核心防护</strong></p>
+<p><strong>安装nignx</strong></p>
+<p><strong>安装Keepalived服务</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y keepalived</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251111200540340.png" alt="image-20251111200540340"></p>
+<p><strong>安装基础依赖包</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y gcc openssl-devel libnl libnl-devel libnfnetlink-devel net-tools vim</span><br></pre></td></tr></table></figure>
+
+<p><strong>启动服务</strong></p>
+<p><img src="/./imgs/image-20251111200713578.png" alt="image-20251111200713578"></p>
+<p>keepalived没有配置好是无法启动的</p>
+<p><strong>主备模式配置</strong></p>
+<p>修改keepalived配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 备份</span></span><br><span class="line"><span class="built_in">cp</span> /etc/keepalived/keepalived.conf /etc/keepalived/keepalived.conf.bak </span><br><span class="line"><span class="comment"># 修改</span></span><br><span class="line">vim /etc/keepalived/keepalived.conf</span><br></pre></td></tr></table></figure>
+
+<p>注：vrrp_script定义脚本后，在vrrp_instance模块必须加上track_script 参数。</p>
+<p>基础三个模块，global_defs全局模块，vrrp_instance配置vip模块，vrrp_script 脚本模块</p>
+<h3 id="核心参数配置"><a href="#核心参数配置" class="headerlink" title="核心参数配置"></a>核心参数配置</h3><p>我来帮你精简易懂地总结这些参数：</p>
+<p><strong>global_defs（全局定义）</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>notification_email</code></td>
+<td>故障时的告警邮箱</td>
+</tr>
+<tr>
+<td><code>router_id</code></td>
+<td>机器标识（通常用主机名）</td>
+</tr>
+</tbody></table>
+<p><strong>vrrp_instance（VRRP实例）</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>state</code></td>
+<td>初始状态：MASTER 或 BACKUP</td>
+</tr>
+<tr>
+<td><code>interface</code></td>
+<td>绑定的网卡（如 ens33、eth0）</td>
+</tr>
+<tr>
+<td><code>mcast_src_ip</code></td>
+<td>发送心跳的IP地址（选择稳定网卡）</td>
+</tr>
+<tr>
+<td><code>virtual_router_id</code></td>
+<td>组ID，相同ID为一个组</td>
+</tr>
+<tr>
+<td><code>priority</code></td>
+<td>优先级（1-255），高的为MASTER</td>
+</tr>
+<tr>
+<td><code>advert_int</code></td>
+<td>心跳间隔（默认1秒）</td>
+</tr>
+<tr>
+<td><code>authentication</code></td>
+<td>认证密码（主从必须一致）</td>
+</tr>
+<tr>
+<td><code>virtual_ipaddress</code></td>
+<td>虚拟IP地址（VIP）</td>
+</tr>
+<tr>
+<td><code>track_script</code></td>
+<td>引用的检测脚本名</td>
+</tr>
+</tbody></table>
+<p><strong>vrrp_script（检测脚本）</strong></p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>script</code></td>
+<td>检测命令或脚本</td>
+</tr>
+<tr>
+<td><code>interval</code></td>
+<td>检测间隔（秒）</td>
+</tr>
+<tr>
+<td><code>weight</code></td>
+<td>失败时降低多少优先级</td>
+</tr>
+<tr>
+<td><code>fall</code></td>
+<td>连续失败N次才认定为真失败</td>
+</tr>
+<tr>
+<td><code>rise</code></td>
+<td>连续成功N次才认定为成功</td>
+</tr>
+</tbody></table>
+<p><strong>核心逻辑</strong>：脚本监控服务 → 失败时降优先级 → 优先级低的自动变BACKUP → 高优先级的变MASTER（故障转移）</p>
+<p><strong>主服务器，设置VIP 192.168.118.100</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">global_defs &#123;   全局配置            </span><br><span class="line">   <span class="selector-id">#router_id</span> Nginx_01</span><br><span class="line">   script_user root		# 检测脚本运行的用户</span><br><span class="line">   enable_script_security</span><br><span class="line">&#125;</span><br><span class="line">vrrp_script check_nginx &#123;	#脚本检测</span><br><span class="line">	script &quot;/etc/keepalived/check_nginx<span class="selector-class">.sh</span>&quot;	#检测本机nginx进程是否开启</span><br><span class="line">	interval <span class="number">2</span>	#检测间隔<span class="number">2</span>秒</span><br><span class="line">    <span class="selector-id">#weight</span> -<span class="number">5</span>	</span><br><span class="line">    fall <span class="number">3</span>	# 检测<span class="number">3</span>次失败将实例定义为故障，移除vip</span><br><span class="line">    rise <span class="number">2</span>	# 检测<span class="number">2</span>次成功后将状态改为正常（设置不抢占后不会抢占vip）</span><br><span class="line">&#125;</span><br><span class="line">vrrp_instance NGINX &#123;	</span><br><span class="line">    state MASTER	#主节点为MASTER，备节点BACKUP </span><br><span class="line">    interface ens33	#需要绑定的网卡,通常该主机的通信网卡</span><br><span class="line">    virtual_router_id <span class="number">51</span>	#同一个网络不能和其它vip重复，同一组vip必须相同，可自定义数值</span><br><span class="line">    priority <span class="number">90</span>	#数值越大优先级越高</span><br><span class="line">    advert_int <span class="number">1</span></span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS	#通过密码授权</span><br><span class="line">        auth_pass <span class="number">1111</span></span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;	#设置虚拟IP</span><br><span class="line">     <span class="number">192.168</span>.<span class="number">118.100</span></span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;	#调用检测规则</span><br><span class="line">    	check_nginx</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>备用nginx服务器配置</strong></p>
+<p>配置通主服务器一样，就三点不同，一点必须相同</p>
+<ol>
+<li><code>router_id</code> 不同</li>
+<li><code>state BACKUP</code>不同 </li>
+<li><code>priority</code>不同</li>
+<li>⭐<code>virtual_router_id</code> 必相同。</li>
+</ol>
+<p>配置如下：</p>
+<p>修改了角色BACKUP和优先级85低于主服务器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">global_defs &#123;   全局配置            </span><br><span class="line">   <span class="comment">#router_id Nginx_01</span></span><br><span class="line">   script_user root		<span class="comment"># 检测脚本运行的用户</span></span><br><span class="line">   enable_script_security</span><br><span class="line">&#125;</span><br><span class="line">vrrp_script check_nginx &#123;	<span class="comment">#脚本检测</span></span><br><span class="line">	script <span class="string">&quot;/etc/keepalived/check_nginx.sh&quot;</span>	<span class="comment">#检测本机nginx进程是否开启</span></span><br><span class="line">	interval 2	<span class="comment">#检测间隔2秒</span></span><br><span class="line">    <span class="comment">#weight -5	</span></span><br><span class="line">    fall 3	<span class="comment"># 检测3次失败将实例定义为故障，移除vip</span></span><br><span class="line">    rise 2	<span class="comment"># 检测2次成功后将状态改为正常（设置不抢占后不会抢占vip）</span></span><br><span class="line">&#125;</span><br><span class="line">vrrp_instance NGINX &#123;	</span><br><span class="line">    state BACKUP	<span class="comment">#主节点为MASTER，备节点BACKUP </span></span><br><span class="line">    interface ens33	<span class="comment">#需要绑定的网卡,通常该主机的通信网卡</span></span><br><span class="line">    virtual_router_id 51	<span class="comment">#同一个网络不能和其它vip重复，同一组vip必须相同，可自定义数值</span></span><br><span class="line">    priority 85	<span class="comment">#数值越大优先级越高</span></span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS	<span class="comment">#通过密码授权</span></span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;	<span class="comment">#设置虚拟IP</span></span><br><span class="line">     192.168.118.100</span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;	<span class="comment">#调用检测规则</span></span><br><span class="line">    	check_nginx</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>编辑检测脚本</strong></p>
+<p>检测本机nginx进程是否开启，如果检测不到存活，进行抢救，抢救失败则漂移</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment">#判断 Nginx 是否存活</span></span><br><span class="line">countng=`ps -C nginx --no-header | <span class="built_in">wc</span> -l`</span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$countng</span> -eq 0 ]; <span class="keyword">then</span></span><br><span class="line"><span class="comment">#如果不存活则尝试启动 Nginx 模拟故障</span></span><br><span class="line"><span class="comment"># /data/nginx/sbin/nginx -c  /data/nginx/conf/nginx.conf</span></span><br><span class="line"><span class="built_in">sleep</span> 3</span><br><span class="line"><span class="comment">#等待 3 秒后再次获取一次 Nginx 状态</span></span><br><span class="line">counter=`ps -C nginx --no-header | <span class="built_in">wc</span> -l`</span><br><span class="line"><span class="comment">#再次进行判断，如 Nginx 还不存活则停止 Keepalived，让地址进行漂移</span></span><br><span class="line">    <span class="keyword">if</span> [ <span class="variable">$counter</span> -eq 0 ]; <span class="keyword">then</span></span><br><span class="line">    systemctl stop keepalived  <span class="comment">#停用keepalived服务</span></span><br><span class="line">    <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line">[root@nginx-server script]# <span class="built_in">chmod</span> +x check_nginx.sh</span><br></pre></td></tr></table></figure>
+
+<p><strong>配置nginx</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">upstream backend &#123;</span><br><span class="line">    server <span class="number">192.168</span>.<span class="number">118.90</span>:<span class="number">80</span>;</span><br><span class="line">    server <span class="number">192.168</span>.<span class="number">118.93</span>:<span class="number">80</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">        listen       <span class="number">80</span>;</span><br><span class="line">        server_name  <span class="number">192.168</span>.<span class="number">118.100</span>;</span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass   http://backend;</span><br><span class="line">            index  index<span class="selector-class">.html</span> index<span class="selector-class">.htm</span>;</span><br><span class="line">        &#125;     </span><br><span class="line">    &#125;        </span><br></pre></td></tr></table></figure>
+
+<p>启动服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start nginx keepalived</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251112135510495.png" alt="image-20251112135510495"></p>
+<p>注：两个只能有一个网卡中有VIP显示</p>
+<p>模拟故障</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 关闭nginx-master的nginx 服务，等待keepalived 进行故障切换、vip飘逸</span></span><br><span class="line">systemctl stop nginx </span><br><span class="line">ip a <span class="comment">#查看到vip消失了</span></span><br><span class="line">    </span><br><span class="line"><span class="comment">#在另一个节点查看ip a</span></span><br><span class="line">ip a <span class="comment">#发现vip出现了</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#重新curl 发现可以正常访问</span></span><br></pre></td></tr></table></figure>
+
+<p>主</p>
+<p><img src="/./imgs/image-20251112141538539.png" alt="image-20251112141538539"></p>
+<p>备</p>
+<p><img src="/./imgs/image-20251112141604973.png" alt="image-20251112141604973"></p>
+<p>服务照常访问</p>
+<p><img src="/./imgs/image-20251112141626604.png" alt="image-20251112141626604"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><h2 id="一、Keepalived-是什么？"><a href="#一、Keepalived-是什么？" class="headerlink" title="一、Keepalived 是什么？"></a>一、Keepalived 是什么？</h2><p>Keepalived 是基于 VRRP 协议的高可用解决方案，通过<strong>虚拟IP漂移</strong>实现服务故障自动转移。</p>
+<h2 id="二、核心工作原理"><a href="#二、核心工作原理" class="headerlink" title="二、核心工作原理"></a>二、核心工作原理</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Master 节点（优先级高）持有 VIP → 定期发送心跳</span><br><span class="line">                ↓</span><br><span class="line">Backup 节点（优先级低）监听心跳</span><br><span class="line">                ↓</span><br><span class="line">Master 故障 → 优先级自动降低 → VIP 漂移到 Backup</span><br><span class="line">                ↓</span><br><span class="line">服务继续可用（对客户端透明）</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、三大配置模块"><a href="#三、三大配置模块" class="headerlink" title="三、三大配置模块"></a>三、三大配置模块</h2><h3 id="1-global-defs（全局定义）"><a href="#1-global-defs（全局定义）" class="headerlink" title="1. global_defs（全局定义）"></a>1. global_defs（全局定义）</h3><ul>
+<li><code>notification_email</code>：故障告警邮箱</li>
+<li><code>router_id</code>：机器标识</li>
+<li><code>script_user</code>：脚本运行用户</li>
+</ul>
+<h3 id="2-vrrp-instance（VRRP-实例）"><a href="#2-vrrp-instance（VRRP-实例）" class="headerlink" title="2. vrrp_instance（VRRP 实例）"></a>2. vrrp_instance（VRRP 实例）</h3><ul>
+<li><code>state</code>：初始状态（MASTER&#x2F;BACKUP）</li>
+<li><code>interface</code>：绑定网卡</li>
+<li><code>virtual_router_id</code>：<strong>组ID（主备必须相同）</strong></li>
+<li><code>priority</code>：优先级（主高于备）</li>
+<li><code>virtual_ipaddress</code>：虚拟IP（VIP）</li>
+<li><code>authentication</code>：认证密码（主备必须相同）</li>
+<li><code>track_script</code>：引用检测脚本</li>
+</ul>
+<h3 id="3-vrrp-script（检测脚本）"><a href="#3-vrrp-script（检测脚本）" class="headerlink" title="3. vrrp_script（检测脚本）"></a>3. vrrp_script（检测脚本）</h3><ul>
+<li><code>script</code>：检测命令或脚本</li>
+<li><code>interval</code>：检测间隔（秒）</li>
+<li><code>fall</code>：连续失败N次认定故障</li>
+<li><code>rise</code>：连续成功N次恢复正常</li>
+<li><code>weight</code>：失败时优先级降幅</li>
+</ul>
+<h2 id="四、主备配置差异"><a href="#四、主备配置差异" class="headerlink" title="四、主备配置差异"></a>四、主备配置差异</h2><table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>主节点</th>
+<th>备节点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>state</td>
+<td>MASTER</td>
+<td>BACKUP</td>
+</tr>
+<tr>
+<td>priority</td>
+<td>90</td>
+<td>85</td>
+</tr>
+<tr>
+<td>router_id</td>
+<td>不同</td>
+<td>不同</td>
+</tr>
+<tr>
+<td>virtual_router_id</td>
+<td><strong>相同</strong></td>
+<td><strong>相同</strong></td>
+</tr>
+<tr>
+<td>authentication</td>
+<td>相同</td>
+<td>相同</td>
+</tr>
+<tr>
+<td>virtual_ipaddress</td>
+<td>相同</td>
+<td>相同</td>
+</tr>
+</tbody></table>
+<h2 id="五、故障转移流程"><a href="#五、故障转移流程" class="headerlink" title="五、故障转移流程"></a>五、故障转移流程</h2><ol>
+<li><strong>正常状态</strong>：Master 持有 VIP，每秒发送心跳包</li>
+<li><strong>检测失败</strong>：脚本连续失败 N 次（fall 次数）</li>
+<li><strong>优先级下降</strong>：Master 的 priority 值被降低</li>
+<li><strong>VIP 漂移</strong>：Backup 优先级更高，接管 VIP</li>
+<li><strong>恢复正常</strong>：脚本连续成功 N 次（rise 次数），Master 状态恢复</li>
+</ol>
+<h2 id="六、关键检测脚本逻辑"><a href="#六、关键检测脚本逻辑" class="headerlink" title="六、关键检测脚本逻辑"></a>六、关键检测脚本逻辑</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">检查服务存活 → 不存活则尝试启动 → 等待 3 秒</span><br><span class="line">    ↓</span><br><span class="line">再次检查 → 仍不存活 → 停止 keepalived</span><br><span class="line">    ↓</span><br><span class="line">keepalived 停止 → VIP 自动漂移到 Backup</span><br></pre></td></tr></table></figure>
+
+<h2 id="七、实战要点"><a href="#七、实战要点" class="headerlink" title="七、实战要点"></a>七、实战要点</h2><p>✅ <strong>必做项</strong></p>
+<ul>
+<li>关闭防火墙或放行 VRRP 多播（224.0.0.18）</li>
+<li>检测脚本必须可执行（chmod +x）</li>
+<li>vrrp_instance 中必须有 track_script</li>
+<li>主备 virtual_router_id 必须相同</li>
+</ul>
+<p>⚠️ <strong>常见坑</strong></p>
+<ul>
+<li>网卡名称不一致（ens33 vs eth0）</li>
+<li>密码配置不一致导致主备无法通信</li>
+<li>检测脚本逻辑错误无法正确判断故障</li>
+<li>优先级差距过小，容易频繁切换</li>
+</ul>
+<h2 id="八、测试验证"><a href="#八、测试验证" class="headerlink" title="八、测试验证"></a>八、测试验证</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 查看 VIP 位置</span></span><br><span class="line">ip a | grep 192.168.118.100</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 停止 Master 的 nginx</span></span><br><span class="line">systemctl stop nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 观察 VIP 漂移</span></span><br><span class="line">ip a | grep 192.168.118.100  <span class="comment"># Master 失去 VIP</span></span><br><span class="line"><span class="comment"># 在 Backup 上查看 VIP 已获得</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 客户端继续访问（通过 VIP）</span></span><br><span class="line">curl http://192.168.118.100</span><br></pre></td></tr></table></figure>
+
+<h2 id="九、Keepalived-Nginx-架构价值"><a href="#九、Keepalived-Nginx-架构价值" class="headerlink" title="九、Keepalived + Nginx 架构价值"></a>九、Keepalived + Nginx 架构价值</h2><ul>
+<li><strong>双层高可用</strong>：Keepalived 保证入口（VIP），Nginx 保证应用</li>
+<li><strong>透明转移</strong>：客户端无感知切换</li>
+<li><strong>业务连续性</strong>：RTO 接近 0（秒级转移）</li>
+<li><strong>成本低</strong>：开源方案，无额外硬件投入</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/11/11/Keepalived/">http://example.com/2025/11/11/Keepalived/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/11/11/NFS%E6%A6%82%E5%BF%B5%E5%8F%8A%E9%85%8D%E7%BD%AE/" title="NFS概念及配置"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">NFS概念及配置</div></div><div class="info-2"><div class="info-item-1">NFS概念及配置NFS与NAS基础什么是NFS（Network File System）？NFS是一个网络文件系统协议，允许不同计算机之间通过网络共享文件系统，就像访问本地磁盘一样访问远程存储。NFS基于客户端-服务器架构，运行在应用层和传输层之间。  ⭐NFS的作用：  给其他服务器分担存储压力 服务器的利旧使用  NFS的关键特点：  透明性：客户端可以像访问本地文件一样访问远程文件，应用程序无需修改 网络性：基于网络协议实现，支持跨网络共享 无状态性：NFS服务器不维护客户端的连接状态，故障恢复简单 性能：相比其他网络文件系统，NFS性能较好，适合LAN环境  NFS版本演进：  NFSv3：支持大文件（&gt;2GB），异步写入，广泛应用 NFSv4：支持强认证、加密、状态管理，更安全，当前主流版本  什么是NAS（Network Attached Storage）？NAS是一个存储设备，通过网络为多个用户和应用程序提供文件级数据访问。NAS实际上是安装了操作系统和存储软件的专用计算机，支持多种文件共享协议（NFS、SMB&#x2F;CIFS等）。 NFS与NAS区别： ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Keepalived"><span class="toc-number">1.</span> <span class="toc-text">Keepalived</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Keepalived%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">Keepalived是什么？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Keepalived%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD"><span class="toc-number">1.1.1.</span> <span class="toc-text">Keepalived的核心功能</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-VRRP%E8%99%9A%E6%8B%9F%E8%B7%AF%E7%94%B1%E5%99%A8%E5%8A%9F%E8%83%BD"><span class="toc-number">1.1.1.1.</span> <span class="toc-text">1. VRRP虚拟路由器功能</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E6%95%85%E9%9A%9C%E6%A3%80%E6%B5%8B%E4%B8%8E%E8%87%AA%E5%8A%A8%E8%BD%AC%E7%A7%BB"><span class="toc-number">1.1.1.2.</span> <span class="toc-text">2. 故障检测与自动转移</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E6%8A%A2%E5%8D%A0%E5%BC%8F%E4%B8%8E%E9%9D%9E%E6%8A%A2%E5%8D%A0%E5%BC%8F"><span class="toc-number">1.1.1.3.</span> <span class="toc-text">3. 抢占式与非抢占式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E5%A4%9A%E6%92%AD%E4%B8%8E%E5%8D%95%E6%92%AD%E9%80%9A%E4%BF%A1"><span class="toc-number">1.1.1.4.</span> <span class="toc-text">4. 多播与单播通信</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Nginx-Keepalived%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">Nginx+Keepalived配置流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%B5%81%E7%A8%8B"><span class="toc-number">1.2.1.</span> <span class="toc-text">配置流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE"><span class="toc-number">1.2.2.</span> <span class="toc-text">核心参数配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">2.</span> <span class="toc-text">总结</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Keepalived-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">2.1.</span> <span class="toc-text">一、Keepalived 是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%A0%B8%E5%BF%83%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">2.2.</span> <span class="toc-text">二、核心工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%B8%89%E5%A4%A7%E9%85%8D%E7%BD%AE%E6%A8%A1%E5%9D%97"><span class="toc-number">2.3.</span> <span class="toc-text">三、三大配置模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-global-defs%EF%BC%88%E5%85%A8%E5%B1%80%E5%AE%9A%E4%B9%89%EF%BC%89"><span class="toc-number">2.3.1.</span> <span class="toc-text">1. global_defs（全局定义）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-vrrp-instance%EF%BC%88VRRP-%E5%AE%9E%E4%BE%8B%EF%BC%89"><span class="toc-number">2.3.2.</span> <span class="toc-text">2. vrrp_instance（VRRP 实例）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-vrrp-script%EF%BC%88%E6%A3%80%E6%B5%8B%E8%84%9A%E6%9C%AC%EF%BC%89"><span class="toc-number">2.3.3.</span> <span class="toc-text">3. vrrp_script（检测脚本）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E4%B8%BB%E5%A4%87%E9%85%8D%E7%BD%AE%E5%B7%AE%E5%BC%82"><span class="toc-number">2.4.</span> <span class="toc-text">四、主备配置差异</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB%E6%B5%81%E7%A8%8B"><span class="toc-number">2.5.</span> <span class="toc-text">五、故障转移流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%85%B3%E9%94%AE%E6%A3%80%E6%B5%8B%E8%84%9A%E6%9C%AC%E9%80%BB%E8%BE%91"><span class="toc-number">2.6.</span> <span class="toc-text">六、关键检测脚本逻辑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%AE%9E%E6%88%98%E8%A6%81%E7%82%B9"><span class="toc-number">2.7.</span> <span class="toc-text">七、实战要点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%B5%8B%E8%AF%95%E9%AA%8C%E8%AF%81"><span class="toc-number">2.8.</span> <span class="toc-text">八、测试验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81Keepalived-Nginx-%E6%9E%B6%E6%9E%84%E4%BB%B7%E5%80%BC"><span class="toc-number">2.9.</span> <span class="toc-text">九、Keepalived + Nginx 架构价值</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/11/Keepalived/" title="Keepalived">Keepalived</a><time datetime="2025-11-11T03:14:12.000Z" title="Created 2025-11-11 11:14:12">2025-11-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/11/NFS%E6%A6%82%E5%BF%B5%E5%8F%8A%E9%85%8D%E7%BD%AE/" title="NFS概念及配置">NFS概念及配置</a><time datetime="2025-11-11T03:13:21.000Z" title="Created 2025-11-11 11:13:21">2025-11-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/08/LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4/" title="LVS负载均衡集群">LVS负载均衡集群</a><time datetime="2025-11-08T11:56:26.000Z" title="Created 2025-11-08 19:56:26">2025-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/07/Kubernetes/" title="Kubernetes">Kubernetes</a><time datetime="2025-11-07T06:03:15.000Z" title="Created 2025-11-07 14:03:15">2025-11-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/03/web%E6%9C%8D%E5%8A%A1%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="Web服务相关知识">Web服务相关知识</a><time datetime="2025-11-03T10:17:19.000Z" title="Created 2025-11-03 18:17:19">2025-11-03</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
