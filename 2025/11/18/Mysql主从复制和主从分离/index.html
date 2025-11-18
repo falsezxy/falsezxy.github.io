@@ -1,0 +1,374 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Mysql主从复制和读写分离 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Mysql主从复制和读写分离一、Mysql主从复制概念概念：什么是主从复制？ MySQL主从复制是一种数据同步技术，通过将主数据库（Master）的所有数据变更操作（包括INSERT、UPDATE、DELETE等）记录在二进制日志中，然后从数据库（Slave）通过读取并执行这些日志来保持与主库的数据一致。 为什么要做主从复制？  数据备份与容灾：在从库上维护数据的完整副本，防止主库故障导致数据丢失">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql主从复制和读写分离">
+<meta property="og:url" content="http://example.com/2025/11/18/Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E4%B8%BB%E4%BB%8E%E5%88%86%E7%A6%BB/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="Mysql主从复制和读写分离一、Mysql主从复制概念概念：什么是主从复制？ MySQL主从复制是一种数据同步技术，通过将主数据库（Master）的所有数据变更操作（包括INSERT、UPDATE、DELETE等）记录在二进制日志中，然后从数据库（Slave）通过读取并执行这些日志来保持与主库的数据一致。 为什么要做主从复制？  数据备份与容灾：在从库上维护数据的完整副本，防止主库故障导致数据丢失">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-11-18T00:54:40.000Z">
+<meta property="article:modified_time" content="2025-11-18T05:00:57.109Z">
+<meta property="article:author" content="Felix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Mysql主从复制和读写分离",
+  "url": "http://example.com/2025/11/18/Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E4%B8%BB%E4%BB%8E%E5%88%86%E7%A6%BB/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-11-18T00:54:40.000Z",
+  "dateModified": "2025-11-18T05:00:57.109Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/11/18/Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E4%B8%BB%E4%BB%8E%E5%88%86%E7%A6%BB/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Mysql主从复制和读写分离',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Mysql主从复制和读写分离</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Mysql主从复制和读写分离</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-18T00:54:40.000Z" title="Created 2025-11-18 08:54:40">2025-11-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-18T05:00:57.109Z" title="Updated 2025-11-18 13:00:57">2025-11-18</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Mysql主从复制和读写分离"><a href="#Mysql主从复制和读写分离" class="headerlink" title="Mysql主从复制和读写分离"></a>Mysql主从复制和读写分离</h1><h2 id="一、Mysql主从复制"><a href="#一、Mysql主从复制" class="headerlink" title="一、Mysql主从复制"></a>一、Mysql主从复制</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p><strong>概念：什么是主从复制？</strong></p>
+<p>MySQL主从复制是一种数据同步技术，通过将主数据库（Master）的所有数据变更操作（包括INSERT、UPDATE、DELETE等）记录在二进制日志中，然后从数据库（Slave）通过读取并执行这些日志来保持与主库的数据一致。</p>
+<p><strong>为什么要做主从复制？</strong></p>
+<ol>
+<li><strong>数据备份与容灾</strong>：在从库上维护数据的完整副本，防止主库故障导致数据丢失</li>
+<li><strong>提高可用性</strong>：主库发生故障时，可以快速切换到从库继续提供服务</li>
+<li><strong>业务连续性</strong>：确保关键业务数据的连续性和可靠性</li>
+<li><strong>为读写分离奠定基础</strong>：是实现读写分离的前提条件</li>
+</ol>
+<p><strong>主从复制的优点</strong></p>
+<ul>
+<li><strong>数据安全性高</strong>：数据在多个节点上保存，降低数据丢失风险</li>
+<li><strong>自动化同步</strong>：无需手动干预，系统自动保持数据一致</li>
+<li><strong>支持异步复制</strong>：主库无需等待从库确认，性能损耗小</li>
+<li><strong>灵活扩展</strong>：可以添加多个从库满足不同需求</li>
+<li><strong>便于维护</strong>：可以在从库上进行备份、查询等维护操作，不影响主库</li>
+</ul>
+<p><strong>主从复制的工作原理</strong></p>
+<ol>
+<li><strong>主库端</strong>：任何修改数据的操作都被记录到二进制日志（Binary Log）</li>
+<li><strong>传输阶段</strong>：从库的IO线程连接到主库，请求并获取新的二进制日志</li>
+<li><strong>中继日志</strong>：从库将获取的日志存储在中继日志（Relay Log）中</li>
+<li><strong>执行阶段</strong>：从库的SQL线程读取中继日志，执行其中的SQL语句</li>
+<li><strong>数据同步</strong>：最终从库的数据与主库保持一致</li>
+</ol>
+<p>原理图：两个日志三个线程</p>
+<p><img src="/./imgs/image-20251118125824966.png" alt="image-20251118125824966"></p>
+<p><img src="/./imgs/3d8c25273ce94491abcdbeef5d14174c.webp" alt="img"></p>
+<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><p>服务器规划（单节点中心化集群）：</p>
+<p>master:192.168.118.91</p>
+<p>backup1:192.168.118.92</p>
+<p>backup2:192.168.118.93</p>
+<h3 id="时钟同步"><a href="#时钟同步" class="headerlink" title="时钟同步"></a>时钟同步</h3><p>安装ntp，同步阿里云时间(主从服务器都进行同步)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install -y ntpdate ntp</span><br><span class="line">ntpdate ntp1.aliyun.com</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251116221605387.png" alt="image-20251116221605387"></p>
+<h3 id="配置主从同步"><a href="#配置主从同步" class="headerlink" title="配置主从同步"></a>配置主从同步</h3><h4 id="master主服务器配置"><a href="#master主服务器配置" class="headerlink" title="master主服务器配置"></a>master主服务器配置</h4><h5 id="修改master数据库配置"><a href="#修改master数据库配置" class="headerlink" title="修改master数据库配置"></a>修改master数据库配置</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改数据库配置</span></span><br><span class="line">vim /etc/my.cnf</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在my.cnf中添加:</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">在mysqld模块下修改一下内容</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">开启二进制日志文件（之后生成的日志名为master-bin）</span></span><br><span class="line">log_bin=master-bin     </span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">开启从服务器日志同步</span></span><br><span class="line">log_slave-updates=true</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">主服务器<span class="built_in">id</span>为1（不可重复）</span></span><br><span class="line">server_id = 1</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重启服务</span></span><br><span class="line">systemctl restart mysqld</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251116222630562.png" alt="image-20251116222630562"></p>
+<h5 id="授权从服务器同步"><a href="#授权从服务器同步" class="headerlink" title="授权从服务器同步"></a>授权从服务器同步</h5><p>进入mysql进行grant给从服务器提供权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 给从服务器提权，允许使用slave的身份复制master的所有数据库的所有表，并指定密码为123456</span><br><span class="line">GRANT REPLICATION SLAVE ON *.* TO &#x27;slave&#x27;@&#x27;192.168.118.%&#x27; IDENTIFIED BY &#x27;123456&#x27;;</span><br><span class="line"># 查看master数据库状态</span><br><span class="line">show master status;</span><br><span class="line">#以上可见产生了master-bin.000001日志文件，定位450</span><br><span class="line">#从服务器需要定位到此处进行复制</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251116225543822.png" alt="image-20251116225543822"></p>
+<h4 id="slave从服务器配置"><a href="#slave从服务器配置" class="headerlink" title="slave从服务器配置"></a>slave从服务器配置</h4><h5 id="修改从服务器配置文件"><a href="#修改从服务器配置文件" class="headerlink" title="修改从服务器配置文件"></a>修改从服务器配置文件</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/my.cnf</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">开启二进制日志文件</span></span><br><span class="line">log-bin=master-bin</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">设置server <span class="built_in">id</span>为22，slave2 为23</span></span><br><span class="line">server_id = 22</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">从主服务器上同步日志文件记录到本地,中继日志</span></span><br><span class="line">relay-log=relay-log-bin</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">定义relay-log的位置和名称（index索引）</span> </span><br><span class="line">relay-log-index=slave-relay-bin.index</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重启服务</span></span><br><span class="line">systemctl restart mysqld</span><br></pre></td></tr></table></figure>
+
+<p>从1</p>
+<p><img src="/./imgs/image-20251116230113002.png" alt="image-20251116230113002"></p>
+<p>从2</p>
+<p><img src="/./imgs/image-20251116232943281.png" alt="image-20251116232943281"></p>
+<h5 id="开启从服务器同步功能"><a href="#开启从服务器同步功能" class="headerlink" title="开启从服务器同步功能"></a>开启从服务器同步功能</h5><p>在从服务器中设置主服务器配置，确认指向后开启功能</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 设置主服务器配置</span><br><span class="line">change master to master_host=&#x27;192.168.118.91&#x27;,master_user=&#x27;slave&#x27;,master_password=&#x27;123456&#x27;,master_log_file=&#x27;master-bin.000001&#x27;,master_log_pos=450;</span><br><span class="line"></span><br><span class="line"># 开启服务</span><br><span class="line">start slave</span><br><span class="line"></span><br><span class="line">#查看从服务器状态</span><br><span class="line">show slave status\G;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251116231204019.png" alt="image-20251116231204019"></p>
+<p>状况1：UUID重复导致IO线程无法连接</p>
+<p><img src="/./imgs/image-20251116231229146.png" alt="image-20251116231229146"></p>
+<p><strong>现象</strong>：<code>show slave status</code> 中IO线程显示未运行 </p>
+<p><strong>原因</strong>：克隆虚拟机时MySQL的UUID相同 </p>
+<p><strong>解决方案</strong>：删除 <code>/var/lib/mysql/auto.cnf</code> 中的UUID后重启MySQL</p>
+<p><img src="/./imgs/image-20251116231821079.png" alt="image-20251116231821079"></p>
+<p>状况2：权限错误（1130错误）</p>
+<p><img src="/./imgs/image-20251118100103911.png" alt="image-20251118100103911"></p>
+<p><strong>现象</strong>：从库IO线程一直处于connecting状态，报1130错误 </p>
+<p><strong>原因</strong>：从库没有访问主库的权限 </p>
+<p>问题1130报错，没有权限，查看配置文件发现恢复快照后配置文件被重置</p>
+<p><img src="/./imgs/image-20251118100547966.png" alt="image-20251118100547966"></p>
+<p><strong>解决方案</strong>：</p>
+<ul>
+<li>在主库重新执行授权命令</li>
+<li>重新配置从库的CHANGE MASTER指令</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GRANT REPLICATION SLAVE ON *.* TO &#x27;slave&#x27;@&#x27;192.168.118.%&#x27; IDENTIFIED BY &#x27;123456&#x27;;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></table></figure>
+
+<p>重新设置从服务器的指向即解决问题。</p>
+<h3 id="测试主从复制"><a href="#测试主从复制" class="headerlink" title="测试主从复制"></a>测试主从复制</h3><p>在主服务器创建新数据库和表，并插入数据</p>
+<p><img src="/./imgs/image-20251116232600171.png" alt="image-20251116232600171"></p>
+<p>查看从服务器，可以看到从服务器均同步</p>
+<p><img src="/./imgs/image-20251116232735154.png" alt="image-20251116232735154"></p>
+<h2 id="二、Mysql读写分离"><a href="#二、Mysql读写分离" class="headerlink" title="二、Mysql读写分离"></a>二、Mysql读写分离</h2><h3 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a>概念</h3><p><strong>什么是读写分离？</strong></p>
+<p>读写分离是在主从复制的基础上，通过中间件（代理层）将数据库操作进行路由：写操作（INSERT、UPDATE、DELETE）被转发到主数据库，读操作（SELECT）被转发到从数据库。</p>
+<p><strong>为什么要做读写分离？</strong></p>
+<ol>
+<li><strong>解决性能瓶颈</strong>：大多数互联网应用读操作量远大于写操作，主库容易成为性能瓶颈</li>
+<li><strong>提高并发能力</strong>：通过多个从库分担读请求，大幅提升系统的并发处理能力</li>
+<li><strong>充分利用资源</strong>：充分发挥多台服务器的处理能力</li>
+<li><strong>降低单点压力</strong>：将写压力集中在主库，读压力分散到多个从库</li>
+</ol>
+<p><strong>读写分离的优点</strong></p>
+<ul>
+<li><strong>性能提升显著</strong>：主库专注写操作，从库专注读操作，各尽其能</li>
+<li><strong>高并发支持</strong>：可以水平扩展从库数量来支持更高的并发读请求</li>
+<li><strong>成本效益高</strong>：通过廉价服务器组建集群，相比升级硬件更经济</li>
+<li><strong>系统可用性强</strong>：单个从库故障不影响整体，主库发生故障仍可读取缓存或从库</li>
+<li><strong>便于维护升级</strong>：可以在从库上做维护工作，不影响业务运行</li>
+</ul>
+<p><strong>读写分离的实现方式</strong></p>
+<p>使用Amoeba作为中间件（MySQL代理），其工作流程：</p>
+<ol>
+<li><strong>客户端连接</strong>：应用程序连接到Amoeba代理而不是直接连接MySQL</li>
+<li><strong>操作类型识别</strong>：Amoeba识别SQL语句类型</li>
+<li><strong>智能路由</strong>：写操作→主库；读操作→从库（可配置负载均衡）</li>
+<li><strong>结果返回</strong>：将执行结果透明地返回给客户端</li>
+<li><strong>连接管理</strong>：Amoeba管理与各数据库的连接池</li>
+</ol>
+<p><strong>读写分离的注意事项</strong></p>
+<ul>
+<li><strong>数据一致性问题</strong>：写操作完成后立即读可能读到旧数据（主从延迟），需要应用层处理</li>
+<li><strong>主从延迟</strong>：从库的复制存在一定延迟，不能保证强一致性</li>
+<li><strong>复杂SQL适配</strong>：某些特殊SQL可能需要特殊处理，不能简单地分离</li>
+<li><strong>事务处理</strong>：事务中的操作应该都路由到主库，保证强一致性</li>
+</ul>
+<p>原理图：</p>
+<p><img src="/./imgs/16e4245ffd9ccadcf2abb20ae3225561.png" alt="在这里插入图片描述"></p>
+<p><img src="/./imgs/image-20251118125545760.png" alt="image-20251118125545760"></p>
+<h3 id="环境准备-1"><a href="#环境准备-1" class="headerlink" title="环境准备"></a>环境准备</h3><ul>
+<li><p>环境部署 cetos7.6</p>
+</li>
+<li><p>虚拟机服务环境<br>Master服务器:192.168.118.91<br>slave1服务器:192.168.118.92<br>Slave2服务器:192.168.118.93<br>Amoeba服务器:192.168.118.95     jdk1.6、Amoeba     </p>
+</li>
+<li><p>mysql 测试</p>
+<p>客户端:192.168.118.100 maridb</p>
+</li>
+</ul>
+<p>注：做读写分离实验之前必须有一 主 两从 环境</p>
+<h3 id="安装Java环境"><a href="#安装Java环境" class="headerlink" title="安装Java环境"></a>安装Java环境</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##安装 Java 环境##</span></span><br><span class="line">因为 Amoeba 基于是 jdk1.5 开发的，所以官方推荐使用 jdk1.5 或 1.6 版本，高版本不建议使用。</span><br><span class="line"><span class="built_in">cd</span> /opt/</span><br><span class="line"><span class="built_in">cp</span> jdk-6u14-linux-x64.bin /usr/local/</span><br><span class="line"><span class="built_in">cd</span> /usr/local/</span><br><span class="line"><span class="built_in">chmod</span> +x jdk-6u14-linux-x64.bin</span><br><span class="line">./jdk-6u14-linux-x64.bin</span><br><span class="line">//按<span class="built_in">yes</span>，按enter</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251118122307319.png" alt="image-20251118122307319"></p>
+<p>配置java环境变量&#x2F;etc&#x2F;profile</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/profile</span><br><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/local/jdk1.6</span><br><span class="line"><span class="built_in">export</span> CLASSPATH=<span class="variable">$CLASSPATH</span>:<span class="variable">$JAVA_HOME</span>/lib:<span class="variable">$JAVA_HOME</span>/jre/lib</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$JAVA_HOME</span>/lib:<span class="variable">$JAVA_HOME</span>/jre/bin/:<span class="variable">$PATH</span>:<span class="variable">$HOME</span>/bin</span><br><span class="line"><span class="built_in">export</span> AMOEBA_HOME=/usr/local/amoeba</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$AMOEBA_HOME</span>/bin</span><br><span class="line"></span><br><span class="line"><span class="built_in">source</span> /etc/profile</span><br><span class="line">java -version</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251118122351757.png" alt="image-20251118122351757"></p>
+<p><img src="/./imgs/image-20251118122358194.png" alt="image-20251118122358194"></p>
+<h3 id="Amoeba服务器配置"><a href="#Amoeba服务器配置" class="headerlink" title="Amoeba服务器配置"></a>Amoeba服务器配置</h3><h4 id="安装ameoba"><a href="#安装ameoba" class="headerlink" title="安装ameoba"></a>安装ameoba</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">##安装 Amoeba软件##</span><br><span class="line">mkdir /usr/local/amoeba</span><br><span class="line">tar zxvf amoeba-mysql-binary-2.2.0.tar.gz -C /usr/local/amoeba/</span><br><span class="line">chmod -R 755 /usr/local/amoeba/</span><br><span class="line">/usr/local/amoeba/bin/amoeba</span><br><span class="line">//如显示amoeba start|stop说明安装成功</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251118122454488.png" alt="image-20251118122454488"></p>
+<p>解压并运行</p>
+<p><img src="/./imgs/image-20251118122515139.png" alt="image-20251118122515139"></p>
+<h4 id="设置amoeba配置文件"><a href="#设置amoeba配置文件" class="headerlink" title="设置amoeba配置文件"></a>设置amoeba配置文件</h4><p>在数据库中开启权限</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#先在Master、Slave1、Slave2 的mysql上开放权限给 Amoeba 访问</span></span><br><span class="line">grant all on *.* to <span class="built_in">test</span>@<span class="string">&#x27;192.168.118.%&#x27;</span> identified by <span class="string">&#x27;123456&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251118122806844.png" alt="image-20251118122806844"></p>
+<p>设置读写分离-配置amoeba.xml文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#再回到amoeba服务器配置amoeba服务：</span></span><br><span class="line"><span class="built_in">cd</span> /usr/local/amoeba/conf/</span><br><span class="line"></span><br><span class="line"><span class="built_in">cp</span> amoeba.xml amoeba.xml.bak</span><br><span class="line">vim amoeba.xml						<span class="comment">#修改amoeba配置文件</span></span><br><span class="line">--30行--</span><br><span class="line">&lt;property name=<span class="string">&quot;user&quot;</span>&gt;amoeba&lt;/property&gt;</span><br><span class="line">--32行-- </span><br><span class="line">&lt;property name=<span class="string">&quot;password&quot;</span>&gt;123456&lt;/property&gt;</span><br><span class="line">--115行--</span><br><span class="line">&lt;property name=<span class="string">&quot;defaultPool&quot;</span>&gt;master&lt;/property&gt;</span><br><span class="line">--117-去掉注释-</span><br><span class="line">&lt;property name=<span class="string">&quot;writePool&quot;</span>&gt;master&lt;/property&gt;</span><br><span class="line">&lt;property name=<span class="string">&quot;readPool&quot;</span>&gt;slaves&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251118122826534.png" alt="image-20251118122826534"></p>
+<p>配置数据库配置文件-dbServers.xml</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cp</span> dbServers.xml dbServers.xml.bak</span><br><span class="line">vim dbServers.xml				<span class="comment">#修改数据库配置文件</span></span><br><span class="line">--23行--注释掉  作用：默认进入<span class="built_in">test</span>库 以防mysql中没有<span class="built_in">test</span>库时，会报错</span><br><span class="line">&lt;!-- &lt;property name=<span class="string">&quot;schema&quot;</span>&gt;<span class="built_in">test</span>&lt;/property&gt; --&gt;</span><br><span class="line">--26--修改</span><br><span class="line">&lt;property name=<span class="string">&quot;user&quot;</span>&gt;<span class="built_in">test</span>&lt;/property&gt;</span><br><span class="line">--28-30--去掉注释</span><br><span class="line">&lt;property name=<span class="string">&quot;password&quot;</span>&gt;123456&lt;/property&gt;</span><br><span class="line">--45--修改，设置主服务器的名Master</span><br><span class="line">&lt;dbServer name=<span class="string">&quot;master&quot;</span>  parent=<span class="string">&quot;abstractServer&quot;</span>&gt;</span><br><span class="line">--48--修改，设置主服务器的地址</span><br><span class="line">&lt;property name=<span class="string">&quot;ipAddress&quot;</span>&gt;192.168.118.91&lt;/property&gt;</span><br><span class="line">--52--修改，设置从服务器的名slave1</span><br><span class="line">&lt;dbServer name=<span class="string">&quot;slave1&quot;</span>  parent=<span class="string">&quot;abstractServer&quot;</span>&gt;</span><br><span class="line">--55--修改，设置从服务器1的地址</span><br><span class="line">&lt;property name=<span class="string">&quot;ipAddress&quot;</span>&gt;192.168.118.92&lt;/property&gt;</span><br><span class="line">--58--复制上面6行粘贴，设置从服务器2的名slave2和地址</span><br><span class="line">&lt;dbServer name=<span class="string">&quot;slave2&quot;</span>  parent=<span class="string">&quot;abstractServer&quot;</span>&gt;</span><br><span class="line">&lt;property name=<span class="string">&quot;ipAddress&quot;</span>&gt;192.168.118.93&lt;/property&gt;</span><br><span class="line">--65行--修改</span><br><span class="line">&lt;dbServer name=<span class="string">&quot;slaves&quot;</span> virtual=<span class="string">&quot;true&quot;</span>&gt;</span><br><span class="line">--71行--修改</span><br><span class="line">&lt;property name=<span class="string">&quot;poolNames&quot;</span>&gt;slave1,slave2&lt;/property&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注：故障</strong></p>
+<p>–23行–（<!-- <property name="schema">test</property> -->）注释掉的作用：默认进入test库，以防mysql中没有test库时，会报错</p>
+<p>报错：amoeba连接mysql–ERROR 2006 (HY000): MySQL server has gone away</p>
+<p>解决方案：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/moliyiran/article/details/80275000">https://blog.csdn.net/moliyiran/article/details/80275000</a></p>
+</blockquote>
+<p>开启amoeba服务-8066端口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#启动Amoeba软件，按ctrl+c 返回</span></span><br><span class="line">/usr/local/amoeba/bin/amoeba start&amp;</span><br><span class="line"><span class="comment">#查看8066端口是否开启，默认端口为TCP 8066</span></span><br><span class="line">netstat -anpt | grep java</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251118105328994.png" alt="image-20251118105328994"></p>
+<p><img src="/./imgs/image-20251118105355516.png" alt="image-20251118105355516"></p>
+<h3 id="测试读写分离"><a href="#测试读写分离" class="headerlink" title="测试读写分离"></a>测试读写分离</h3><p>在客户端安装数据库</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#先安装数据库</span></span><br><span class="line">yum install -y mariadb-server mariadb</span><br><span class="line">systemctl start mariadb.service</span><br><span class="line"><span class="comment"># 在客户端服务器上测试</span></span><br><span class="line">mysql -u amoeba -p123456 -h 192.168.118.95 -P8066</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251118112135310.png" alt="image-20251118112135310"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">//通过amoeba服务器代理访问mysql ，在通过客户端连接mysql后写入的数据只有主服务会记录，然后同步给从--从服务器</span><br><span class="line"></span><br><span class="line">#在主服务器上创建表格</span><br><span class="line">use db_test;</span><br><span class="line">create table test (id int(10),name varchar(10),address varchar(20));</span><br><span class="line"></span><br><span class="line">#在两台从服务器上停止主从复制，以便查看效果</span><br><span class="line">stop slave;								#关闭同步</span><br><span class="line">use db_test;</span><br><span class="line">//在slave1上：</span><br><span class="line">insert into test values(&#x27;1&#x27;,&#x27;zhangsan&#x27;,&#x27;this_is_slave1&#x27;);</span><br><span class="line"></span><br><span class="line">//在slave2上：</span><br><span class="line">insert into test values(&#x27;2&#x27;,&#x27;lisi&#x27;,&#x27;this_is_slave2&#x27;);</span><br><span class="line"></span><br><span class="line">//在主服务器上：</span><br><span class="line">insert into test values(&#x27;3&#x27;,&#x27;wangwu&#x27;,&#x27;this_is_master&#x27;);</span><br><span class="line"></span><br><span class="line">//在客户端服务器上：</span><br><span class="line">use db_test;</span><br><span class="line">select * from test;		</span><br><span class="line">//客户端会分别向slave1和slave2读取数据，显示的只有在两个从服务器上添加的数据，没有在主服务器上添加的数据</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251118123619212.png" alt="image-20251118123619212"></p>
+<p>可以看到由于设置，我们读只能读到slaves从服务器</p>
+<p>进行写操作测试</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">insert into test values(&#x27;4&#x27;,&#x27;qianqi&#x27;,&#x27;this_is_client&#x27;);	</span><br><span class="line">//只有主服务器上有此数据</span><br><span class="line"></span><br><span class="line">//在两个从服务器上执行 start slave; 即可实现同步在主服务器上添加的数据</span><br><span class="line">start slave;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251118112431063.png" alt="image-20251118112431063"></p>
+<p><img src="/./imgs/image-20251118112454609.png" alt="image-20251118112454609"></p>
+<p>可以看到只有主服务器master上才有在amoeba代理服务器上所插入的数据，证明写操作只能在主服务器上进行</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>MySQL主从复制与读写分离是构建高可用、高性能数据库系统的关键技术：</p>
+<ul>
+<li><strong>主从复制</strong>是基础：提供数据备份、容灾和HA支持</li>
+<li><strong>读写分离</strong>是优化：通过合理分配负载，提升系统整体性能和并发能力</li>
+<li><strong>两者结合</strong>是最佳实践：实现了数据安全、系统可靠、性能高效的目标</li>
+<li><strong>实施要点</strong>：要注意主从延迟、数据一致性等问题，在应用层面做好处理</li>
+</ul>
+<p>这套架构广泛应用于互联网企业的生产环境中，是数据库架构设计的标准方案。</p>
+<p><strong>配置流程回顾：</strong></p>
+<ol>
+<li><strong>环境准备</strong>（3台MySQL服务器+1台Amoeba服务器）<ul>
+<li>同步系统时间（NTP）</li>
+<li>规划IP地址</li>
+</ul>
+</li>
+<li><strong>主从复制部署</strong><ul>
+<li>配置Master：启用二进制日志、设置server_id</li>
+<li>授权从库账户</li>
+<li>配置Slave：设置server_id、中继日志、指向主库</li>
+<li>验证同步状态</li>
+</ul>
+</li>
+<li><strong>读写分离部署</strong><ul>
+<li>安装Java环境（Amoeba依赖）</li>
+<li>安装并配置Amoeba</li>
+<li>定义数据库连接池</li>
+<li>配置读写分离规则</li>
+</ul>
+</li>
+</ol>
+<p><strong>测试验证</strong></p>
+<ul>
+<li><strong>主从复制测试</strong>：在主库写入数据，验证从库是否同步</li>
+<li><strong>读写分离测试</strong>：<ul>
+<li>读操作验证：SELECT只能读到从库数据</li>
+<li>写操作验证：INSERT只能写入主库</li>
+<li>同步验证：重启从库同步后，验证主库新数据是否同步过来</li>
+</ul>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/11/18/Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E4%B8%BB%E4%BB%8E%E5%88%86%E7%A6%BB/">http://example.com/2025/11/18/Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E4%B8%BB%E4%BB%8E%E5%88%86%E7%A6%BB/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/11/11/Keepalived/" title="Keepalived"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Keepalived</div></div><div class="info-2"><div class="info-item-1">KeepalivedKeepalived是什么？Keepalived是一个基于VRRP（Virtual Router Redundancy Protocol）协议的高可用解决方案。它可以在服务故障时自动进行故障转移，确保服务的连续性。 keepalived怎么实现高可用？ 1、需要定义一个热备组(⭐)2、确定主-备关系（通过优先级（100 - 90）来确定）3、该怎么分辨MASTER能否正常工作呢？？   健康检查（icmp 协议—ping 检测存活）这是默认的检查方式   其他：例如 脚本检测服务的存活性4、VIP的特性：     ① VIP 是作为访问入口的IP地址（用于外网域名解析的 IP记录）     ② VIP 只会存在于优先级最高的节点5、怎么让VIP 漂移呢？     ① keepalived 当发现master节点状态异常了，则会把master的优先级进行降级例如：从100 -》80以上机制建立完成后，Nginx 就可以与keepalived 组合实现HA 高可用了 Keepalived的核心功能1. VRRP虚拟路由器功能VRRP允许多个路由器（或服务器）共享一...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="toc-number">1.</span> <span class="toc-text">Mysql主从复制和读写分离</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">1.1.</span> <span class="toc-text">一、Mysql主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">1.1.1.</span> <span class="toc-text">概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">1.1.2.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%B6%E9%92%9F%E5%90%8C%E6%AD%A5"><span class="toc-number">1.1.3.</span> <span class="toc-text">时钟同步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5"><span class="toc-number">1.1.4.</span> <span class="toc-text">配置主从同步</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#master%E4%B8%BB%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.4.1.</span> <span class="toc-text">master主服务器配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9master%E6%95%B0%E6%8D%AE%E5%BA%93%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.4.1.1.</span> <span class="toc-text">修改master数据库配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8E%88%E6%9D%83%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8C%E6%AD%A5"><span class="toc-number">1.1.4.1.2.</span> <span class="toc-text">授权从服务器同步</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#slave%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.4.2.</span> <span class="toc-text">slave从服务器配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">1.1.4.2.1.</span> <span class="toc-text">修改从服务器配置文件</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%BC%80%E5%90%AF%E4%BB%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%90%8C%E6%AD%A5%E5%8A%9F%E8%83%BD"><span class="toc-number">1.1.4.2.2.</span> <span class="toc-text">开启从服务器同步功能</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">1.1.5.</span> <span class="toc-text">测试主从复制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Mysql%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="toc-number">1.2.</span> <span class="toc-text">二、Mysql读写分离</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5-1"><span class="toc-number">1.2.1.</span> <span class="toc-text">概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87-1"><span class="toc-number">1.2.2.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85Java%E7%8E%AF%E5%A2%83"><span class="toc-number">1.2.3.</span> <span class="toc-text">安装Java环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Amoeba%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%85%8D%E7%BD%AE"><span class="toc-number">1.2.4.</span> <span class="toc-text">Amoeba服务器配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85ameoba"><span class="toc-number">1.2.4.1.</span> <span class="toc-text">安装ameoba</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AEamoeba%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">1.2.4.2.</span> <span class="toc-text">设置amoeba配置文件</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="toc-number">1.2.5.</span> <span class="toc-text">测试读写分离</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/18/Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E4%B8%BB%E4%BB%8E%E5%88%86%E7%A6%BB/" title="Mysql主从复制和读写分离">Mysql主从复制和读写分离</a><time datetime="2025-11-18T00:54:40.000Z" title="Created 2025-11-18 08:54:40">2025-11-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/11/Keepalived/" title="Keepalived">Keepalived</a><time datetime="2025-11-11T03:14:12.000Z" title="Created 2025-11-11 11:14:12">2025-11-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/11/NFS%E6%A6%82%E5%BF%B5%E5%8F%8A%E9%85%8D%E7%BD%AE/" title="NFS概念及配置">NFS概念及配置</a><time datetime="2025-11-11T03:13:21.000Z" title="Created 2025-11-11 11:13:21">2025-11-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/08/LVS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E9%9B%86%E7%BE%A4/" title="LVS负载均衡集群">LVS负载均衡集群</a><time datetime="2025-11-08T11:56:26.000Z" title="Created 2025-11-08 19:56:26">2025-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/07/Kubernetes/" title="Kubernetes">Kubernetes</a><time datetime="2025-11-07T06:03:15.000Z" title="Created 2025-11-07 14:03:15">2025-11-07</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
