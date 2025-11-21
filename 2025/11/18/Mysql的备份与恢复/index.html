@@ -1,0 +1,483 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Mysql的备份与恢复 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="MySQL 备份与恢复引言 - 日志是什么？谈到备份，就不得不提日志。 日志的定义与作用日志是什么：用于记录指定对象生命周期内发生的所有事件 日志可以用来做什么：  ① 用于记录 - 例如：nginx access.log（访问日志） ② 用于排障 - 例如：nginx error.log（错误日志）、journalctl -xe（系统日志）、journalctl -u nginx（服务日志） ③">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql的备份与恢复">
+<meta property="og:url" content="http://example.com/2025/11/18/Mysql%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="MySQL 备份与恢复引言 - 日志是什么？谈到备份，就不得不提日志。 日志的定义与作用日志是什么：用于记录指定对象生命周期内发生的所有事件 日志可以用来做什么：  ① 用于记录 - 例如：nginx access.log（访问日志） ② 用于排障 - 例如：nginx error.log（错误日志）、journalctl -xe（系统日志）、journalctl -u nginx（服务日志） ③">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-11-18T07:54:15.000Z">
+<meta property="article:modified_time" content="2025-11-20T11:52:03.133Z">
+<meta property="article:author" content="Felix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Mysql的备份与恢复",
+  "url": "http://example.com/2025/11/18/Mysql%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-11-18T07:54:15.000Z",
+  "dateModified": "2025-11-20T11:52:03.133Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/11/18/Mysql%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Mysql的备份与恢复',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Mysql的备份与恢复</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Mysql的备份与恢复</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-18T07:54:15.000Z" title="Created 2025-11-18 15:54:15">2025-11-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-20T11:52:03.133Z" title="Updated 2025-11-20 19:52:03">2025-11-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="MySQL-备份与恢复"><a href="#MySQL-备份与恢复" class="headerlink" title="MySQL 备份与恢复"></a>MySQL 备份与恢复</h1><h2 id="引言-日志是什么？"><a href="#引言-日志是什么？" class="headerlink" title="引言 - 日志是什么？"></a>引言 - 日志是什么？</h2><p>谈到备份，就不得不提日志。</p>
+<h3 id="日志的定义与作用"><a href="#日志的定义与作用" class="headerlink" title="日志的定义与作用"></a>日志的定义与作用</h3><p><strong>日志是什么</strong>：用于记录指定对象生命周期内发生的所有事件</p>
+<p><strong>日志可以用来做什么</strong>：</p>
+<ul>
+<li>① <strong>用于记录</strong> - 例如：nginx access.log（访问日志）</li>
+<li>② <strong>用于排障</strong> - 例如：nginx error.log（错误日志）、journalctl -xe（系统日志）、journalctl -u nginx（服务日志）</li>
+<li>③ <strong>服务日志</strong> - 通用日志、业务日志（如Java Tomcat、Amoeba等应用日志）</li>
+</ul>
+<p><strong>业务日志补充</strong>：代码运行过程中记录的日志，部分业务日志运维可能无法直接访问，需要与开发团队协调获取</p>
+<h3 id="日志分类"><a href="#日志分类" class="headerlink" title="日志分类"></a>日志分类</h3><ol>
+<li><strong>系统日志</strong> - 操作系统级别的日志记录</li>
+<li><strong>服务日志</strong> - MySQL、Nginx等服务产生的日志</li>
+<li><strong>⭐⭐业务日志</strong> - 应用程序代码运行过程中产生的日志</li>
+</ol>
+<h3 id="与MySQL备份的关系"><a href="#与MySQL备份的关系" class="headerlink" title="与MySQL备份的关系"></a>与MySQL备份的关系</h3><p>MySQL的<strong>二进制日志（Binary Log）</strong> 就是一种服务日志，它记录所有修改数据库的操作，是增量备份和灾难恢复的关键基础。</p>
+<hr>
+<h2 id="一、备份基础概念"><a href="#一、备份基础概念" class="headerlink" title="一、备份基础概念"></a>一、备份基础概念</h2><h3 id="1-1-备份的目的"><a href="#1-1-备份的目的" class="headerlink" title="1.1 备份的目的"></a>1.1 备份的目的</h3><p>灾难恢复 - 应对数据丢失场景（程序错误、人为操作错误、磁盘故障、灾难等）</p>
+<h3 id="1-2-备份分类"><a href="#1-2-备份分类" class="headerlink" title="1.2 备份分类"></a>1.2 备份分类</h3><h4 id="按备份时数据库状态分类"><a href="#按备份时数据库状态分类" class="headerlink" title="按备份时数据库状态分类"></a>按备份时数据库状态分类</h4><table>
+<thead>
+<tr>
+<th>分类</th>
+<th>特点</th>
+<th>工具</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>冷备份（脱机备份）</td>
+<td>关闭数据库，直接打包数据文件</td>
+<td>tar</td>
+</tr>
+<tr>
+<td>热备份（联机备份）</td>
+<td>数据库运行中备份</td>
+<td>xtrabackup、mysqlhotcopy</td>
+</tr>
+<tr>
+<td>温备份</td>
+<td>数据库锁表（可读不可写）备份</td>
+<td>mysqldump ⭐</td>
+</tr>
+</tbody></table>
+<h4 id="按备份内容分类"><a href="#按备份内容分类" class="headerlink" title="按备份内容分类"></a>按备份内容分类</h4><ul>
+<li><strong>完全备份</strong>：整个数据库完整备份，是增量备份的基础</li>
+<li><strong>增量备份</strong>：只备份上次完全或增量备份后的数据变化，需要逐个恢复所有增量文件</li>
+<li><strong>差异备份</strong>：只备份上次完全备份后的所有变化，恢复时只需完全+最后一次差异</li>
+</ul>
+<h4 id="备份频次建议"><a href="#备份频次建议" class="headerlink" title="备份频次建议"></a>备份频次建议</h4><ul>
+<li>完全备份：5~7天一次（非业务高峰期，如晚上10点至凌晨5点）</li>
+<li>增量备份：1~3天一次</li>
+<li>差异备份：按需进行</li>
+</ul>
+<p><img src="/./imgs/image-20251120193304799.png" alt="image-20251120193304799"></p>
+<hr>
+<h2 id="二、完全备份与恢复"><a href="#二、完全备份与恢复" class="headerlink" title="二、完全备份与恢复"></a>二、完全备份与恢复</h2><h3 id="2-1-冷备份（物理备份）"><a href="#2-1-冷备份（物理备份）" class="headerlink" title="2.1 冷备份（物理备份）"></a>2.1 冷备份（物理备份）</h3><p><strong>原理</strong>：关闭MySQL服务，直接压缩data文件夹</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 备份</span></span><br><span class="line">systemctl stop mysqld</span><br><span class="line">tar zcvPf /opt/mysql_all_$(<span class="built_in">date</span> +%F).tar.gz /usr/local/mysql/data/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 恢复</span></span><br><span class="line">tar zxvPf /opt/mysql_all_2025-09-15.tar.gz -C /usr/local/mysql/</span><br><span class="line">systemctl start mysqld</span><br></pre></td></tr></table></figure>
+
+<p><strong>优点</strong>：备份速度快，恢复简单<br> <strong>缺点</strong>：必须关闭数据库，业务中断</p>
+<hr>
+<h3 id="2-2-温备份（mysqldump）⭐"><a href="#2-2-温备份（mysqldump）⭐" class="headerlink" title="2.2 温备份（mysqldump）⭐"></a>2.2 温备份（mysqldump）⭐</h3><p><strong>原理</strong>：逐表备份，每张表备份时按以下步骤：</p>
+<p><strong>1.对需要备份的表加读锁</strong></p>
+<ul>
+<li>防止写入</li>
+<li>允许读取</li>
+<li>保证数据在一个一致时间点</li>
+</ul>
+<p><strong>2.导出表结构（SHOW CREATE TABLE）</strong></p>
+<ul>
+<li>得到建表语句</li>
+<li>不会真正执行 DROP&#x2F;CREATE</li>
+</ul>
+<p><strong>3.导出数据</strong></p>
+<ul>
+<li>常见方法：<ul>
+<li><code>SELECT * FROM table INTO OUTFILE</code></li>
+<li>mysqldump（内部实现也是 SELECT）</li>
+</ul>
+</li>
+<li>只是导出，不执行 INSERT</li>
+</ul>
+<p><strong>4.释放锁</strong></p>
+<h4 id="备份库级别"><a href="#备份库级别" class="headerlink" title="备份库级别"></a>备份库级别</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 备份单个库</span></span><br><span class="line">mysqldump -u root -p密码 --databases 库名 &gt; /opt/文件名.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份多个库</span></span><br><span class="line">mysqldump -u root -p密码 --databases 库1 库2 &gt; /opt/文件名.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份所有库</span></span><br><span class="line">mysqldump -u root -p密码 --all-databases &gt; /opt/all.sql</span><br></pre></td></tr></table></figure>
+
+<h4 id="备份表级别"><a href="#备份表级别" class="headerlink" title="备份表级别"></a>备份表级别</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 仅备份表结构（-d参数）</span></span><br><span class="line">mysqldump -u root -p密码 -d 库名 表名 &gt; /opt/文件名.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份表结构和数据</span></span><br><span class="line">mysqldump -u root -p密码 库名 表1 表2 &gt; /opt/文件名.sql</span><br></pre></td></tr></table></figure>
+
+<h4 id="恢复数据"><a href="#恢复数据" class="headerlink" title="恢复数据"></a>恢复数据</h4><p><strong>方式一</strong>：登录MySQL后使用source恢复</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql <span class="operator">-</span>u root <span class="operator">-</span>p密码</span><br><span class="line">mysql<span class="operator">&gt;</span> source <span class="operator">/</span>opt<span class="operator">/</span>all.sql</span><br></pre></td></tr></table></figure>
+
+<p><strong>方式二</strong>：命令行直接恢复</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -p密码 库名 &lt; /opt/all.sql</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：如果备份时使用了<code>--databases</code>参数（包含CREATE DATABASE语句），恢复前可以先删除数据库；如果没有使用该参数，需要先创建库再导入</p>
+<hr>
+<h2 id="三、增量备份与恢复"><a href="#三、增量备份与恢复" class="headerlink" title="三、增量备份与恢复"></a>三、增量备份与恢复</h2><h3 id="3-1-二进制日志（Binary-Log）"><a href="#3-1-二进制日志（Binary-Log）" class="headerlink" title="3.1 二进制日志（Binary Log）"></a>3.1 二进制日志（Binary Log）</h3><p><strong>概念</strong>：MySQL开启二进制日志后，所有修改操作都被记录，形成增量备份的基础</p>
+<h4 id="启用二进制日志"><a href="#启用二进制日志" class="headerlink" title="启用二进制日志"></a>启用二进制日志</h4><p>编辑配置文件 <code>/etc/my.cnf</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">log-bin</span>=mysql-bin          <span class="comment"># 启用二进制日志</span></span><br><span class="line"><span class="attr">binlog_format</span> = MIXED      <span class="comment"># 指定日志格式</span></span><br><span class="line"><span class="attr">server-id</span> = <span class="number">1</span>              <span class="comment"># 建议设置</span></span><br></pre></td></tr></table></figure>
+
+<p>重启MySQL：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart mysqld</span><br></pre></td></tr></table></figure>
+
+<h4 id="二进制日志格式对比"><a href="#二进制日志格式对比" class="headerlink" title="二进制日志格式对比"></a>二进制日志格式对比</h4><table>
+<thead>
+<tr>
+<th>格式</th>
+<th>原理</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>STATEMENT（默认）</td>
+<td>记录SQL语句</td>
+<td>日志量小，速度快</td>
+<td>高并发下可能出现顺序错误、不精确</td>
+</tr>
+<tr>
+<td>ROW</td>
+<td>记录每行数据变化</td>
+<td>精确性高、一致性好</td>
+<td>日志量大，性能影响大</td>
+</tr>
+<tr>
+<td>MIXED（推荐）</td>
+<td>普通语句用STATEMENT，函数操作用ROW</td>
+<td>兼顾性能和精确性</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<h3 id="3-2-查看二进制日志"><a href="#3-2-查看二进制日志" class="headerlink" title="3.2 查看二进制日志"></a>3.2 查看二进制日志</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看日志文件列表</span></span><br><span class="line"><span class="built_in">ls</span> -la /var/lib/mysql/mysql-bin.*</span><br><span class="line"></span><br><span class="line"><span class="comment"># 解码查看日志内容</span></span><br><span class="line">mysqlbinlog --no-defaults --base64-output=decode-rows -v /opt/mysql-bin.000001</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出为文本文件便于查阅</span></span><br><span class="line">mysqlbinlog --no-defaults --base64-output=decode-rows -v /opt/mysql-bin.000001 &gt; /opt/mysql-bin.000001.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251120193204367.png" alt="image-20251120193204367"></p>
+<p><img src="/./imgs/image-20251120193709084.png" alt="image-20251120193709084"></p>
+<p><strong>参数说明</strong>：</p>
+<ul>
+<li><code>--no-defaults</code>：使用默认字符集（避免UTF-8错误）</li>
+<li><code>--base64-output=decode-rows</code>：64位编码机制解码并按行读取</li>
+<li><code>-v</code>：显示详细内容</li>
+</ul>
+<p><strong>关键信息</strong>：</p>
+<ul>
+<li><code>at</code>：操作开始位置点</li>
+<li><code>end_log_pos</code>：操作结束位置</li>
+<li><code>时间戳</code>：操作时间（2025-09-16 10:30:45）</li>
+<li><code>SQL语句</code>：具体执行的语句</li>
+</ul>
+<h3 id="3-3-增量备份步骤"><a href="#3-3-增量备份步骤" class="headerlink" title="3.3 增量备份步骤"></a>3.3 增量备份步骤</h3><p><strong>前提</strong>：先进行一次完全备份作为基线</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 完全备份</span></span><br><span class="line"><span class="comment"># mysqldump -u root -p[密码] --databases 库名1 [库名2] ... &gt; /备份路径/备份文件名.sql</span></span><br><span class="line">mysqldump -u root -p密码 --all-databases &gt; /opt/full_backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 刷新二进制日志，生成新文件用于增量记录</span></span><br><span class="line">mysqladmin -u root -p密码 flush-logs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 之后的所有操作都会记录在新生成的mysql-bin.000002中</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 每天定时刷新二进制日志</span></span><br><span class="line"><span class="comment"># 可配置crontab定时任务</span></span><br><span class="line">0 1 * * * /usr/local/mysql/bin/mysqladmin -u root -p密码 flush-logs</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-增量恢复"><a href="#3-4-增量恢复" class="headerlink" title="3.4 增量恢复"></a>3.4 增量恢复</h3><h4 id="一般恢复（全部恢复）"><a href="#一般恢复（全部恢复）" class="headerlink" title="一般恢复（全部恢复）"></a>一般恢复（全部恢复）</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 基于某个二进制日志完全恢复</span></span><br><span class="line">mysqlbinlog --no-defaults /opt/mysql-bin.000002 | mysql -u root -p密码</span><br></pre></td></tr></table></figure>
+
+<h4 id="断点恢复（选择性恢复）"><a href="#断点恢复（选择性恢复）" class="headerlink" title="断点恢复（选择性恢复）"></a>断点恢复（选择性恢复）</h4><p><strong>场景</strong>：某条SQL语句执行错误，需要跳过该操作</p>
+<p><img src="/./imgs/image-20251120193432605.png" alt="image-20251120193432605"></p>
+<p><strong>步骤</strong>：</p>
+<ol>
+<li>查看二进制日志找出错误操作的位置点和时间点</li>
+<li>使用<code>--start-position</code>和<code>--stop-position</code>指定恢复范围</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 仅恢复到位置623之前（不包括623）</span></span><br><span class="line">mysqlbinlog --no-defaults --stop-position=<span class="string">&#x27;623&#x27;</span> /opt/mysql-bin.000003 | mysql -u root -p密码</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从位置400恢复到位置623</span></span><br><span class="line"><span class="comment"># 从...开始到...为止</span></span><br><span class="line"><span class="comment"># mysqlbinlog --no-defaults --start-position=&#x27;起始位置&#x27; --stop-psoition=&#x27;结束位置&#x27; /opt/mysql-bin.000003 | mysql -uroot -p</span></span><br><span class="line">mysqlbinlog --no-defaults --start-position=<span class="string">&#x27;400&#x27;</span> --stop-position=<span class="string">&#x27;623&#x27;</span> /opt/mysql-bin.000003 | mysql -u root -p密码</span><br></pre></td></tr></table></figure>
+
+<h4 id="基于时间点恢复"><a href="#基于时间点恢复" class="headerlink" title="基于时间点恢复"></a>基于时间点恢复</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 从某时间点开始恢复</span></span><br><span class="line">mysqlbinlog --no-defaults --start-datetime=<span class="string">&#x27;2025-09-16 10:30:00&#x27;</span> /opt/mysql-bin.000003 | mysql -u root -p密码</span><br><span class="line"></span><br><span class="line"><span class="comment"># 恢复时间范围内的操作</span></span><br><span class="line">mysqlbinlog --no-defaults --start-datetime=<span class="string">&#x27;2025-09-16 10:30:00&#x27;</span> --stop-datetime=<span class="string">&#x27;2025-09-16 10:35:00&#x27;</span> /opt/mysql-bin.000003 | mysql -u root -p密码</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="四、备份方案设计"><a href="#四、备份方案设计" class="headerlink" title="四、备份方案设计"></a>四、备份方案设计</h2><h3 id="完整的备份策略"><a href="#完整的备份策略" class="headerlink" title="完整的备份策略"></a>完整的备份策略</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># 完全备份脚本（每周六凌晨1点执行）</span></span><br><span class="line">mysqldump -u root -p密码 --all-databases &gt; /opt/backup/full_backup_$(<span class="built_in">date</span> +%Y%m%d).sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 刷新二进制日志生成新的增量记录文件</span></span><br><span class="line">mysqladmin -u root -p密码 flush-logs</span><br></pre></td></tr></table></figure>
+
+<p><strong>配置crontab定时任务</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 周一至周五每天凌晨1点刷新二进制日志（增量备份）</span></span><br><span class="line">0 1 * * 1-5 /usr/local/mysql/bin/mysqladmin -u root -p密码 flush-logs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每周六凌晨1点执行完全备份</span></span><br><span class="line">0 1 * * 6 /usr/local/mysql/bin/mysqldump -u root -p密码 --all-databases &gt; /opt/backup/full_backup_$(<span class="built_in">date</span> +\%Y\%m\%d).sql</span><br></pre></td></tr></table></figure>
+
+<h3 id="存储方案"><a href="#存储方案" class="headerlink" title="存储方案"></a>存储方案</h3><p>当备份日志增多导致磁盘压力时，使用网络存储转移备份文件：</p>
+<ul>
+<li><strong>NAS</strong>（Network Attached Storage）：网络共享存储</li>
+<li><strong>NFS</strong>（Network File System）：网络文件系统</li>
+</ul>
+<hr>
+<h2 id="五、慢查询日志（扩展）"><a href="#五、慢查询日志（扩展）" class="headerlink" title="五、慢查询日志（扩展）"></a>五、慢查询日志（扩展）</h2><h3 id="5-1-什么是慢查询日志"><a href="#5-1-什么是慢查询日志" class="headerlink" title="5.1 什么是慢查询日志"></a>5.1 什么是慢查询日志</h3><p>MySQL记录执行时间超过指定阈值的SQL语句，用于发现和优化性能瓶颈</p>
+<h3 id="5-2-启用慢查询日志"><a href="#5-2-启用慢查询日志" class="headerlink" title="5.2 启用慢查询日志"></a>5.2 启用慢查询日志</h3><p>编辑 <code>/etc/my.cnf</code>：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[mysqld]</span></span><br><span class="line"><span class="attr">slow_query_log</span> = <span class="literal">ON</span></span><br><span class="line"><span class="attr">slow_query_log_file</span> = /var/log/mysql/mysql-slow.log</span><br><span class="line"><span class="attr">long_query_time</span> = <span class="number">2</span>                    <span class="comment"># 超过2秒认为是慢查询</span></span><br><span class="line"><span class="attr">log_queries_not_using_indexes</span> = <span class="literal">ON</span>     <span class="comment"># 记录未使用索引的查询</span></span><br></pre></td></tr></table></figure>
+
+<p>重启MySQL服务后生效</p>
+<h3 id="5-3-查看和分析"><a href="#5-3-查看和分析" class="headerlink" title="5.3 查看和分析"></a>5.3 查看和分析</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 直接查看日志文件</span></span><br><span class="line"><span class="built_in">tail</span> -f /var/log/mysql/mysql-slow.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用mysqldumpslow工具分析（按时间排序，显示top 10）</span></span><br><span class="line">mysqldumpslow -s t -t 10 /var/log/mysql/mysql-slow.log</span><br></pre></td></tr></table></figure>
+
+<p>日志示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># Query_time: 3.5  Lock_time: 0  Rows_sent: 100  Rows_examined: 50000</span><br><span class="line">SELECT * FROM user WHERE name LIKE &#x27;%zhang%&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p>关键指标：</p>
+<ul>
+<li><code>Query_time</code>：查询耗时（秒）</li>
+<li><code>Rows_examined</code>：扫描行数</li>
+<li><code>Rows_sent</code>：返回行数</li>
+</ul>
+<p><strong>作用</strong>：配合EXPLAIN分析执行计划，针对性地创建索引优化SQL</p>
+<hr>
+<h2 id="六、快速参考"><a href="#六、快速参考" class="headerlink" title="六、快速参考"></a>六、快速参考</h2><h3 id="常用备份命令"><a href="#常用备份命令" class="headerlink" title="常用备份命令"></a>常用备份命令</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 完全备份（温备份）</span></span><br><span class="line">mysqldump -u root -p密码 --all-databases &gt; /opt/all.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 增量备份刷新</span></span><br><span class="line">mysqladmin -u root -p密码 flush-logs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 恢复完全备份</span></span><br><span class="line">mysql -u root -p密码 &lt; /opt/all.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 恢复增量备份</span></span><br><span class="line">mysqlbinlog --no-defaults /opt/mysql-bin.000002 | mysql -u root -p密码</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看二进制日志</span></span><br><span class="line">mysqlbinlog --no-defaults --base64-output=decode-rows -v /opt/mysql-bin.000002 &gt; /tmp/binlog.txt</span><br></pre></td></tr></table></figure>
+
+<h3 id="恢复流程速记"><a href="#恢复流程速记" class="headerlink" title="恢复流程速记"></a>恢复流程速记</h3><ol>
+<li><strong>完全备份丢失</strong> → 恢复完全备份文件 + 逐个恢复增量备份</li>
+<li><strong>单表数据错误</strong> → 单独备份该表恢复</li>
+<li><strong>需要跳过某条SQL</strong> → 使用<code>--stop-position</code>断点恢复</li>
+<li><strong>需要回到某个时间点</strong> → 使用<code>--stop-datetime</code>时间点恢复</li>
+</ol>
+<hr>
+<h2 id="七、总结"><a href="#七、总结" class="headerlink" title="七、总结"></a>七、总结</h2><h3 id="备份核心概念回顾"><a href="#备份核心概念回顾" class="headerlink" title="备份核心概念回顾"></a>备份核心概念回顾</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>备份目的</strong></td>
+<td>灾难恢复 - 应对数据丢失</td>
+</tr>
+<tr>
+<td><strong>三种状态</strong></td>
+<td>冷备（关闭）、热备（运行）、温备（锁表）</td>
+</tr>
+<tr>
+<td><strong>三种策略</strong></td>
+<td>完全备份（全量）、增量备份（增量）、差异备份（差异）</td>
+</tr>
+<tr>
+<td><strong>常用工具</strong></td>
+<td>tar（冷备）、mysqldump（温备）、mysqlbinlog（增量）</td>
+</tr>
+</tbody></table>
+<h3 id="选择备份方案的判断标准"><a href="#选择备份方案的判断标准" class="headerlink" title="选择备份方案的判断标准"></a>选择备份方案的判断标准</h3><p><strong>选择冷备份还是温备份？</strong></p>
+<ul>
+<li>冷备：业务可中断的情况，速度快，操作简单</li>
+<li>温备：7×24小时业务运行，数据量大，对实时性要求高</li>
+</ul>
+<p><strong>选择完全备份还是增量备份？</strong></p>
+<ul>
+<li>完全备份：数据量小，每5~7天一次；恢复快，只需一个文件</li>
+<li>增量备份：数据量大，每1~3天一次；需要多个文件逐个恢复</li>
+</ul>
+<p><strong>选择STATEMENT还是ROW还是MIXED？</strong></p>
+<ul>
+<li>STATEMENT：日志小，但高并发下可能不精确 ✗</li>
+<li>ROW：精确，但日志大，性能影响大 △</li>
+<li>MIXED：<strong>推荐选择</strong>，兼顾性能和精确性 ✓</li>
+</ul>
+<h3 id="运维最佳实践"><a href="#运维最佳实践" class="headerlink" title="运维最佳实践"></a>运维最佳实践</h3><p><strong>定期完全备份 + 每日增量备份 + 异地存储</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 周一至周五：每天凌晨刷新增量备份日志</span></span><br><span class="line">0 1 * * 1-5 /usr/local/mysql/bin/mysqladmin -u root -p密码 flush-logs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每周六：完全备份 + 刷新日志</span></span><br><span class="line">0 1 * * 6 /backup/full_backup.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每日：增量备份日志同步到NAS/NFS</span></span><br><span class="line">0 3 * * * rsync -av /var/lib/mysql/mysql-bin.* /nas/backup/</span><br></pre></td></tr></table></figure>
+
+<h3 id="恢复决策树"><a href="#恢复决策树" class="headerlink" title="恢复决策树"></a>恢复决策树</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">数据丢失</span><br><span class="line">  ├─ 是否是全库丢失？</span><br><span class="line">  │   ├─ 是 → 恢复完全备份 + 逐个恢复增量备份至需要的时间点</span><br><span class="line">  │   └─ 否 → 进入下一步</span><br><span class="line">  │</span><br><span class="line">  └─ 是否是单表错误？</span><br><span class="line">      ├─ 是 → 使用单表备份恢复</span><br><span class="line">      └─ 否 → 需要精确定位错误操作</span><br><span class="line">          ├─ 已知位置点 → 使用 --start-position/--stop-position</span><br><span class="line">          ├─ 已知时间点 → 使用 --start-datetime/--stop-datetime</span><br><span class="line">          └─ 完全恢复 → mysqlbinlog | mysql 全量恢复</span><br></pre></td></tr></table></figure>
+
+<h3 id="关键命令速查"><a href="#关键命令速查" class="headerlink" title="关键命令速查"></a>关键命令速查</h3><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>备份单库</td>
+<td><code>mysqldump -u root -p --databases db_name &gt; backup.sql</code></td>
+</tr>
+<tr>
+<td>备份全库</td>
+<td><code>mysqldump -u root -p --all-databases &gt; backup.sql</code></td>
+</tr>
+<tr>
+<td>恢复备份</td>
+<td><code>mysql -u root -p db_name &lt; backup.sql</code></td>
+</tr>
+<tr>
+<td>刷新日志</td>
+<td><code>mysqladmin -u root -p flush-logs</code></td>
+</tr>
+<tr>
+<td>查看日志</td>
+<td><code>mysqlbinlog --no-defaults --base64-output=decode-rows -v mysql-bin.000001</code></td>
+</tr>
+<tr>
+<td>位置点恢复</td>
+<td>&#96;mysqlbinlog –no-defaults –start-position&#x3D;’X’ –stop-position&#x3D;’Y’ mysql-bin.000001</td>
+</tr>
+<tr>
+<td>时间点恢复</td>
+<td>&#96;mysqlbinlog –no-defaults –start-datetime&#x3D;’2025-09-16 10:00:00’ –stop-datetime&#x3D;’2025-09-16 11:00:00’ mysql-bin.000001</td>
+</tr>
+</tbody></table>
+<h3 id="常见错误与排查"><a href="#常见错误与排查" class="headerlink" title="常见错误与排查"></a>常见错误与排查</h3><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mysqlbinlog 报UTF-8错误</td>
+<td>未指定字符集</td>
+<td>加<code>--no-defaults</code>参数</td>
+</tr>
+<tr>
+<td>恢复后数据不完整</td>
+<td>遗漏了某个增量文件</td>
+<td>检查完全备份+增量备份的时间序列</td>
+</tr>
+<tr>
+<td>恢复速度很慢</td>
+<td>ROW格式日志量大</td>
+<td>检查binlog_format配置，改为MIXED</td>
+</tr>
+<tr>
+<td>备份文件太大</td>
+<td>完全备份频次过高</td>
+<td>改为5<del>7天一次完全+1</del>3天一次增量</td>
+</tr>
+</tbody></table>
+<h3 id="运维清单"><a href="#运维清单" class="headerlink" title="运维清单"></a>运维清单</h3><ul>
+<li>确保binlog已启用：<code>log-bin=mysql-bin</code></li>
+<li>确保binlog格式为MIXED：<code>binlog_format=MIXED</code></li>
+<li>每日检查备份日志是否完整</li>
+<li>定期测试恢复流程（至少每月一次）</li>
+<li>备份文件已转移到异地存储（NAS&#x2F;NFS&#x2F;云存储）</li>
+<li>文档记录最近一次完全备份和增量备份的位置</li>
+<li>团队成员掌握基本的恢复操作</li>
+</ul>
+<h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>一个代购平台，覆盖杭州主城区商场，老人、小孩的衣服采购，数据都保存在mysql中，5天完全备份一次。</p>
+<p>80% 的空间都被“订单 + 明细 + 日志”占用</p>
+<p>mysqldump 输出 SQL，<strong>压缩比 60%～80%</strong></p>
+<p>一个中小型代购平台的 MySQL 完全备份（压缩后）通常在：300MB ～ 1GB 之间</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/11/18/Mysql%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D/">http://example.com/2025/11/18/Mysql%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/19/Mysql%E6%95%B0%E6%8D%AE%E5%BA%93MHA%E9%AB%98%E5%8F%AF%E7%94%A8/" title="Mysql数据库MHA高可用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Mysql数据库MHA高可用</div></div><div class="info-2"><div class="info-item-1">MySQL MHA 高可用一、MHA 是什么？MHA（Master High Availability）是一款开源的MySQL自动故障转移解决方案。它能够在主库发生故障时，自动将从库提升为主库，保证数据库服务的连续性。 核心功能：  自动故障转移：主库宕机时自动切换到从库 最小化数据丢失：智能选择最接近主库的从库作为新主库 VIP管理：自动漂移虚拟IP，应用无需修改连接地址 监控告警：持续监控主从状态，及时发现异常   二、为什么要做 MHA？问题场景：  数据库单点故障导致服务中断 主库宕机时，手动切换耗时，期间服务不可用 多个从库时，难以快速判断哪个应该成为新主库  MHA 的价值： ✅ 高可用：冗余设计，避免单点故障 ✅ 自动化：无需人工干预，秒级故障转移 ✅ 数据保护：优先选择数据最完整的从库 ✅ 对业务透明：通过VIP切换，应用连接无需改动  高可用：冗余、容灾、备份、故障转移 高可用为了干嘛？避免单点故障带来的问题   三、配置流程简述   步骤 说明    1. 基础配置 关闭防火墙，安装MySQL 5.7   2. 一主两从 配置主从复制（Master-Slave...</div></div></div></a><a class="pagination-related" href="/2025/11/18/Mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%92%8C%E4%B8%BB%E4%BB%8E%E5%88%86%E7%A6%BB/" title="Mysql主从复制和读写分离"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Mysql主从复制和读写分离</div></div><div class="info-2"><div class="info-item-1">Mysql主从复制和读写分离一、Mysql主从复制概念概念：什么是主从复制？ MySQL主从复制是一种数据同步技术，通过将主数据库（Master）的所有数据变更操作（包括INSERT、UPDATE、DELETE等）记录在二进制日志中，然后从数据库（Slave）通过读取并执行这些日志来保持与主库的数据一致。 为什么要做主从复制？  数据备份与容灾：在从库上维护数据的完整副本，防止主库故障导致数据丢失 提高可用性：主库发生故障时，可以快速切换到从库继续提供服务 业务连续性：确保关键业务数据的连续性和可靠性 为读写分离奠定基础：是实现读写分离的前提条件  主从复制的优点  数据安全性高：数据在多个节点上保存，降低数据丢失风险 自动化同步：无需手动干预，系统自动保持数据一致 支持异步复制：主库无需等待从库确认，性能损耗小 灵活扩展：可以添加多个从库满足不同需求 便于维护：可以在从库上进行备份、查询等维护操作，不影响主库  主从复制的工作原理  主库端：任何修改数据的操作都被记录到二进制日志（Binary Log） 传输阶段：从库的IO线程连接到主库，请求并获取新的二进制日志 中继日志：从...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">23</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#MySQL-%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="toc-number">1.</span> <span class="toc-text">MySQL 备份与恢复</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80-%E6%97%A5%E5%BF%97%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">引言 - 日志是什么？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E7%9A%84%E5%AE%9A%E4%B9%89%E4%B8%8E%E4%BD%9C%E7%94%A8"><span class="toc-number">1.1.1.</span> <span class="toc-text">日志的定义与作用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E5%88%86%E7%B1%BB"><span class="toc-number">1.1.2.</span> <span class="toc-text">日志分类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8EMySQL%E5%A4%87%E4%BB%BD%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">1.1.3.</span> <span class="toc-text">与MySQL备份的关系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%A4%87%E4%BB%BD%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.2.</span> <span class="toc-text">一、备份基础概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%A4%87%E4%BB%BD%E7%9A%84%E7%9B%AE%E7%9A%84"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.1 备份的目的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%A4%87%E4%BB%BD%E5%88%86%E7%B1%BB"><span class="toc-number">1.2.2.</span> <span class="toc-text">1.2 备份分类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%89%E5%A4%87%E4%BB%BD%E6%97%B6%E6%95%B0%E6%8D%AE%E5%BA%93%E7%8A%B6%E6%80%81%E5%88%86%E7%B1%BB"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">按备份时数据库状态分类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%89%E5%A4%87%E4%BB%BD%E5%86%85%E5%AE%B9%E5%88%86%E7%B1%BB"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">按备份内容分类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E9%A2%91%E6%AC%A1%E5%BB%BA%E8%AE%AE"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">备份频次建议</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%AE%8C%E5%85%A8%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="toc-number">1.3.</span> <span class="toc-text">二、完全备份与恢复</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%86%B7%E5%A4%87%E4%BB%BD%EF%BC%88%E7%89%A9%E7%90%86%E5%A4%87%E4%BB%BD%EF%BC%89"><span class="toc-number">1.3.1.</span> <span class="toc-text">2.1 冷备份（物理备份）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%B8%A9%E5%A4%87%E4%BB%BD%EF%BC%88mysqldump%EF%BC%89%E2%AD%90"><span class="toc-number">1.3.2.</span> <span class="toc-text">2.2 温备份（mysqldump）⭐</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E5%BA%93%E7%BA%A7%E5%88%AB"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">备份库级别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E8%A1%A8%E7%BA%A7%E5%88%AB"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">备份表级别</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E6%95%B0%E6%8D%AE"><span class="toc-number">1.3.2.3.</span> <span class="toc-text">恢复数据</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%A2%9E%E9%87%8F%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D"><span class="toc-number">1.4.</span> <span class="toc-text">三、增量备份与恢复</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%97%A5%E5%BF%97%EF%BC%88Binary-Log%EF%BC%89"><span class="toc-number">1.4.1.</span> <span class="toc-text">3.1 二进制日志（Binary Log）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AF%E7%94%A8%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%97%A5%E5%BF%97"><span class="toc-number">1.4.1.1.</span> <span class="toc-text">启用二进制日志</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%97%A5%E5%BF%97%E6%A0%BC%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="toc-number">1.4.1.2.</span> <span class="toc-text">二进制日志格式对比</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%9F%A5%E7%9C%8B%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%97%A5%E5%BF%97"><span class="toc-number">1.4.2.</span> <span class="toc-text">3.2 查看二进制日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%A2%9E%E9%87%8F%E5%A4%87%E4%BB%BD%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.4.3.</span> <span class="toc-text">3.3 增量备份步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%A2%9E%E9%87%8F%E6%81%A2%E5%A4%8D"><span class="toc-number">1.4.4.</span> <span class="toc-text">3.4 增量恢复</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E8%88%AC%E6%81%A2%E5%A4%8D%EF%BC%88%E5%85%A8%E9%83%A8%E6%81%A2%E5%A4%8D%EF%BC%89"><span class="toc-number">1.4.4.1.</span> <span class="toc-text">一般恢复（全部恢复）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%AD%E7%82%B9%E6%81%A2%E5%A4%8D%EF%BC%88%E9%80%89%E6%8B%A9%E6%80%A7%E6%81%A2%E5%A4%8D%EF%BC%89"><span class="toc-number">1.4.4.2.</span> <span class="toc-text">断点恢复（选择性恢复）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E7%82%B9%E6%81%A2%E5%A4%8D"><span class="toc-number">1.4.4.3.</span> <span class="toc-text">基于时间点恢复</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%A4%87%E4%BB%BD%E6%96%B9%E6%A1%88%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.5.</span> <span class="toc-text">四、备份方案设计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E7%9A%84%E5%A4%87%E4%BB%BD%E7%AD%96%E7%95%A5"><span class="toc-number">1.5.1.</span> <span class="toc-text">完整的备份策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E6%96%B9%E6%A1%88"><span class="toc-number">1.5.2.</span> <span class="toc-text">存储方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97%EF%BC%88%E6%89%A9%E5%B1%95%EF%BC%89"><span class="toc-number">1.6.</span> <span class="toc-text">五、慢查询日志（扩展）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%BB%80%E4%B9%88%E6%98%AF%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97"><span class="toc-number">1.6.1.</span> <span class="toc-text">5.1 什么是慢查询日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%90%AF%E7%94%A8%E6%85%A2%E6%9F%A5%E8%AF%A2%E6%97%A5%E5%BF%97"><span class="toc-number">1.6.2.</span> <span class="toc-text">5.2 启用慢查询日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E6%9F%A5%E7%9C%8B%E5%92%8C%E5%88%86%E6%9E%90"><span class="toc-number">1.6.3.</span> <span class="toc-text">5.3 查看和分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%BF%AB%E9%80%9F%E5%8F%82%E8%80%83"><span class="toc-number">1.7.</span> <span class="toc-text">六、快速参考</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E5%A4%87%E4%BB%BD%E5%91%BD%E4%BB%A4"><span class="toc-number">1.7.1.</span> <span class="toc-text">常用备份命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E6%B5%81%E7%A8%8B%E9%80%9F%E8%AE%B0"><span class="toc-number">1.7.2.</span> <span class="toc-text">恢复流程速记</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">七、总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%87%E4%BB%BD%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E5%9B%9E%E9%A1%BE"><span class="toc-number">1.8.1.</span> <span class="toc-text">备份核心概念回顾</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E5%A4%87%E4%BB%BD%E6%96%B9%E6%A1%88%E7%9A%84%E5%88%A4%E6%96%AD%E6%A0%87%E5%87%86"><span class="toc-number">1.8.2.</span> <span class="toc-text">选择备份方案的判断标准</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%BB%B4%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="toc-number">1.8.3.</span> <span class="toc-text">运维最佳实践</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%81%A2%E5%A4%8D%E5%86%B3%E7%AD%96%E6%A0%91"><span class="toc-number">1.8.4.</span> <span class="toc-text">恢复决策树</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5"><span class="toc-number">1.8.5.</span> <span class="toc-text">关键命令速查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E4%B8%8E%E6%8E%92%E6%9F%A5"><span class="toc-number">1.8.6.</span> <span class="toc-text">常见错误与排查</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%BB%B4%E6%B8%85%E5%8D%95"><span class="toc-number">1.8.7.</span> <span class="toc-text">运维清单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A1%88%E4%BE%8B"><span class="toc-number">1.8.8.</span> <span class="toc-text">案例</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/20/Redis/" title="Redis">Redis</a><time datetime="2025-11-20T06:09:27.000Z" title="Created 2025-11-20 14:09:27">2025-11-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/20/Mysql%E5%BF%AB%E9%80%9F%E6%89%8B%E5%86%8C/" title="Mysql快速手册">Mysql快速手册</a><time datetime="2025-11-20T03:16:48.000Z" title="Created 2025-11-20 11:16:48">2025-11-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/20/Mysql%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="Mysql相关知识">Mysql相关知识</a><time datetime="2025-11-20T03:16:15.000Z" title="Created 2025-11-20 11:16:15">2025-11-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/19/Mysql%E6%95%B0%E6%8D%AE%E5%BA%93MHA%E9%AB%98%E5%8F%AF%E7%94%A8/" title="Mysql数据库MHA高可用">Mysql数据库MHA高可用</a><time datetime="2025-11-19T05:52:00.000Z" title="Created 2025-11-19 13:52:00">2025-11-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/18/Mysql%E7%9A%84%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D/" title="Mysql的备份与恢复">Mysql的备份与恢复</a><time datetime="2025-11-18T07:54:15.000Z" title="Created 2025-11-18 15:54:15">2025-11-18</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
