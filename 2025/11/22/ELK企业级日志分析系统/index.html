@@ -1,0 +1,505 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ELK企业级日志分析系统 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="ELK企业级日志分析系统ELK是什么？ELK是一套开源日志分析系统，由三个核心组件组成：  Elasticsearch：分布式搜索引擎，负责日志存储和快速检索 Logstash：日志收集处理引擎，用于收集、解析、转换日志数据 Kibana：数据可视化工具，提供友好的Web界面查询和分析日志   衍生方案：Filebeat（轻量级日志收集器，替代Logstash中的输入端）  主要目的：收集、存储、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ELK企业级日志分析系统">
+<meta property="og:url" content="http://example.com/2025/11/22/ELK%E4%BC%81%E4%B8%9A%E7%BA%A7%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="ELK企业级日志分析系统ELK是什么？ELK是一套开源日志分析系统，由三个核心组件组成：  Elasticsearch：分布式搜索引擎，负责日志存储和快速检索 Logstash：日志收集处理引擎，用于收集、解析、转换日志数据 Kibana：数据可视化工具，提供友好的Web界面查询和分析日志   衍生方案：Filebeat（轻量级日志收集器，替代Logstash中的输入端）  主要目的：收集、存储、">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-11-22T05:26:17.000Z">
+<meta property="article:modified_time" content="2025-11-24T03:24:06.664Z">
+<meta property="article:author" content="Felix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ELK企业级日志分析系统",
+  "url": "http://example.com/2025/11/22/ELK%E4%BC%81%E4%B8%9A%E7%BA%A7%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-11-22T05:26:17.000Z",
+  "dateModified": "2025-11-24T03:24:06.664Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/11/22/ELK%E4%BC%81%E4%B8%9A%E7%BA%A7%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ELK企业级日志分析系统',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">ELK企业级日志分析系统</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">ELK企业级日志分析系统</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-22T05:26:17.000Z" title="Created 2025-11-22 13:26:17">2025-11-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-24T03:24:06.664Z" title="Updated 2025-11-24 11:24:06">2025-11-24</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="ELK企业级日志分析系统"><a href="#ELK企业级日志分析系统" class="headerlink" title="ELK企业级日志分析系统"></a>ELK企业级日志分析系统</h1><h2 id="ELK是什么？"><a href="#ELK是什么？" class="headerlink" title="ELK是什么？"></a>ELK是什么？</h2><p>ELK是一套开源日志分析系统，由三个核心组件组成：</p>
+<ul>
+<li><strong>Elasticsearch</strong>：分布式搜索引擎，负责日志存储和快速检索</li>
+<li><strong>Logstash</strong>：日志收集处理引擎，用于收集、解析、转换日志数据</li>
+<li><strong>Kibana</strong>：数据可视化工具，提供友好的Web界面查询和分析日志</li>
+</ul>
+<blockquote>
+<p>衍生方案：Filebeat（轻量级日志收集器，替代Logstash中的输入端）</p>
+</blockquote>
+<p>主要目的：收集、存储、分析与可视化</p>
+<p><img src="/./imgs/image-20251122174107047.png" alt="image-20251122174107047"></p>
+<p><img src="/./imgs/image-20251124105530554.png" alt="image-20251124105530554"></p>
+<h2 id="为什么要用ELK？"><a href="#为什么要用ELK？" class="headerlink" title="为什么要用ELK？"></a>为什么要用ELK？</h2><p>传统单机日志分析存在的问题：</p>
+<ul>
+<li>日志分散在各个服务器，查询困难</li>
+<li>海量日志无法有效存储和分析</li>
+<li>难以快速定位和追踪问题</li>
+</ul>
+<p>ELK解决方案的优势：</p>
+<ul>
+<li>集中管理企业级日志，支持分布式存储</li>
+<li>支持全文搜索，查询性能高</li>
+<li>灵活的数据可视化和告警机制</li>
+<li>支持海量日志实时处理</li>
+</ul>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p><strong>简化叙述流程：</strong></p>
+<ol>
+<li><p><strong>采集阶段</strong>：Logstash&#x2F;Filebeat从应用服务器、系统日志、网络设备等多种来源收集日志</p>
+</li>
+<li><p><strong>处理阶段</strong>：Logstash对日志进行处理</p>
+<ul>
+<li>使用Grok、JSON、正则表达式等解析器提取结构化数据</li>
+<li>添加新字段、删除敏感信息、丰富数据内容</li>
+<li>日志转换为标准格式</li>
+</ul>
+</li>
+<li><p><strong>存储阶段</strong>：处理后的日志发送到Elasticsearch</p>
+<ul>
+<li>分词并建立倒向索引，支持快速查询</li>
+<li>数据按时间分片存储，便于管理</li>
+</ul>
+</li>
+<li><p><strong>查询分析阶段</strong>：用户通过Kibana操作</p>
+<ul>
+<li>搜索特定日志信息</li>
+<li>创建可视化报表</li>
+<li>设置告警规则</li>
+</ul>
+</li>
+</ol>
+<p><strong>详细叙述：</strong></p>
+<p>1.日志首先从各种来源生成，包括应用服务器、系统日志、网络设备等。Logstash 通过多种输入方式收集这些日志，可以是读取文件、监听端口、订阅消息队列等。</p>
+<p>2.收集后，Logstash 对日志进行处理。在过滤阶段，使用 Grok、JSON、正则表达式等解析器提取结构化数据，可以添加新字段、删除敏感信息或丰富数据内容。处理完成的日志转换为标准格式。</p>
+<p>3.处理后的日志被发送到 Elasticsearch 存储。Elasticsearch 接收数据后进行索引处理，将日志数据分词并建立倒排索引，支持快速查询。数据可以按时间分片存储，便于管理和优化。</p>
+<p>4.最后，用户通过 Kibana 查询和分析这些日志。Kibana 连接到 Elasticsearch 进行查询，用户可以搜索特定的日志信息、创建可视化报表，还可以设置告警规则在异常情况发生时通知相关人员。</p>
+<p><img src="/./imgs/image-20251124105625353.png" alt="image-20251124105625353"></p>
+<h2 id="ELK部署"><a href="#ELK部署" class="headerlink" title="ELK部署"></a>ELK部署</h2><h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><table>
+<thead>
+<tr>
+<th>配置与名称</th>
+<th>IP</th>
+<th>服务</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Node1节点（2C&#x2F;4G）</td>
+<td>node1&#x2F;192.168.118.101</td>
+<td>Elasticsearch（集群）  Kibana</td>
+</tr>
+<tr>
+<td>Node2节点（2C&#x2F;4G）</td>
+<td>node2&#x2F;192.168.118.102</td>
+<td>Elasticsearch（集群）</td>
+</tr>
+<tr>
+<td>Apache节点</td>
+<td>apache&#x2F;192.168.118.103</td>
+<td>Logstash  Apache</td>
+</tr>
+</tbody></table>
+<p>关闭防火墙与核心防护</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systectl stop firewalld   <span class="comment">#关闭防火墙</span></span><br><span class="line">setenforce 0    <span class="comment">#关闭增强功能</span></span><br></pre></td></tr></table></figure>
+
+<p>更改主机名、配置域名解析、查看Java环境 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Node1节点：hostnamectl set-hostname node1</span><br><span class="line">Node2节点：hostnamectl set-hostname node2</span><br></pre></td></tr></table></figure>
+
+<p>主机名与IP解析</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/hosts</span><br><span class="line">192.168.118.101 node1</span><br><span class="line">192.168.118.102 node2</span><br></pre></td></tr></table></figure>
+
+<p>java安装</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 检查java版本</span><br><span class="line">java -version										</span><br><span class="line"></span><br><span class="line">#如果没有安装，yum -y install java</span><br><span class="line">openjdk version &quot;1.8.0_131&quot;</span><br><span class="line">OpenJDK Runtime Environment (build 1.8.0_131-b12)</span><br><span class="line">OpenJDK 64-Bit Server VM (build 25.131-b12, mixed mode)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122144814050.png" alt="image-20251122144814050"></p>
+<h3 id="Elasticsearch-集群部署"><a href="#Elasticsearch-集群部署" class="headerlink" title="Elasticsearch 集群部署"></a>Elasticsearch 集群部署</h3><p>在Node1、Node2节点上操作</p>
+<h4 id="部署流程"><a href="#部署流程" class="headerlink" title="部署流程"></a>部署流程</h4><p>1.部署 Elasticsearch 软件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 用rpm包安装 Elasticsearch</span><br><span class="line"># 上传elasticsearch-6.7.2.rpm到/opt目录下 </span><br><span class="line">cd /opt</span><br><span class="line">rpm -ivh elasticsearch-6.7.2.rpm </span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122150755704.png" alt="image-20251122150755704"></p>
+<p>2.加载系统服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload    </span><br><span class="line">systemctl enable elasticsearch.service</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122150834503.png" alt="image-20251122150834503"></p>
+<p>3.修改elasticsearch主配置文件elasticsearch.yml</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 备份</span></span><br><span class="line"><span class="built_in">cp</span> /etc/elasticsearch/elasticsearch.yml /etc/elasticsearch/elasticsearch.yml.bak</span><br><span class="line"><span class="comment"># 配置</span></span><br><span class="line">vim /etc/elasticsearch/elasticsearch.yml</span><br><span class="line"></span><br><span class="line"><span class="comment">########配置文件中内容########</span></span><br><span class="line">--17--取消注释，指定集群名字</span><br><span class="line">cluster.name: my-elk-cluster</span><br><span class="line">--23--取消注释，指定节点名字：Node1节点为node1，Node2节点为node2</span><br><span class="line">node.name: node1</span><br><span class="line">--33--取消注释，指定数据存放路径</span><br><span class="line">path.data: /data/elk_data</span><br><span class="line">--37--取消注释，指定日志存放路径</span><br><span class="line">path.logs: /var/log/elasticsearch/</span><br><span class="line">--43--取消注释，改为在启动的时候不锁定内存</span><br><span class="line">bootstrap.memory_lock: <span class="literal">false</span></span><br><span class="line">--55--取消注释，设置监听地址，0.0.0.0代表所有地址</span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line">--59--取消注释，ES 服务的默认监听端口为9200</span><br><span class="line">http.port: 9200</span><br><span class="line">--68--取消注释，集群发现通过单播实现，指定要发现的节点 node1、node2</span><br><span class="line">discovery.zen.ping.unicast.hosts: [<span class="string">&quot;node1&quot;</span>, <span class="string">&quot;node2&quot;</span>]</span><br><span class="line"><span class="comment">#############################</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看配置内容</span></span><br><span class="line">grep -v <span class="string">&quot;^#&quot;</span> /etc/elasticsearch/elasticsearch.yml</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122151355290.png" alt="image-20251122151355290"></p>
+<p>4.创建数据存放路径并授权</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /data/elk_data</span><br><span class="line"><span class="built_in">chown</span> elasticsearch:elasticsearch /data/elk_data/</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122151612319.png" alt="image-20251122151612319"></p>
+<p>5.启动elasticsearch，并确认是否成功开启</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl start elasticsearch.service</span><br><span class="line">netstat -antp | grep 9200</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122151730918.png" alt="image-20251122151730918"></p>
+<p>6.若开启成功，可以在浏览器中访问，看到集群情况</p>
+<p>浏览器访问  <a target="_blank" rel="noopener" href="http://192.168.118.101:9200/">http://192.168.118.101:9200</a> 、 <a target="_blank" rel="noopener" href="http://192.168.118.102:9200/">http://192.168.118.102:9200</a> 查看节点 Node1、Node2 的信息。</p>
+<p><img src="/./imgs/image-20251122151759782.png" alt="image-20251122151759782"></p>
+<p>浏览器访问 <a target="_blank" rel="noopener" href="http://192.168.118.101:9200/_cluster/health?pretty%E3%80%81http://192.168.118.102:9200/_cluster/health?pretty%E6%9F%A5%E7%9C%8B%E7%BE%A4%E9%9B%86%E7%9A%84%E5%81%A5%E5%BA%B7%E6%83%85%E5%86%B5%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%9C%8B%E5%88%B0">http://192.168.118.101:9200/_cluster/health?pretty、http://192.168.118.102:9200/_cluster/health?pretty查看群集的健康情况，可以看到</a> status 值为 green（绿色）， 表示节点健康运行。</p>
+<blockquote>
+<p>绿色：健康  数据和副本 全都没有问题<br>红色：数据都不完整<br>黄色：数据完整，但副本有问题</p>
+</blockquote>
+<p><img src="/./imgs/image-20251122151834160.png" alt="image-20251122151834160"></p>
+<p>浏览器访问 <a target="_blank" rel="noopener" href="http://192.168.118.101:9200/_cluster/state?pretty">http://192.168.118.101:9200/_cluster/state?pretty</a>  检查群集状态信息。</p>
+<p><img src="/./imgs/image-20251122151903551.png" alt="image-20251122151903551"></p>
+<h4 id="拓展：Elasticsearch-head"><a href="#拓展：Elasticsearch-head" class="headerlink" title="拓展：Elasticsearch-head"></a>拓展：Elasticsearch-head</h4><p>安装 Elasticsearch-head 插件，便捷查看集群状态</p>
+<blockquote>
+<p>Elasticsearch 在 5.0 版本后，Elasticsearch-head 插件需要作为独立服务进行安装，需要使用npm工具（NodeJS的包管理工具）安装。<br>安装 Elasticsearch-head 需要提前安装好依赖软件 node 和 phantomjs。<br>node：是一个基于 Chrome V8 引擎的 JavaScript 运行环境。<br>phantomjs：是一个基于 webkit 的JavaScriptAPI，可以理解为一个隐形的浏览器，任何基于 webkit 浏览器做的事情，它都可以做到。</p>
+</blockquote>
+<p>1.编译安装 node</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 上传软件包 node-v8.2.1.tar.gz 到/opt ——版本v10 ~ 16 </span></span><br><span class="line"><span class="comment"># 安装编译依赖</span></span><br><span class="line">yum install gcc gcc-c++ make -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 解压并进行编译安装</span></span><br><span class="line"><span class="built_in">cd</span> /opt</span><br><span class="line">tar zxvf node-v8.2.1.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> node-v8.2.1/</span><br><span class="line">./configure</span><br><span class="line">make -j 3  &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<p>2.安装 phantomjs（前端的框架）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#上传软件包 phantomjs-2.1.1-linux-x86_64.tar.bz2到/opt</span></span><br><span class="line"><span class="built_in">cd</span> /opt</span><br><span class="line">tar jxvf phantomjs-2.1.1-linux-x86_64.tar.bz2 -C /usr/local/src/</span><br><span class="line"><span class="built_in">cd</span> /usr/local/src/phantomjs-2.1.1-linux-x86_64/bin</span><br><span class="line"><span class="built_in">cp</span> phantomjs /usr/local/bin</span><br></pre></td></tr></table></figure>
+
+<p>3.安装 Elasticsearch-head 数据可视化工具</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#上传软件包 elasticsearch-head.tar.gz 到/opt</span><br><span class="line">cd /opt</span><br><span class="line">tar zxvf elasticsearch-head.tar.gz -C /usr/local/src/</span><br><span class="line">cd /usr/local/src/elasticsearch-head/</span><br><span class="line"># 安装前端依赖</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122155741893.png" alt="image-20251122155741893"></p>
+<p>4.修改 Elasticsearch 主配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/elasticsearch/elasticsearch.yml</span><br><span class="line">......</span><br><span class="line">--末尾添加以下内容--</span><br><span class="line">http.cors.enabled: <span class="literal">true</span>				<span class="comment">#开启跨域访问支持，默认为 false</span></span><br><span class="line">http.cors.allow-origin: <span class="string">&quot;*&quot;</span>			<span class="comment">#指定跨域访问允许的域名地址为所有</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启服务</span></span><br><span class="line">systemctl restart elasticsearch</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122155944470.png" alt="image-20251122155944470"></p>
+<p>5.启动 elasticsearch-head 服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 必须在解压后的 elasticsearch-head 目录下启动服务，进程会读取该目录下的 gruntfile.js 文件，否则可能启动失败。</span></span><br><span class="line"><span class="built_in">cd</span> /usr/local/src/elasticsearch-head/</span><br><span class="line">npm run start &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看是否启动成功</span></span><br><span class="line"><span class="comment"># elasticsearch-head 监听的端口是 9100</span></span><br><span class="line">netstat -natp |grep 9100</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122160146778.png" alt="image-20251122160146778"></p>
+<p>6.测试</p>
+<p>通过 Elasticsearch-head 查看 Elasticsearch 信息<br>通过浏览器访问 <a target="_blank" rel="noopener" href="http://192.168.118.101:9100/">http://192.168.118.101:9100/</a> 地址并连接群集。如果看到群集健康值为 green 绿色，代表群集很健康。</p>
+<p><img src="/./imgs/image-20251122160223132.png" alt="image-20251122160223132"></p>
+<p>插入索引</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过命令插入一个测试索引，索引为 index-demo，类型为 test</span></span><br><span class="line">curl -X PUT <span class="string">&#x27;localhost:9200/index-demo1/test/1?pretty&amp;pretty&#x27;</span> -H <span class="string">&#x27;content-Type: application/json&#x27;</span> -d <span class="string">&#x27;&#123;&quot;user&quot;:&quot;zhangsan&quot;,&quot;mesg&quot;:&quot;hello world&quot;&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122172358999.png" alt="image-20251122172358999"></p>
+<p>浏览器访问 <a target="_blank" rel="noopener" href="http://192.168.118.101:9100/">http://192.168.118.101:9100/</a> 查看索引信息，可以看见索引默认被分片5个，并且有一个副本。<br>点击“数据浏览”，会发现在node1上创建的索引为 index-demo，类型为 test 的相关信息。</p>
+<p><img src="/./imgs/image-20251122172425230.png" alt="image-20251122172425230"></p>
+<p><strong>问题描述</strong>：磁盘空间不足导致无法创建索引</p>
+<p>出现yellow状况，提示磁盘使用量到达90%</p>
+<p>解决：添加新磁盘并挂载，给予读写权限</p>
+<h3 id="Logstash-部署"><a href="#Logstash-部署" class="headerlink" title="Logstash 部署"></a>Logstash 部署</h3><p>在Apache节点上操作</p>
+<blockquote>
+<p>Logstash 一般部署在需要监控其日志的服务器。在本案例中，Logstash 部署在 Apache 服务器上，用于收集 Apache 服务器的日志信息并发送到 Elasticsearch。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 更改主机名</span></span><br><span class="line">hostnamectl set-hostname apache</span><br><span class="line"><span class="comment"># 安装Apahce服务（httpd）</span></span><br><span class="line">yum -y install httpd</span><br><span class="line">systemctl start httpd</span><br><span class="line"><span class="comment"># 查看java环境，没有就安装</span></span><br><span class="line">java -version</span><br><span class="line">yum -y install java</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122173530694.png" alt="image-20251122173530694"></p>
+<p>1.安装并启动logstash</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 上传软件包 logstash-6.7.2.rpm 到/opt目录下</span></span><br><span class="line"><span class="built_in">cd</span> /opt</span><br><span class="line">rpm -ivh logstash-6.7.2.rpm                           </span><br><span class="line">systemctl start logstash.service                      </span><br><span class="line">systemctl <span class="built_in">enable</span> logstash.service</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置软连接</span></span><br><span class="line"><span class="built_in">ln</span> -s /usr/share/logstash/bin/logstash /usr/local/bin/</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122173636532.png" alt="image-20251122173636532"></p>
+<p><img src="/./imgs/image-20251122173747942.png" alt="image-20251122173747942"></p>
+<p>2.测试Logstash</p>
+<blockquote>
+<p>Logstash 命令常用选项：<br>-f：通过这个选项可以指定 Logstash 的配置文件，根据配置文件配置 Logstash 的输入和输出流。<br>-e：从命令行中获取，输入、输出后面跟着字符串，该字符串可以被当作 Logstash 的配置（如果是空，则默认使用 stdin 作为输入，stdout 作为输出）。<br>-t：测试配置文件是否正确，然后退出。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 定义输入和输出流：</span></span><br><span class="line"><span class="comment"># 输入采用标准输入，输出采用标准输出（类似管道）</span></span><br><span class="line">logstash -e <span class="string">&#x27;input &#123; stdin&#123;&#125; &#125; output &#123; stdout&#123;&#125; &#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122173905582.png" alt="image-20251122173905582"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 rubydebug 输出详细格式显示，codec 为一种编解码器</span></span><br><span class="line">logstash -e <span class="string">&#x27;input &#123; stdin&#123;&#125; &#125; output &#123; stdout&#123; codec=&gt;rubydebug &#125; &#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122174010921.png" alt="image-20251122174010921"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 Logstash 将信息写入 Elasticsearch 中</span></span><br><span class="line">logstash -e <span class="string">&#x27;input &#123; stdin&#123;&#125; &#125; output &#123; elasticsearch &#123; hosts=&gt;[&quot;192.168.118.101:9200&quot;] &#125; &#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>输入数据后保存到Elasticsearch 中</p>
+<p><img src="/./imgs/image-20251122174210873.png" alt="image-20251122174210873"></p>
+<p>3.定义logstash配置文件</p>
+<blockquote>
+<p>Logstash 配置文件基本由三部分组成：input、output 以及 filter（可选，根据需要选择使用）。<br>input：表示从数据源采集数据，常见的数据源如Kafka、日志文件等<br>filter：表示数据处理层，包括对数据进行格式化处理、数据类型转换、数据过滤等，支持正则表达式<br>output：表示将Logstash收集的数据经由过滤器处理之后输出到Elasticsearch。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#格式如下：</span></span><br><span class="line">input &#123;...&#125;</span><br><span class="line">filter &#123;...&#125;</span><br><span class="line">output &#123;...&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#在每个部分中，也可以指定多个访问方式。例如，若要指定两个日志来源文件，则格式如下：</span></span><br><span class="line">input &#123;</span><br><span class="line">	file &#123; path =&gt;<span class="string">&quot;/var/log/messages&quot;</span> <span class="built_in">type</span> =&gt;<span class="string">&quot;syslog&quot;</span>&#125;</span><br><span class="line">	file &#123; path =&gt;<span class="string">&quot;/var/log/httpd/access.log&quot;</span> <span class="built_in">type</span> =&gt;<span class="string">&quot;apache&quot;</span>&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#修改 Logstash 配置文件，让其收集系统日志/var/log/messages，并将其输出到 elasticsearch 中。</span></span><br><span class="line"><span class="built_in">chmod</span> +r /var/log/messages					<span class="comment">#让 Logstash 可以读取日志</span></span><br><span class="line"></span><br><span class="line">vim /etc/logstash/conf.d/system.conf</span><br><span class="line">input &#123;</span><br><span class="line">    file&#123;</span><br><span class="line">        path =&gt;<span class="string">&quot;/var/log/messages&quot;</span>						<span class="comment">#指定要收集的日志的位置</span></span><br><span class="line">        <span class="built_in">type</span> =&gt;<span class="string">&quot;system&quot;</span>									<span class="comment">#自定义日志类型标识</span></span><br><span class="line">        start_position =&gt;<span class="string">&quot;beginning&quot;</span>					<span class="comment">#表示从开始处收集</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">output &#123;</span><br><span class="line">    elasticsearch &#123;										<span class="comment">#输出到 elasticsearch</span></span><br><span class="line">        hosts =&gt; [<span class="string">&quot;192.168.118.101:9200&quot;</span>]					<span class="comment">#指定 elasticsearch 服务器的地址和端口</span></span><br><span class="line">        index =&gt;<span class="string">&quot;system-%&#123;+YYYY.MM.dd&#125;&quot;</span>					<span class="comment">#指定输出到 elasticsearch 的索引格式</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">systemctl restart logstash </span><br><span class="line"></span><br><span class="line">浏览器访问 http://192.168.118.101:9100/ 查看索引信息</span><br></pre></td></tr></table></figure>
+
+<p>通过定义配置文件</p>
+<p><img src="/./imgs/image-20251122174634144.png" alt="image-20251122174634144"></p>
+<p><img src="/./imgs/image-20251122174619433.png" alt="image-20251122174619433"></p>
+<p>来定义Logstash收集的数据源，然后经由过滤器处理之后输出到Elasticsearch</p>
+<p><img src="/./imgs/image-20251122174914409.png" alt="image-20251122174914409"></p>
+<h3 id="Kiabana-部署"><a href="#Kiabana-部署" class="headerlink" title="Kiabana 部署"></a>Kiabana 部署</h3><p>在 Node1 节点上操作&#x2F;或者重新开一台机子</p>
+<p>1.安装Kiabana</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#上传软件包 kibana-6.7.2-x86_64.rpm 到/opt目录</span></span><br><span class="line"><span class="built_in">cd</span> /opt</span><br><span class="line">rpm -ivh kibana-6.7.2-x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122175806839.png" alt="image-20251122175806839"></p>
+<p>2.设置 Kibana 的主配置文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/kibana/kibana.yml</span><br><span class="line">##########配置文件内容##########</span><br><span class="line">--2--取消注释，Kiabana 服务的默认监听端口为5601</span><br><span class="line">server.port: 5601</span><br><span class="line">--7--取消注释，设置 Kiabana 的监听地址，0.0.0.0代表所有地址</span><br><span class="line">server.host: &quot;0.0.0.0&quot;</span><br><span class="line">--28--取消注释，设置和 Elasticsearch 建立连接的地址和端口</span><br><span class="line">elasticsearch.hosts: [&quot;http://192.168.118.101:9200&quot;] </span><br><span class="line">--37--取消注释，设置在 elasticsearch 中添加.kibana索引</span><br><span class="line">kibana.index: &quot;.kibana&quot;</span><br><span class="line">##############################</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122175954327.png" alt="image-20251122175954327"></p>
+<p>3.启动 Kibana 服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">systemctl start kibana.service</span><br><span class="line">systemctl enable kibana.service</span><br><span class="line"></span><br><span class="line"># 查询是否运行</span><br><span class="line">netstat -natp | grep 5601</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122183918923.png" alt="image-20251122183918923"></p>
+<p>4.验证Kibana</p>
+<p>浏览器访问 <a target="_blank" rel="noopener" href="http://192.168.118.101:5601/">http://192.168.118.101:5601</a></p>
+<p><img src="/./imgs/image-20251122184001723.png" alt="image-20251122184001723"></p>
+<p><img src="/./imgs/image-20251122184301055.png" alt="image-20251122184301055"></p>
+<p>第一次登录需要添加一个 Elasticsearch 索引：<br>Index Patterns—》create index Patterns<br>&#x2F;&#x2F;输入：system-*			#在索引名中输入之前配置的 Output 前缀“system”</p>
+<p><img src="/./imgs/image-20251122184412418.png" alt="image-20251122184412418"></p>
+<p>然后–》Next step（下一步）–》Time Filter field name–》@timestarmp</p>
+<p>单击 “create index Patterns” 按钮创建，单击 “Discover” 按钮可查看图表信息及日志信息。</p>
+<p><img src="/./imgs/image-20251122184439391.png" alt="image-20251122184439391"></p>
+<p><img src="/./imgs/image-20251122185554937.png" alt="image-20251122185554937"></p>
+<p>数据展示可以分类显示，在“Available Fields”中的“host”，然后单击 “add”按钮，可以看到按照“host”筛选后的结果</p>
+<p><img src="/./imgs/image-20251122185639390.png" alt="image-20251122185639390"></p>
+<p>后面再次创建的步骤—》Management–》index Patterns–》单击 “create index Patterns” 按钮创建</p>
+<p>5.将 Apache 服务器的日志（访问的、错误的）添加到 Elasticsearch 并通过 Kibana 显示</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/logstash/conf.d/apache_log.conf</span><br><span class="line">input &#123;</span><br><span class="line">    file&#123;</span><br><span class="line">        path =&gt; <span class="string">&quot;/etc/httpd/logs/access_log&quot;</span></span><br><span class="line">        <span class="built_in">type</span> =&gt; <span class="string">&quot;access&quot;</span></span><br><span class="line">        start_position =&gt; <span class="string">&quot;beginning&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    file&#123;</span><br><span class="line">        path =&gt; <span class="string">&quot;/etc/httpd/logs/error_log&quot;</span></span><br><span class="line">        <span class="built_in">type</span> =&gt; <span class="string">&quot;error&quot;</span></span><br><span class="line">        start_position =&gt; <span class="string">&quot;beginning&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">output &#123;</span><br><span class="line">    <span class="keyword">if</span> [<span class="built_in">type</span>] == <span class="string">&quot;access&quot;</span> &#123;</span><br><span class="line">        elasticsearch &#123;</span><br><span class="line">            hosts =&gt; [<span class="string">&quot;192.168.118.101:9200&quot;</span>]</span><br><span class="line">            index =&gt; <span class="string">&quot;apache_access-%&#123;+YYYY.MM.dd&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="keyword">if</span> [<span class="built_in">type</span>] == <span class="string">&quot;error&quot;</span> &#123;</span><br><span class="line">        elasticsearch &#123;</span><br><span class="line">            hosts =&gt; [<span class="string">&quot;192.168.118.101:9200&quot;</span>]</span><br><span class="line">            index =&gt; <span class="string">&quot;apache_error-%&#123;+YYYY.MM.dd&#125;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> /etc/logstash/conf.d/</span><br><span class="line">/usr/share/logstash/bin/logstash -f apache_log.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122185835536.png" alt="image-20251122185835536"></p>
+<p>浏览器访问 <a target="_blank" rel="noopener" href="http://192.168.118.101:9100/">http://192.168.118.101:9100</a> 查看索引是否创建</p>
+<p><img src="/./imgs/image-20251122185913472.png" alt="image-20251122185913472"></p>
+<p>浏览器访问 <a target="_blank" rel="noopener" href="http://192.168.118.101:5601/">http://192.168.118.101:5601</a> 登录 Kibana，单击“Create Index Pattern”按钮添加索引， 在索引名中输入之前配置的 Output 前缀 apache_access-<em>，并单击“Create”按钮。在用相同的方法添加 apache_error-<em>索引。<br>选择“Discover”选项卡，在中间下拉列表中选择刚添加的 apache_access-</em> 、apache_error-</em> 索引， 可以查看相应的图表及日志信息。</p>
+<p><img src="/./imgs/CD76E497284AC2B274E0073AFC6CBE33.png" alt="img"></p>
+<h3 id="Filebeat-ELK-部署"><a href="#Filebeat-ELK-部署" class="headerlink" title="Filebeat+ELK 部署"></a>Filebeat+ELK 部署</h3><table>
+<thead>
+<tr>
+<th>配置与名称</th>
+<th>IP</th>
+<th>服务</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Node1节点（2C&#x2F;4G）</td>
+<td>node1&#x2F;192.168.118.101</td>
+<td>Elasticsearch（集群）  Kibana</td>
+</tr>
+<tr>
+<td>Node2节点（2C&#x2F;4G）</td>
+<td>node2&#x2F;192.168.118.102</td>
+<td>Elasticsearch（集群）</td>
+</tr>
+<tr>
+<td>Apache节点</td>
+<td>apache&#x2F;192.168.118.103</td>
+<td>Logstash  Apache</td>
+</tr>
+<tr>
+<td>Filebeat节点</td>
+<td>filebeat&#x2F;192.168.118.104</td>
+<td>Filebeat</td>
+</tr>
+</tbody></table>
+<p><strong>工作流程：</strong></p>
+<p>1.日志首先从各种来源生成，filebeat 通过多种输入方式收集这些日志，转发给logstash。</p>
+<p>2.Logstash 对日志进行处理使用 Grok、JSON、正则表达式等解析器提取结构化数据，处理完成的日志转换为标准格式。</p>
+<p>3.处理后的日志被发送到 Elasticsearch 存储，Elasticsearch 接收数据后进行索引处理，数据分片存储。</p>
+<p>4.最后，通过 Kibana 查询和分析这些日志。Kibana 连接到 Elasticsearch 进行查询，用户可以搜索特定的日志信息、创建可视化报表，还可以设置告警规则在异常情况发生时通知相关人员。</p>
+<p><img src="/./imgs/AB2025A383871CFF9B478B6A98BB2659.png" alt="img"></p>
+<h4 id="Filebeat节点部署"><a href="#Filebeat节点部署" class="headerlink" title="Filebeat节点部署"></a>Filebeat节点部署</h4><p>1.安装 Filebeat 两种</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ① 二进制解包即可</span></span><br><span class="line"><span class="comment">#上传软件包 filebeat-6.7.2-linux-x86_64.tar.gz 到/opt目录</span></span><br><span class="line">tar zxvf filebeat-6.7.2-linux-x86_64.tar.gz</span><br><span class="line"><span class="built_in">mv</span> filebeat-6.7.2-linux-x86_64/ /usr/local/filebeat</span><br><span class="line"></span><br><span class="line"><span class="comment"># ② 使用rpm包安装 上传包</span></span><br><span class="line">rpm -ivh filebeat-6.6.1-x86_64.rpm </span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122192216842.png" alt="image-20251122192216842"></p>
+<p>2.在 Logstash 组件所在节点上新建一个 Logstash 配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">vim logstash.conf</span><br><span class="line"><span class="comment"># 下面是配置文件内容</span></span><br><span class="line">input &#123;</span><br><span class="line">    beats &#123;</span><br><span class="line">        port =&gt; <span class="string">&quot;5044&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">output &#123;</span><br><span class="line">    elasticsearch &#123;</span><br><span class="line">        hosts =&gt; [<span class="string">&quot;192.168.118.92:9200&quot;</span>]</span><br><span class="line">        index =&gt; <span class="string">&quot;%&#123;[fields][service_name]&#125;-%&#123;+YYYY.MM.dd&#125;&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    stdout &#123;</span><br><span class="line">        codec =&gt; rubydebug</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#启动 logstash</span></span><br><span class="line">logstash -f logstash.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122194111687.png" alt="image-20251122194111687"></p>
+<p>3.设置 filebeat 的主配置文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ① 如果使用第一种方式按照如下配置</span></span><br><span class="line"><span class="built_in">cd</span> /usr/local/filebeat</span><br><span class="line"></span><br><span class="line">vim filebeat.yml</span><br><span class="line"></span><br><span class="line"><span class="comment">################配置文件内容###################</span></span><br><span class="line">filebeat.prospectors:</span><br><span class="line">- <span class="built_in">type</span>: <span class="built_in">log</span>         <span class="comment">#指定 log 类型，从日志文件中读取消息</span></span><br><span class="line">  enabled: <span class="literal">true</span></span><br><span class="line">  paths:</span><br><span class="line">    - /var/log/messages       <span class="comment">#指定监控的日志文件</span></span><br><span class="line">    - /var/log/*.<span class="built_in">log</span></span><br><span class="line">  fields:           <span class="comment">#可以使用 fields 配置选项设置一些参数字段添加到 output 中</span></span><br><span class="line">    service_name: filebeat</span><br><span class="line">    log_type: <span class="built_in">log</span></span><br><span class="line">    service_id: 192.168.118.104</span><br><span class="line"></span><br><span class="line">--------------Elasticsearch output-------------------</span><br><span class="line">(全部注释掉)</span><br><span class="line"></span><br><span class="line">----------------Logstash output---------------------</span><br><span class="line">output.logstash:</span><br><span class="line">  hosts: [<span class="string">&quot;192.168.118.103:5044&quot;</span>]      <span class="comment">#指定 logstash 的 IP 和端口</span></span><br><span class="line"><span class="comment">##########################################</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#启动 filebeat</span></span><br><span class="line">./filebeat -e -c filebeat.yml</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># ② rpm包方式安装    配置都一样</span></span><br><span class="line">vim /etc/filebeat/filebeat.yml</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251122192937608.png" alt="image-20251122192937608"></p>
+<p><img src="/./imgs/image-20251122194132079.png" alt="image-20251122194132079"></p>
+<p>4．浏览器访问 <a target="_blank" rel="noopener" href="http://192.168.118.92:5601/">http://192.168.118.92:5601</a> 登录 Kibana，</p>
+<p>先点击Management–》“Index Pattern”–》“Create Index Pattern”按钮创建–》选择输入“Index Pattern”–》然后Next step（下一步）–》Time Filter field name–》@timestarmp</p>
+<p>单击 “Discover” 按钮可查看图表信息及日志信息。  按钮添加索引“filebeat-*”</p>
+<p><img src="/./imgs/5A2A62FECF565E51537A4461B96F2330.png" alt="img"></p>
+<h2 id="收集其他日志的配置方案"><a href="#收集其他日志的配置方案" class="headerlink" title="收集其他日志的配置方案"></a>收集其他日志的配置方案</h2><p>在对应服务的服务器上安装filebeat，配置filebeat.yml配置文件采集日志文件，输出给logstash</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">filebeat.prospectors:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">log</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">paths:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/log/messages</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/log/*.log</span></span><br><span class="line">    <span class="attr">fields:</span></span><br><span class="line">      <span class="attr">service_name:</span> <span class="string">filebeat</span></span><br><span class="line">      <span class="attr">log_type:</span> <span class="string">log</span></span><br><span class="line">      <span class="attr">service_id:</span> <span class="number">192.168</span><span class="number">.118</span><span class="number">.104</span></span><br><span class="line">  <span class="comment"># 收集httpd的日志文件</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">log</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">paths:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/etc/httpd/log/*.log</span></span><br><span class="line">    <span class="attr">fields:</span></span><br><span class="line">      <span class="attr">service_name:</span> <span class="string">apache</span></span><br><span class="line">      <span class="attr">log_type:</span> <span class="string">log</span></span><br><span class="line">      <span class="attr">service_id:</span> <span class="number">192.168</span><span class="number">.118</span><span class="number">.104</span></span><br><span class="line">  <span class="comment"># 收集mysql的日志文件</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">type:</span> <span class="string">log</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">paths:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/log/mysqld.log</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/var/log/mysql/*.log</span></span><br><span class="line">    <span class="attr">fields:</span></span><br><span class="line">      <span class="attr">service_name:</span> <span class="string">mysql</span></span><br><span class="line">      <span class="attr">log_type:</span> <span class="string">database</span></span><br><span class="line">      <span class="attr">service_id:</span> <span class="number">192.168</span><span class="number">.118</span><span class="number">.104</span></span><br><span class="line"><span class="comment"># 采集文件输出到logstash进行处理整合</span></span><br><span class="line"><span class="attr">output.logstash:</span></span><br><span class="line">  <span class="attr">hosts:</span> [<span class="string">&quot;192.168.118.103:5044&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>注意：配置时注意日志是否有读权限</p>
+<p>读取信息：</p>
+<p><img src="/./imgs/image-20251124102503403.png" alt="image-20251124102503403"></p>
+<p>生成的es数据：</p>
+<p><img src="/./imgs/image-20251124102554164.png" alt="image-20251124102554164"></p>
+<p><img src="/./imgs/image-20251124102623412.png" alt="image-20251124102623412"></p>
+<p>运行效果：</p>
+<p><img src="/./imgs/image-20251124102637783.png" alt="image-20251124102637783"></p>
+<h2 id="拓展——配置MySQL日志采集"><a href="#拓展——配置MySQL日志采集" class="headerlink" title="拓展——配置MySQL日志采集"></a>拓展——配置MySQL日志采集</h2><h3 id="确认-MySQL-日志配置"><a href="#确认-MySQL-日志配置" class="headerlink" title="确认 MySQL 日志配置"></a>确认 MySQL 日志配置</h3><p>首先需要在 MySQL 服务器上启用相关日志。编辑 MySQL 配置文件（通常是 <code>/etc/mysql/my.cnf</code> 或 <code>/etc/my.cnf</code>），添加以下配置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启用错误日志</span></span><br><span class="line">log_error = /var/log/mysqld.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启用慢查询日志</span></span><br><span class="line">slow_query_log = 1</span><br><span class="line">slow_query_log_file = /var/log/mysql/slow.log</span><br><span class="line">long_query_time = 2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启用通用查询日志（可选，日志量很大）</span></span><br><span class="line">general_log = 0</span><br><span class="line">general_log_file = /var/log/mysql/general.log</span><br></pre></td></tr></table></figure>
+
+<p>重启 MySQL 服务使配置生效。</p>
+<h3 id="配置-Filebeat"><a href="#配置-Filebeat" class="headerlink" title="配置 Filebeat"></a>配置 Filebeat</h3><p>修改 Filebeat 配置文件（<code>filebeat.yml</code>），添加 MySQL 日志的输入配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">filebeat.inputs:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">type:</span> <span class="string">log</span></span><br><span class="line">  <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">paths:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/var/log/mysqld.log</span></span><br><span class="line">  <span class="attr">fields:</span></span><br><span class="line">    <span class="attr">log_type:</span> <span class="string">mysql_error</span></span><br><span class="line">    <span class="attr">service:</span> <span class="string">mysql</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span> <span class="attr">type:</span> <span class="string">log</span></span><br><span class="line">  <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">paths:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/var/log/mysql/slow.log</span></span><br><span class="line">  <span class="attr">fields:</span></span><br><span class="line">    <span class="attr">log_type:</span> <span class="string">mysql_slow</span></span><br><span class="line">    <span class="attr">service:</span> <span class="string">mysql</span></span><br><span class="line"></span><br><span class="line"><span class="attr">output.logstash:</span></span><br><span class="line">  <span class="attr">hosts:</span> [<span class="string">&quot;localhost:5044&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>确保 Filebeat 运行的用户有<strong>权限</strong>读取 MySQL 日志文件。重启 Filebeat。</p>
+</blockquote>
+<h2 id="常见问题排查"><a href="#常见问题排查" class="headerlink" title="常见问题排查"></a>常见问题排查</h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>原因</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Elasticsearch节点离线</td>
+<td>内存不足或网络问题</td>
+<td>增加内存、检查网络连接</td>
+</tr>
+<tr>
+<td>集群状态为yellow</td>
+<td>某些分片副本未分配</td>
+<td>检查节点数量和磁盘空间</td>
+</tr>
+<tr>
+<td>磁盘使用率达90%</td>
+<td>索引过多或数据未清理</td>
+<td>添加磁盘挂载或删除过期索引</td>
+</tr>
+<tr>
+<td>日志未被采集</td>
+<td>日志路径错误或权限不足</td>
+<td>检查路径配置和文件权限</td>
+</tr>
+<tr>
+<td>Kibana无法连接ES</td>
+<td>网络不通或ES未启动</td>
+<td>验证ES服务状态和连接地址</td>
+</tr>
+</tbody></table>
+<h2 id="关键概念速记"><a href="#关键概念速记" class="headerlink" title="关键概念速记"></a>关键概念速记</h2><ul>
+<li><strong>索引（Index）</strong>：类似数据库中的表，按时间分片管理</li>
+<li><strong>类型（Type）</strong>：类似表中的字段分类（ES7.0后弃用）</li>
+<li><strong>分片（Shard）</strong>：索引被分成多个分片，支持分布式存储</li>
+<li><strong>副本（Replica）</strong>：分片的备份副本，提高可用性</li>
+<li><strong>倒排索引</strong>：将文档中的词映射到包含它的文档，实现快速全文搜索</li>
+<li><strong>Grok</strong>：Logstash中用于解析日志的强大工具</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/11/22/ELK%E4%BC%81%E4%B8%9A%E7%BA%A7%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F/">http://example.com/2025/11/22/ELK%E4%BC%81%E4%B8%9A%E7%BA%A7%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/11/24/Docker%20%E5%BF%AB%E9%80%9F%E6%89%8B%E5%86%8C/" title="Docker快速手册"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Docker快速手册</div></div><div class="info-2"><div class="info-item-1">Docker 快速手册第一部分：Docker 快速手册1. Docker 基础命令速查1.1 系统信息查看12345docker --version                    # 查看 Docker 版本docker info                         # 查看 Docker 系统信息docker ps                          # 查看运行中的容器docker ps -a                       # 查看所有容器（包括已停止）docker images                      # 查看本地镜像列表  1.2 镜像操作镜像搜索与下载123docker search nginx                                    # 搜索镜像docker pull nginx:latest                             # 拉取镜像docker pull nginx:latest --platform linux/amd64      # 指定...</div></div></div></a><a class="pagination-related" href="/2025/11/20/Redis/" title="Redis"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Redis</div></div><div class="info-2"><div class="info-item-1">Redis一、关系型数据库和非关系型数据库关系型数据库（SQL） 特点： 表格模型（行 + 列） 使用 SQL 语言 数据必须符合表结构 强事务 ACID 纵向扩展（升级硬件）   常见产品：MySQL、Oracle、PostgreSQL 适用：结构化数据、一致性要求高（如银行转账） 举例：银行转账：A 转账给 B，必须保证 A 扣钱成功的同时 B 收钱成功（事务保证一致性）  非关系型数据库（NoSQL） 特点： 键值对 &#x2F; 文档 &#x2F; 图结构存储 无需固定表结构 高并发、高可扩展 横向扩展（增加服务器节点）   常见产品：Redis、MongoDB、HBase、Memcached 适用：非结构化数据、高并发场景（如微信聊天消息） 举例：微信聊天：一条消息可能是文字、图片、语音，不适合用表格存储，更适合用文档型数据库  二、Redis简介是什么 定义：开源、C 语言编写、基于内存、支持持久化的键值数据库 用途：缓存系统，为MySQL做缓冲层存储高热数据  有什么用？ 给MySQL做缓冲层：存储高热数据，减轻数据库压力 存储非结构化数据：灵活存储各种数据类型 缓...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#ELK%E4%BC%81%E4%B8%9A%E7%BA%A7%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F"><span class="toc-number">1.</span> <span class="toc-text">ELK企业级日志分析系统</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ELK%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">ELK是什么？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8ELK%EF%BC%9F"><span class="toc-number">1.2.</span> <span class="toc-text">为什么要用ELK？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">1.3.</span> <span class="toc-text">工作原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ELK%E9%83%A8%E7%BD%B2"><span class="toc-number">1.4.</span> <span class="toc-text">ELK部署</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">1.4.1.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Elasticsearch-%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2"><span class="toc-number">1.4.2.</span> <span class="toc-text">Elasticsearch 集群部署</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">部署流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8B%93%E5%B1%95%EF%BC%9AElasticsearch-head"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">拓展：Elasticsearch-head</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Logstash-%E9%83%A8%E7%BD%B2"><span class="toc-number">1.4.3.</span> <span class="toc-text">Logstash 部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kiabana-%E9%83%A8%E7%BD%B2"><span class="toc-number">1.4.4.</span> <span class="toc-text">Kiabana 部署</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Filebeat-ELK-%E9%83%A8%E7%BD%B2"><span class="toc-number">1.4.5.</span> <span class="toc-text">Filebeat+ELK 部署</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Filebeat%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2"><span class="toc-number">1.4.5.1.</span> <span class="toc-text">Filebeat节点部署</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%94%B6%E9%9B%86%E5%85%B6%E4%BB%96%E6%97%A5%E5%BF%97%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%B9%E6%A1%88"><span class="toc-number">1.5.</span> <span class="toc-text">收集其他日志的配置方案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%93%E5%B1%95%E2%80%94%E2%80%94%E9%85%8D%E7%BD%AEMySQL%E6%97%A5%E5%BF%97%E9%87%87%E9%9B%86"><span class="toc-number">1.6.</span> <span class="toc-text">拓展——配置MySQL日志采集</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A1%AE%E8%AE%A4-MySQL-%E6%97%A5%E5%BF%97%E9%85%8D%E7%BD%AE"><span class="toc-number">1.6.1.</span> <span class="toc-text">确认 MySQL 日志配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-Filebeat"><span class="toc-number">1.6.2.</span> <span class="toc-text">配置 Filebeat</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="toc-number">1.7.</span> <span class="toc-text">常见问题排查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E9%94%AE%E6%A6%82%E5%BF%B5%E9%80%9F%E8%AE%B0"><span class="toc-number">1.8.</span> <span class="toc-text">关键概念速记</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/24/Docker%20%E5%BF%AB%E9%80%9F%E6%89%8B%E5%86%8C/" title="Docker快速手册">Docker快速手册</a><time datetime="2025-11-24T10:54:40.000Z" title="Created 2025-11-24 18:54:40">2025-11-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/22/ELK%E4%BC%81%E4%B8%9A%E7%BA%A7%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F/" title="ELK企业级日志分析系统">ELK企业级日志分析系统</a><time datetime="2025-11-22T05:26:17.000Z" title="Created 2025-11-22 13:26:17">2025-11-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/20/Redis/" title="Redis">Redis</a><time datetime="2025-11-20T06:09:27.000Z" title="Created 2025-11-20 14:09:27">2025-11-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/20/Mysql%E5%BF%AB%E9%80%9F%E6%89%8B%E5%86%8C/" title="Mysql快速手册">Mysql快速手册</a><time datetime="2025-11-20T03:16:48.000Z" title="Created 2025-11-20 11:16:48">2025-11-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/20/Mysql%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" title="Mysql相关知识">Mysql相关知识</a><time datetime="2025-11-20T03:16:15.000Z" title="Created 2025-11-20 11:16:15">2025-11-20</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
