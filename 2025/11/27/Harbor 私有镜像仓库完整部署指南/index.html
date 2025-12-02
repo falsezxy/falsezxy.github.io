@@ -1,0 +1,292 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Harbor 私有镜像仓库完整部署指南 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Harbor 私有镜像仓库完整部署指南简介Harbor 是由 VMware 开源的企业级容器镜像仓库解决方案，支持镜像存储、版本管理、访问控制等丰富功能。本文将详细介绍如何搭建一套完整的 Harbor 私有镜像系统。  第一步：环境准备准备好Docker 安装 Docker ComposeHarbor 依赖 Docker Compose 来管理各个微服务组件，首先需要部署该工具： 123curl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Harbor 私有镜像仓库完整部署指南">
+<meta property="og:url" content="http://example.com/2025/11/27/Harbor%20%E7%A7%81%E6%9C%89%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93%E5%AE%8C%E6%95%B4%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="Harbor 私有镜像仓库完整部署指南简介Harbor 是由 VMware 开源的企业级容器镜像仓库解决方案，支持镜像存储、版本管理、访问控制等丰富功能。本文将详细介绍如何搭建一套完整的 Harbor 私有镜像系统。  第一步：环境准备准备好Docker 安装 Docker ComposeHarbor 依赖 Docker Compose 来管理各个微服务组件，首先需要部署该工具： 123curl">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-11-27T10:54:40.000Z">
+<meta property="article:modified_time" content="2025-11-27T11:30:56.719Z">
+<meta property="article:author" content="Felix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Harbor 私有镜像仓库完整部署指南",
+  "url": "http://example.com/2025/11/27/Harbor%20%E7%A7%81%E6%9C%89%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93%E5%AE%8C%E6%95%B4%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-11-27T10:54:40.000Z",
+  "dateModified": "2025-11-27T11:30:56.719Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/11/27/Harbor%20%E7%A7%81%E6%9C%89%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93%E5%AE%8C%E6%95%B4%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Harbor 私有镜像仓库完整部署指南',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Harbor 私有镜像仓库完整部署指南</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Harbor 私有镜像仓库完整部署指南</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-11-27T10:54:40.000Z" title="Created 2025-11-27 18:54:40">2025-11-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-11-27T11:30:56.719Z" title="Updated 2025-11-27 19:30:56">2025-11-27</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Harbor-私有镜像仓库完整部署指南"><a href="#Harbor-私有镜像仓库完整部署指南" class="headerlink" title="Harbor 私有镜像仓库完整部署指南"></a>Harbor 私有镜像仓库完整部署指南</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Harbor 是由 VMware 开源的企业级容器镜像仓库解决方案，支持镜像存储、版本管理、访问控制等丰富功能。本文将详细介绍如何搭建一套完整的 Harbor 私有镜像系统。</p>
+<hr>
+<h2 id="第一步：环境准备"><a href="#第一步：环境准备" class="headerlink" title="第一步：环境准备"></a>第一步：环境准备</h2><p>准备好Docker</p>
+<h3 id="安装-Docker-Compose"><a href="#安装-Docker-Compose" class="headerlink" title="安装 Docker Compose"></a>安装 Docker Compose</h3><p>Harbor 依赖 Docker Compose 来管理各个微服务组件，首先需要部署该工具：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -L https://github.com/docker/compose/releases/download/1.21.1/docker-compose-$(<span class="built_in">uname</span> -s)-$(<span class="built_in">uname</span> -m) -o /usr/local/bin/docker-compose</span><br><span class="line"><span class="built_in">chmod</span> +x /usr/local/bin/docker-compose</span><br><span class="line">docker-compose --version</span><br></pre></td></tr></table></figure>
+
+<h3 id="获取-Harbor-安装包"><a href="#获取-Harbor-安装包" class="headerlink" title="获取 Harbor 安装包"></a>获取 Harbor 安装包</h3><p>从 GitHub 官方仓库下载对应版本的离线安装包并解压：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/goharbor/harbor/releases/download/v2.4.0/harbor-offline-installer-v2.4.0.tgz</span><br><span class="line">tar zxvf harbor-offline-installer-v2.4.0.tgz -C /usr/local/</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第二步：核心配置"><a href="#第二步：核心配置" class="headerlink" title="第二步：核心配置"></a>第二步：核心配置</h2><h3 id="修改-Harbor-配置文件"><a href="#修改-Harbor-配置文件" class="headerlink" title="修改 Harbor 配置文件"></a>修改 Harbor 配置文件</h3><p>进入 Harbor 目录，编辑 <code>harbor.cfg</code> 配置文件以适配实际部署环境：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/local/harbor/harbor.cfg</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251127190329962.png" alt="image-20251127190329962"></p>
+<h3 id="必需参数配置"><a href="#必需参数配置" class="headerlink" title="必需参数配置"></a>必需参数配置</h3><table>
+<thead>
+<tr>
+<th>参数名</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>hostname</code></td>
+<td>Harbor 访问地址，支持 IP 或域名</td>
+<td>192.168.118.101 或 hub.example.com</td>
+</tr>
+<tr>
+<td><code>ui_url_protocol</code></td>
+<td>UI 访问协议</td>
+<td>http 或 https</td>
+</tr>
+<tr>
+<td><code>harbor_admin_password</code></td>
+<td>管理员初始密码</td>
+<td>Harbor12345</td>
+</tr>
+<tr>
+<td><code>db_password</code></td>
+<td>MySQL 数据库密码</td>
+<td>自定义安全密码</td>
+</tr>
+<tr>
+<td><code>max_job_workers</code></td>
+<td>镜像复制作业线程数</td>
+<td>10</td>
+</tr>
+</tbody></table>
+<h3 id="可选参数详解"><a href="#可选参数详解" class="headerlink" title="可选参数详解"></a>可选参数详解</h3><p><strong>认证相关：</strong> 支持数据库认证（db_auth）和 LDAP 认证（ldap_auth），默认使用数据库存储凭证。</p>
+<p><strong>用户管理：</strong> 可通过 <code>self_registration</code> 参数控制是否允许用户自注册，禁用后仅管理员可创建新用户。</p>
+<p><strong>权限控制：</strong> 使用 <code>project_creation_restriction</code> 参数限制项目创建权限，设为 “adminonly” 时只有管理员可创建项目。</p>
+<p><strong>令牌有效期：</strong> <code>Token_expiration</code> 参数控制由令牌服务生成的令牌过期时间，默认 30 分钟。</p>
+<p><strong>远程证书验证：</strong> <code>verify_remote_cert</code> 参数决定是否验证远程仓库的 SSL&#x2F;TLS 证书，自签名证书可设为 off 跳过验证。</p>
+<h3 id="存储后端配置"><a href="#存储后端配置" class="headerlink" title="存储后端配置"></a>存储后端配置</h3><p>默认情况下，Harbor 将镜像数据保存在本地文件系统 <code>/data/registry</code> 目录。生产环境建议配置对象存储服务（如 S3、Ceph）以提升可扩展性，需修改 <code>common/templates/registry/config.yml</code> 文件。</p>
+<hr>
+<h2 id="第三步：启动服务"><a href="#第三步：启动服务" class="headerlink" title="第三步：启动服务"></a>第三步：启动服务</h2><h3 id="生成配置环境"><a href="#生成配置环境" class="headerlink" title="生成配置环境"></a>生成配置环境</h3><p>执行 prepare 脚本为 Harbor 容器生成必要的初始化环境：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/local/harbor/</span><br><span class="line">./prepare <span class="comment"># 会生成docker-compose.yml文件</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251127190405036.png" alt="image-20251127190405036"></p>
+<h3 id="启动所有容器"><a href="#启动所有容器" class="headerlink" title="启动所有容器"></a>启动所有容器</h3><p>运行安装脚本拉取镜像并启动完整的 Harbor 服务栈：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./install.sh</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251127190446089.png" alt="image-20251127190446089"></p>
+<p><img src="/./imgs/image-20251127190508172.png" alt="image-20251127190508172"></p>
+<h3 id="验证服务状态"><a href="#验证服务状态" class="headerlink" title="验证服务状态"></a>验证服务状态</h3><p><img src="/./imgs/image-20251127190543482.png" alt="image-20251127190543482"></p>
+<p>使用 Docker Compose 命令查看各组件运行状态，确保所有容器均处于 “Up” 状态：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/local/harbor/</span><br><span class="line">docker-compose ps</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第四步：初始化操作"><a href="#第四步：初始化操作" class="headerlink" title="第四步：初始化操作"></a>第四步：初始化操作</h2><h3 id="首次登录与项目创建"><a href="#首次登录与项目创建" class="headerlink" title="首次登录与项目创建"></a>首次登录与项目创建</h3><p>在浏览器中访问 <code>http://192.168.118.101</code>，使用默认管理员账户（admin&#x2F;Harbor12345）登录 Web UI 界面。</p>
+<p><img src="/./imgs/image-20251127190625851.png" alt="image-20251127190625851"></p>
+<p><img src="/./imgs/image-20251127190644008.png" alt="image-20251127190644008"></p>
+<p>点击 “+项目” 按钮创建新项目，例如命名为 “test”，确认后项目创建完成。</p>
+<p><img src="/./imgs/image-20251127190730998.png" alt="image-20251127190730998"></p>
+<h3 id="本地镜像推送测试"><a href="#本地镜像推送测试" class="headerlink" title="本地镜像推送测试"></a>本地镜像推送测试</h3><p>在 Harbor 服务器本地进行镜像操作测试：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 登录 Harbor</span></span><br><span class="line">docker login -u admin -p Harbor12345 http://127.0.0.1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 拉取测试镜像</span></span><br><span class="line">docker pull nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 为镜像打标签</span></span><br><span class="line">docker tag nginx:latest 127.0.0.1/test/nginx:v1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 推送镜像到私有仓库</span></span><br><span class="line">docker push 127.0.0.1/test/nginx:v1</span><br></pre></td></tr></table></figure>
+
+<p>登录</p>
+<p><img src="/./imgs/image-20251127190816230.png" alt="image-20251127190816230"></p>
+<p>打标签并推送到私有仓库</p>
+<p><img src="/./imgs/image-20251127191225776.png" alt="image-20251127191225776"></p>
+<p>完成后在 Harbor Web 界面的项目目录下可以看到已推送的镜像及其详细信息。</p>
+<p><img src="/./imgs/image-20251127191248136.png" alt="image-20251127191248136"></p>
+<hr>
+<h2 id="第五步：客户端接入"><a href="#第五步：客户端接入" class="headerlink" title="第五步：客户端接入"></a>第五步：客户端接入</h2><h3 id="解决-HTTP-与-HTTPS-的兼容性问题"><a href="#解决-HTTP-与-HTTPS-的兼容性问题" class="headerlink" title="解决 HTTP 与 HTTPS 的兼容性问题"></a>解决 HTTP 与 HTTPS 的兼容性问题</h3><p>远程客户端直接访问会遇到 HTTPS 协议错误，原因是 Docker Registry 默认使用 HTTPS，而私有仓库服务使用 HTTP。</p>
+<p><strong>错误日志示例：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error response from daemon: Get https://192.168.118.101/v2/: dial tcp 192.168.118.101:443: connect: connection refused</span><br></pre></td></tr></table></figure>
+
+<h3 id="Docker-守护进程配置"><a href="#Docker-守护进程配置" class="headerlink" title="Docker 守护进程配置"></a>Docker 守护进程配置</h3><p>修改客户端主机的 Docker 启动配置，添加不安全仓库白名单参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/lib/systemd/system/docker.service</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>ExecStart</code> 行添加 <code>--insecure-registry</code> 参数：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ExecStart</span>=/usr/bin/dockerd -H fd:// --insecure-registry <span class="number">192.168</span>.<span class="number">118.101</span> --containerd=/run/containerd/containerd.sock</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251127191451289.png" alt="image-20251127191451289"></p>
+<h3 id="重启-Docker-并验证连接"><a href="#重启-Docker-并验证连接" class="headerlink" title="重启 Docker 并验证连接"></a>重启 Docker 并验证连接</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl restart docker</span><br><span class="line">docker login -u admin -p Harbor12345 http://192.168.118.101</span><br></pre></td></tr></table></figure>
+
+<p>登录成功后，凭证会自动保存到 <code>/root/.docker/config.json</code>，后续操作无需重复登录。</p>
+<p><img src="/./imgs/image-20251127192728331.png" alt="image-20251127192728331"></p>
+<hr>
+<h2 id="第六步：用户与权限管理"><a href="#第六步：用户与权限管理" class="headerlink" title="第六步：用户与权限管理"></a>第六步：用户与权限管理</h2><h3 id="创建普通用户"><a href="#创建普通用户" class="headerlink" title="创建普通用户"></a>创建普通用户</h3><p>在 Web UI 系统管理 → 用户管理中，点击 “+用户” 按钮添加新用户：</p>
+<ul>
+<li>用户名：yjs-zhangsan</li>
+<li>邮箱：<a href="mailto:&#121;&#x6a;&#x73;&#45;&#122;&#104;&#97;&#x6e;&#103;&#115;&#x61;&#110;&#x40;&#x65;&#x78;&#97;&#109;&#112;&#x6c;&#x65;&#46;&#99;&#x6f;&#109;">yjs-zhangsan@example.com</a></li>
+<li>密码：设置复杂密码确保安全</li>
+</ul>
+<h3 id="分配项目成员"><a href="#分配项目成员" class="headerlink" title="分配项目成员"></a>分配项目成员</h3><p>在项目详情页的成员选项卡中，将用户添加为项目成员并设置角色（如开发人员、维护者等）。</p>
+<h3 id="普通用户操作示例"><a href="#普通用户操作示例" class="headerlink" title="普通用户操作示例"></a>普通用户操作示例</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用普通账户登录</span></span><br><span class="line">docker login -u yjs-zhangsan -p Abc123456 http://192.168.118.101</span><br><span class="line"></span><br><span class="line"><span class="comment"># 拉取项目中的镜像</span></span><br><span class="line">docker pull 192.168.10.23/test/nginx:v1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 上传新版本镜像</span></span><br><span class="line">docker pull cirros</span><br><span class="line">docker tag cirros:latest 192.168.118.101/test/cirros:v2</span><br><span class="line">docker push 192.168.118.101/test/cirros:v2</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第七步：运维管理"><a href="#第七步：运维管理" class="headerlink" title="第七步：运维管理"></a>第七步：运维管理</h2><h3 id="配置修改与重启"><a href="#配置修改与重启" class="headerlink" title="配置修改与重启"></a>配置修改与重启</h3><p>若需调整可选参数，先停止现有实例，更新配置文件后重新启动：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/local/harbor</span><br><span class="line">docker-compose down -v</span><br><span class="line">vim harbor.yml</span><br><span class="line">./prepare</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong> 只能修改可选参数，必需参数的变更需要重新安装。</p>
+<h3 id="防火墙问题处理"><a href="#防火墙问题处理" class="headerlink" title="防火墙问题处理"></a>防火墙问题处理</h3><p>若启动时遇到 iptables 错误，需要重启防火墙服务：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart firewalld.service</span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<h3 id="镜像数据备份"><a href="#镜像数据备份" class="headerlink" title="镜像数据备份"></a>镜像数据备份</h3><p>Harbor 的持久化数据存储位置如下：</p>
+<ul>
+<li><strong>镜像数据：</strong> <code>/data/registry/</code> 目录</li>
+<li><strong>数据库数据：</strong> <code>/data/database/</code> 目录</li>
+<li><strong>操作日志：</strong> <code>/var/log/harbor/</code> 目录</li>
+</ul>
+<p>执行数据备份：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /data/registry/docker/registry/v2/repositories/test</span><br><span class="line">tar zcvf harbor-backup.tar.gz ./*</span><br></pre></td></tr></table></figure>
+
+<h3 id="服务迁移与清理"><a href="#服务迁移与清理" class="headerlink" title="服务迁移与清理"></a>服务迁移与清理</h3><p>迁移前停止服务并备份数据，完全卸载时清空所有持久化数据：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/local/harbor</span><br><span class="line">docker-compose down -v</span><br><span class="line"><span class="built_in">rm</span> -r /data/database</span><br><span class="line"><span class="built_in">rm</span> -r /data/registry</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Harbor 提供了从基础设施到应用层的完整镜像管理解决方案。通过本指南的配置步骤，你可以快速搭建满足企业需求的私有镜像仓库，实现镜像的安全存储、版本控制和权限隔离。在实际部署中，建议根据业务规模选择合适的存储后端，配置可靠的备份策略，定期检查操作日志以确保系统稳定运行。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/11/27/Harbor%20%E7%A7%81%E6%9C%89%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93%E5%AE%8C%E6%95%B4%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/">http://example.com/2025/11/27/Harbor%20%E7%A7%81%E6%9C%89%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93%E5%AE%8C%E6%95%B4%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/12/01/Ansible/" title="Docker快速手册"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Docker快速手册</div></div><div class="info-2"><div class="info-item-1">Ansible 完整学习笔记目录 Ansible 核心概念 环境部署 Ansible 命令行模块 Ansible Playbook Ansible 循环与条件 Ansible Roles 快速手册 面试题   Ansible 核心概念什么是 Ansible？Ansible 是一个基于 Python 开发的开源自动化工具，用于进行配置管理、应用部署、任务编排等工作。它的核心理念是”无Agent”架构，通过 SSH 协议对远程主机进行管理。 Ansible 的核心特性   特性 说明    Agentless 无需在被管理主机上安装任何代理程序   SSH连接 基于 SSH 进行远程连接和操作   幂等性 多次执行相同操作，结果一致   模块化 工作基于模块，每个模块执行特定任务   批量操作 可同时管理成百上千台主机   易于扩展 支持自定义模块和插件   Ansible 工作流程12345678910111213用户执行命令/Playbook        ↓Ansible 解析配置文件        ↓根据主机清单定位目标主机        ↓生成临时执行文件        ↓...</div></div></div></a><a class="pagination-related" href="/2025/11/27/Docker%20%E6%9E%84%E5%BB%BA%E5%89%8D%E5%90%8E%E7%AB%AF%E9%A1%B9%E7%9B%AERuo-Yi/" title="Docker构建前后端项目RuoYi"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Docker构建前后端项目RuoYi</div></div><div class="info-2"><div class="info-item-1">Docker 构建前后端项目 RuoYi一、项目概述什么是 RuoYi？RuoYi 是一个开源的前后端分离式管理系统，提供了完整的企业级应用框架。它包含：  前端：Vue.js 构建的单页面应用（SPA） 后端：Spring Boot 的 RESTful API 服务 数据库：MySQL 数据存储 缓存：Redis 缓存系统  应用场景   场景 使用方式    OA系统 在 RuoYi 基础上添加请假、审批、工资条管理   ERP系统 添加采购、销售、库存、财务等模块   CRM系统 添加客户、销售机会、合同管理   电商后台 添加商品、订单、库存、营销管理   学校管理系统 添加学生、成绩、课程管理   为什么选择 RuoYi？ 开箱即用：不用从零开始写权限、菜单、日志等基础功能 完整文档：有详细的使用和二次开发文档 活跃社区：遇到问题有人帮忙解答 代码质量高：遵循企业级开发规范 前后端分离：便于团队协作，前端和后端独立开发   二、系统架构与数据流12345678910111213用户浏览器    ↓[ Nginx ]  ← 处理静态文件 + 代理 API 请求    ↓ ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">30</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Harbor-%E7%A7%81%E6%9C%89%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93%E5%AE%8C%E6%95%B4%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97"><span class="toc-number">1.</span> <span class="toc-text">Harbor 私有镜像仓库完整部署指南</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">1.2.</span> <span class="toc-text">第一步：环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-Docker-Compose"><span class="toc-number">1.2.1.</span> <span class="toc-text">安装 Docker Compose</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96-Harbor-%E5%AE%89%E8%A3%85%E5%8C%85"><span class="toc-number">1.2.2.</span> <span class="toc-text">获取 Harbor 安装包</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE"><span class="toc-number">1.3.</span> <span class="toc-text">第二步：核心配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9-Harbor-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">1.3.1.</span> <span class="toc-text">修改 Harbor 配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%85%E9%9C%80%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE"><span class="toc-number">1.3.2.</span> <span class="toc-text">必需参数配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E9%80%89%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.3.3.</span> <span class="toc-text">可选参数详解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%98%E5%82%A8%E5%90%8E%E7%AB%AF%E9%85%8D%E7%BD%AE"><span class="toc-number">1.3.4.</span> <span class="toc-text">存储后端配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.4.</span> <span class="toc-text">第三步：启动服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83"><span class="toc-number">1.4.1.</span> <span class="toc-text">生成配置环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E6%89%80%E6%9C%89%E5%AE%B9%E5%99%A8"><span class="toc-number">1.4.2.</span> <span class="toc-text">启动所有容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E6%9C%8D%E5%8A%A1%E7%8A%B6%E6%80%81"><span class="toc-number">1.4.3.</span> <span class="toc-text">验证服务状态</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E5%88%9D%E5%A7%8B%E5%8C%96%E6%93%8D%E4%BD%9C"><span class="toc-number">1.5.</span> <span class="toc-text">第四步：初始化操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A6%96%E6%AC%A1%E7%99%BB%E5%BD%95%E4%B8%8E%E9%A1%B9%E7%9B%AE%E5%88%9B%E5%BB%BA"><span class="toc-number">1.5.1.</span> <span class="toc-text">首次登录与项目创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E9%95%9C%E5%83%8F%E6%8E%A8%E9%80%81%E6%B5%8B%E8%AF%95"><span class="toc-number">1.5.2.</span> <span class="toc-text">本地镜像推送测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8E%A5%E5%85%A5"><span class="toc-number">1.6.</span> <span class="toc-text">第五步：客户端接入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3-HTTP-%E4%B8%8E-HTTPS-%E7%9A%84%E5%85%BC%E5%AE%B9%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-number">1.6.1.</span> <span class="toc-text">解决 HTTP 与 HTTPS 的兼容性问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Docker-%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%E9%85%8D%E7%BD%AE"><span class="toc-number">1.6.2.</span> <span class="toc-text">Docker 守护进程配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E5%90%AF-Docker-%E5%B9%B6%E9%AA%8C%E8%AF%81%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.6.3.</span> <span class="toc-text">重启 Docker 并验证连接</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E6%AD%A5%EF%BC%9A%E7%94%A8%E6%88%B7%E4%B8%8E%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86"><span class="toc-number">1.7.</span> <span class="toc-text">第六步：用户与权限管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7"><span class="toc-number">1.7.1.</span> <span class="toc-text">创建普通用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E9%85%8D%E9%A1%B9%E7%9B%AE%E6%88%90%E5%91%98"><span class="toc-number">1.7.2.</span> <span class="toc-text">分配项目成员</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%AE%E9%80%9A%E7%94%A8%E6%88%B7%E6%93%8D%E4%BD%9C%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.7.3.</span> <span class="toc-text">普通用户操作示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E6%AD%A5%EF%BC%9A%E8%BF%90%E7%BB%B4%E7%AE%A1%E7%90%86"><span class="toc-number">1.8.</span> <span class="toc-text">第七步：运维管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E4%BF%AE%E6%94%B9%E4%B8%8E%E9%87%8D%E5%90%AF"><span class="toc-number">1.8.1.</span> <span class="toc-text">配置修改与重启</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99%E9%97%AE%E9%A2%98%E5%A4%84%E7%90%86"><span class="toc-number">1.8.2.</span> <span class="toc-text">防火墙问题处理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%95%9C%E5%83%8F%E6%95%B0%E6%8D%AE%E5%A4%87%E4%BB%BD"><span class="toc-number">1.8.3.</span> <span class="toc-text">镜像数据备份</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E8%BF%81%E7%A7%BB%E4%B8%8E%E6%B8%85%E7%90%86"><span class="toc-number">1.8.4.</span> <span class="toc-text">服务迁移与清理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.9.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/Prometheus%E7%9B%91%E6%8E%A7-%E9%92%89%E9%92%89%E8%AD%A6%E5%91%8A-%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3/" title="Prometheus监控+钉钉警告 部署指南">Prometheus监控+钉钉警告 部署指南</a><time datetime="2025-12-02T05:39:16.000Z" title="Created 2025-12-02 13:39:16">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/Prometheus/" title="Prometheus监控系统">Prometheus监控系统</a><time datetime="2025-12-02T00:55:58.000Z" title="Created 2025-12-02 08:55:58">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/01/Ansible/" title="Docker快速手册">Docker快速手册</a><time datetime="2025-12-01T00:54:40.000Z" title="Created 2025-12-01 08:54:40">2025-12-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/27/Harbor%20%E7%A7%81%E6%9C%89%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93%E5%AE%8C%E6%95%B4%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/" title="Harbor 私有镜像仓库完整部署指南">Harbor 私有镜像仓库完整部署指南</a><time datetime="2025-11-27T10:54:40.000Z" title="Created 2025-11-27 18:54:40">2025-11-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/27/Docker%20%E6%9E%84%E5%BB%BA%E5%89%8D%E5%90%8E%E7%AB%AF%E9%A1%B9%E7%9B%AERuo-Yi/" title="Docker构建前后端项目RuoYi">Docker构建前后端项目RuoYi</a><time datetime="2025-11-27T05:54:40.000Z" title="Created 2025-11-27 13:54:40">2025-11-27</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
