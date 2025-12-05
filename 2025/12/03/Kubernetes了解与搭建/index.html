@@ -1,0 +1,610 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Kubernetes了解与搭建 | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Kubernetes了解与搭建Kubernetes 介绍Kubernetes（简称 K8s）是 Google 开源的容器编排管理平台，用于自动化部署、扩缩容、负载均衡和监控容器化应用。 为什么需要 Kubernetes？在传统微服务架构中，应用部署、扩容、升级通常需要手动干预，运维成本高且容错能力弱。而 Kubernetes 将这些能力自动化、平台化：  应用交给 K8s → 资源调度、负载均衡、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes了解与搭建">
+<meta property="og:url" content="http://example.com/2025/12/03/Kubernetes%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="Kubernetes了解与搭建Kubernetes 介绍Kubernetes（简称 K8s）是 Google 开源的容器编排管理平台，用于自动化部署、扩缩容、负载均衡和监控容器化应用。 为什么需要 Kubernetes？在传统微服务架构中，应用部署、扩容、升级通常需要手动干预，运维成本高且容错能力弱。而 Kubernetes 将这些能力自动化、平台化：  应用交给 K8s → 资源调度、负载均衡、">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-12-03T06:44:22.000Z">
+<meta property="article:modified_time" content="2025-12-05T01:29:10.081Z">
+<meta property="article:author" content="Felix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Kubernetes了解与搭建",
+  "url": "http://example.com/2025/12/03/Kubernetes%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%90%AD%E5%BB%BA/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-12-03T06:44:22.000Z",
+  "dateModified": "2025-12-05T01:29:10.081Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/12/03/Kubernetes%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%90%AD%E5%BB%BA/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Kubernetes了解与搭建',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Kubernetes了解与搭建</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Kubernetes了解与搭建</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-12-03T06:44:22.000Z" title="Created 2025-12-03 14:44:22">2025-12-03</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-12-05T01:29:10.081Z" title="Updated 2025-12-05 09:29:10">2025-12-05</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Kubernetes了解与搭建"><a href="#Kubernetes了解与搭建" class="headerlink" title="Kubernetes了解与搭建"></a>Kubernetes了解与搭建</h1><h2 id="Kubernetes-介绍"><a href="#Kubernetes-介绍" class="headerlink" title="Kubernetes 介绍"></a>Kubernetes 介绍</h2><p>Kubernetes（简称 <strong>K8s</strong>）是 Google 开源的容器编排管理平台，用于自动化部署、扩缩容、负载均衡和监控容器化应用。</p>
+<h3 id="为什么需要-Kubernetes？"><a href="#为什么需要-Kubernetes？" class="headerlink" title="为什么需要 Kubernetes？"></a>为什么需要 Kubernetes？</h3><p>在传统微服务架构中，应用部署、扩容、升级通常需要手动干预，运维成本高且容错能力弱。而 Kubernetes 将这些能力自动化、平台化：</p>
+<blockquote>
+<p><strong>应用交给 K8s → 资源调度、负载均衡、自愈、扩缩容全自动完成</strong></p>
+</blockquote>
+<h3 id="K8s-的核心能力"><a href="#K8s-的核心能力" class="headerlink" title="K8s 的核心能力"></a>K8s 的核心能力</h3><table>
+<thead>
+<tr>
+<th>传统架构痛点</th>
+<th>K8s 解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>部署复杂，升级可能停机</td>
+<td>滚动更新 &amp; 一键回滚</td>
+</tr>
+<tr>
+<td>流量激增扩容慢</td>
+<td>自动扩缩容（HPA）</td>
+</tr>
+<tr>
+<td>负载均衡需要额外维护</td>
+<td>Service 内置 LB</td>
+</tr>
+<tr>
+<td>容器宕机需人工恢复</td>
+<td>自动自愈 &amp; 健康检查</td>
+</tr>
+<tr>
+<td>资源利用率低</td>
+<td>自动调度与分配</td>
+</tr>
+<tr>
+<td>配置混乱不可管理</td>
+<td>声明式 YAML 配置</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="Kubernetes-整体架构"><a href="#Kubernetes-整体架构" class="headerlink" title="Kubernetes 整体架构"></a>Kubernetes 整体架构</h3><p>Kubernetes 由 <strong>Master 控制平面</strong> + <strong>Worker 工作节点</strong> 组成，如下图：</p>
+<p><img src="/./imgs/image-20251205091240340.png" alt="image-20251205091240340"></p>
+<h4 id="✨-Master-控制平面组件"><a href="#✨-Master-控制平面组件" class="headerlink" title="✨ Master 控制平面组件"></a>✨ Master 控制平面组件</h4><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>kubectl</strong></td>
+<td>集群管理的命令行入口</td>
+</tr>
+<tr>
+<td><strong>API Server</strong></td>
+<td>集群的数据库交互、任务调度与分配</td>
+</tr>
+<tr>
+<td><strong>etcd</strong></td>
+<td>K8s 核心数据库，存储集群所有信息（必须为奇数个节点）</td>
+</tr>
+<tr>
+<td><strong>Scheduler</strong></td>
+<td>调度器，选择最适合创建 Pod 的节点</td>
+</tr>
+<tr>
+<td><strong>Controller Manager</strong></td>
+<td>控制器管理中心，管理各类控制器与 Pod 生命周期</td>
+</tr>
+</tbody></table>
+<h4 id="🧱-Worker-节点组件"><a href="#🧱-Worker-节点组件" class="headerlink" title="🧱 Worker 节点组件"></a>🧱 Worker 节点组件</h4><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>kubelet</strong></td>
+<td>执行调度命令，管理本节点容器</td>
+</tr>
+<tr>
+<td><strong>kube-proxy</strong></td>
+<td>负责 Service 网络代理与负载均衡</td>
+</tr>
+<tr>
+<td><strong>Pod</strong></td>
+<td>最小运行单元，一个或多个容器组成</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="K8s-工作流程"><a href="#K8s-工作流程" class="headerlink" title="K8s 工作流程"></a>K8s 工作流程</h2><p>以创建 Deployment 为例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl create deployment nginx --replicas=3 --image=nginx:1.14 --port=80 -n app</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251205091228984.png" alt="image-20251205091228984"></p>
+<p><strong>整个流程：</strong></p>
+<ol>
+<li><strong>kubectl 提交命令</strong> → 经过 auth 鉴权</li>
+<li><strong>API Server 记录</strong> → 信息存入 etcd 中</li>
+<li><strong>etcd 存储信息,返回清单List</strong> → 说明需要哪些组件协助</li>
+<li><strong>Scheduler + Controller Manager 监听api-server的list清单中的资源请求</strong> → 从清单中明确需要调度的资源</li>
+<li><strong>Scheduler 选择最适合创建Pod的节点</strong> → Controller Manager 根据list清单准备对应的控制器资源</li>
+<li><strong>API Server 通知调度器选择节点的 kubelet</strong> → kubelet 执行创建动作</li>
+<li><strong>持续上报</strong> → kubelet 将所有事件上报给 API Server → etcd 持续更新</li>
+</ol>
+<h2 id="Kubernetes-核心概念详解"><a href="#Kubernetes-核心概念详解" class="headerlink" title="Kubernetes 核心概念详解"></a>Kubernetes 核心概念详解</h2><p>在深入安装与部署之前，需要理解 Kubernetes 中的一些核心概念，它们是理解 K8s 如何调度、扩展、运行和管理应用的基础。</p>
+<hr>
+<h3 id="🚀-1-Pod（最小运行单元）"><a href="#🚀-1-Pod（最小运行单元）" class="headerlink" title="🚀 1. Pod（最小运行单元）"></a>🚀 1. Pod（最小运行单元）</h3><p><strong>Pod 是 Kubernetes 中最小的调度与运行单位</strong>，是对一个或多个容器的封装。<br> 多个容器在同一个 Pod 中共享：</p>
+<ul>
+<li><strong>网络</strong>（同一个 IP）</li>
+<li><strong>存储</strong></li>
+<li><strong>生命周期</strong></li>
+</ul>
+<p>📌 通常一个 Pod 只运行一个应用容器，如果是辅助容器配置（如 Sidecar），则可能包含多个。</p>
+<p>示例场景：</p>
+<ul>
+<li>一个应用容器 + 日志收集容器</li>
+<li>一个应用容器 + 代理容器</li>
+</ul>
+<p>示例 YAML：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-pod</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">nginx:1.21</span></span><br></pre></td></tr></table></figure>
+
+<p>📍 <strong>Pod 本身不可靠</strong>，可能被删除或重建，所以需要更高级控制器来保证数量一致，比如 Deployment。</p>
+<hr>
+<h3 id="📦-2-Deployment（无状态应用控制器）"><a href="#📦-2-Deployment（无状态应用控制器）" class="headerlink" title="📦 2. Deployment（无状态应用控制器）"></a>📦 2. Deployment（无状态应用控制器）</h3><p>Deployment 用于管理 <strong>无状态应用</strong>（Stateless App），提供：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>副本数管理</td>
+<td>自动保持固定副本</td>
+</tr>
+<tr>
+<td>滚动更新</td>
+<td>无停机发布应用</td>
+</tr>
+<tr>
+<td>回滚</td>
+<td>一键回滚到历史版本</td>
+</tr>
+<tr>
+<td>自愈能力</td>
+<td>Pod 挂掉自动重建</td>
+</tr>
+</tbody></table>
+<p><img src="/./imgs/image-20251205092756425.png" alt="image-20251205092756425"></p>
+<p>示例 YAML：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">apps/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-deployment</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">matchLabels:</span></span><br><span class="line">      <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">nginx:1.21</span></span><br></pre></td></tr></table></figure>
+
+<p>效果效果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods</span><br><span class="line">kubectl describe deploy nginx-deployment</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="🌍-3-Service（服务访问入口）"><a href="#🌍-3-Service（服务访问入口）" class="headerlink" title="🌍 3. Service（服务访问入口）"></a>🌍 3. Service（服务访问入口）</h3><p>Pod 是动态变化的，每次重启 Pod IP 都会改变，为了解决内部访问和负载均衡问题，需要 Service。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>场景</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ClusterIP</td>
+<td>集群内部访问</td>
+<td>默认，提供稳定虚拟 IP</td>
+</tr>
+<tr>
+<td>NodePort</td>
+<td>外部访问</td>
+<td>通过节点 IP + 端口访问</td>
+</tr>
+<tr>
+<td>LoadBalancer</td>
+<td>云厂商 LB</td>
+<td>自动创建公网访问入口</td>
+</tr>
+<tr>
+<td>Headless</td>
+<td>微服务 &amp; 服务发现</td>
+<td>使用 DNS 解析全部 Pod IP</td>
+</tr>
+</tbody></table>
+<p><img src="/./imgs/image-20251205092842212.png" alt="image-20251205092842212"></p>
+<p>示例 YAML（NodePort）：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Service</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-svc</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">selector:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">NodePort</span></span><br><span class="line">  <span class="attr">ports:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">port:</span> <span class="number">80</span></span><br><span class="line">    <span class="attr">targetPort:</span> <span class="number">80</span></span><br><span class="line">    <span class="attr">nodePort:</span> <span class="number">30080</span></span><br></pre></td></tr></table></figure>
+
+<p>访问方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://NodeIP:30080</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="🔀-4-Ingress（七层负载均衡入口）"><a href="#🔀-4-Ingress（七层负载均衡入口）" class="headerlink" title="🔀 4. Ingress（七层负载均衡入口）"></a>🔀 4. Ingress（七层负载均衡入口）</h3><p>Service 只负责内部流量能力，而当需要 <strong>域名访问、多路径路由、HTTPS、统一网关</strong> 时，需要 Ingress。</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>提供域名访问</td>
+<td>&#x2F;appA &#x2F;appB 或多个域名</td>
+</tr>
+<tr>
+<td>支持 HTTPS</td>
+<td>管理证书</td>
+</tr>
+<tr>
+<td>支持流量控制</td>
+<td>限流、灰度发布、重写路由</td>
+</tr>
+</tbody></table>
+<p>示例（基于 Nginx Ingress）：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">networking.k8s.io/v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Ingress</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">web-ingress</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">rules:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">host:</span> <span class="string">app.test.com</span></span><br><span class="line">    <span class="attr">http:</span></span><br><span class="line">      <span class="attr">paths:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">path:</span> <span class="string">/</span></span><br><span class="line">        <span class="attr">pathType:</span> <span class="string">Prefix</span></span><br><span class="line">        <span class="attr">backend:</span></span><br><span class="line">          <span class="attr">service:</span></span><br><span class="line">            <span class="attr">name:</span> <span class="string">nginx-svc</span></span><br><span class="line">            <span class="attr">port:</span></span><br><span class="line">              <span class="attr">number:</span> <span class="number">80</span></span><br></pre></td></tr></table></figure>
+
+<p>访问方式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://app.test.com</span><br></pre></td></tr></table></figure>
+
+<h3 id="💡-核心概念总结图"><a href="#💡-核心概念总结图" class="headerlink" title="💡 核心概念总结图"></a>💡 核心概念总结图</h3><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pod</td>
+<td>最小运行单位</td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>管理 Pod 复制、自愈、更新</td>
+</tr>
+<tr>
+<td>Service</td>
+<td>稳定访问入口、负载均衡</td>
+</tr>
+<tr>
+<td>Ingress</td>
+<td>反向代理、域名、路由、证书</td>
+</tr>
+<tr>
+<td>ConfigMap</td>
+<td>配置管理，如 application.yml</td>
+</tr>
+<tr>
+<td>Secret</td>
+<td>加密数据，如密码、证书</td>
+</tr>
+<tr>
+<td>Namespace</td>
+<td>多租户资源隔离</td>
+</tr>
+<tr>
+<td>Volume &#x2F; PVC</td>
+<td>持久化存储</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="🚀-流量访问路径"><a href="#🚀-流量访问路径" class="headerlink" title="🚀 流量访问路径"></a>🚀 流量访问路径</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">外部用户</span><br><span class="line">    ↓</span><br><span class="line">Ingress（域名、HTTPS、路由）</span><br><span class="line">    ↓</span><br><span class="line">Service（负载均衡、服务发现）</span><br><span class="line">    ↓</span><br><span class="line">Deployment（管理 Pod 副本、自愈、更新）</span><br><span class="line">    ↓</span><br><span class="line">Pod（容器运行业务）</span><br></pre></td></tr></table></figure>
+
+<p>与传统架构相比：<strong>无需手动维护 Nginx&#x2F;LVS，扩缩容与故障恢复完全自动化</strong></p>
+<hr>
+<h3 id="与传统微服务架构对比"><a href="#与传统微服务架构对比" class="headerlink" title="与传统微服务架构对比"></a>与传统微服务架构对比</h3><h4 id="🖼-传统架构示意图"><a href="#🖼-传统架构示意图" class="headerlink" title="🖼 传统架构示意图"></a>🖼 传统架构示意图</h4><p><img src="/./imgs/image-20251205091913041.png" alt="image-20251205091913041"></p>
+<ul>
+<li>负载均衡依赖 LVS &#x2F; Nginx</li>
+<li>扩容需要手动新增应用节点</li>
+<li>升级需要停机或复杂脚本</li>
+<li>服务发现依赖注册中心（如 Nacos）</li>
+</ul>
+<h4 id="🖼-Kubernetes-云原生架构"><a href="#🖼-Kubernetes-云原生架构" class="headerlink" title="🖼 Kubernetes + 云原生架构"></a>🖼 Kubernetes + 云原生架构</h4><p><img src="/./imgs/image-20251203142028890.png" alt="image-20251203142028890"></p>
+<table>
+<thead>
+<tr>
+<th>云原生组件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Rancher</td>
+<td>K8s 可视化管理平台</td>
+</tr>
+<tr>
+<td>Prometheus</td>
+<td>监控告警</td>
+</tr>
+<tr>
+<td>SkyWalking</td>
+<td>链路追踪</td>
+</tr>
+<tr>
+<td>Nacos &#x2F; Istio</td>
+<td>服务治理与网格</td>
+</tr>
+<tr>
+<td>持久化存储</td>
+<td>MySQL &#x2F; Redis &#x2F; Kafka &#x2F; MinIO 等</td>
+</tr>
+</tbody></table>
+<p>✨ 支持 <strong>蓝绿发布、灰度发布、自动扩缩容、弹性伸缩、微服务治理、资源隔离</strong></p>
+<h2 id="k8s部署流程"><a href="#k8s部署流程" class="headerlink" title="k8s部署流程"></a>k8s部署流程</h2><h3 id="1-环境准备"><a href="#1-环境准备" class="headerlink" title="1. 环境准备"></a>1. 环境准备</h3><h4 id="节点角色和IP配置"><a href="#节点角色和IP配置" class="headerlink" title="节点角色和IP配置"></a>节点角色和IP配置</h4><ul>
+<li>192.168.118.101 master01（4c 4G）</li>
+<li>192.168.118.104 worker01（2c 3G）</li>
+<li>192.168.118.105 worker02（2c 3G）</li>
+</ul>
+<h4 id="所有节点执行以下操作"><a href="#所有节点执行以下操作" class="headerlink" title="所有节点执行以下操作"></a>所有节点执行以下操作</h4><h5 id="关闭防火墙、SELinux-和-swap"><a href="#关闭防火墙、SELinux-和-swap" class="headerlink" title="关闭防火墙、SELinux 和 swap"></a>关闭防火墙、SELinux 和 swap</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl <span class="built_in">disable</span> firewalld</span><br><span class="line">setenforce 0</span><br><span class="line">sed -i <span class="string">&#x27;s/enforcing/disabled/&#x27;</span> /etc/selinux/config</span><br><span class="line">iptables -F &amp;&amp; iptables -t nat -F &amp;&amp; iptables -t mangle -F &amp;&amp; iptables -X</span><br><span class="line">swapoff -a  <span class="comment"># 交换分区必须要关闭</span></span><br><span class="line">sed -ri <span class="string">&#x27;s/.*swap.*/#&amp;/&#x27;</span> /etc/fstab  <span class="comment"># 永久关闭swap分区，&amp;符号在sed命令中代表上次匹配的结果</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203161216133.png" alt="image-20251203161216133"></p>
+<h5 id="加载-ip-vs-模块"><a href="#加载-ip-vs-模块" class="headerlink" title="加载 ip_vs 模块"></a>加载 ip_vs 模块</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> $(<span class="built_in">ls</span> /usr/lib/modules/$(<span class="built_in">uname</span> -r)/kernel/net/netfilter/ipvs|grep -o <span class="string">&quot;^[^.]*&quot;</span>);<span class="keyword">do</span> <span class="built_in">echo</span> <span class="variable">$i</span>; /sbin/modinfo -F filename <span class="variable">$i</span> &gt;/dev/null 2&gt;&amp;1 &amp;&amp; /sbin/modprobe <span class="variable">$i</span>;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203160555564.png" alt="image-20251203160555564"></p>
+<h5 id="修改主机名"><a href="#修改主机名" class="headerlink" title="修改主机名"></a>修改主机名</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Master节点</span></span><br><span class="line">hostnamectl set-hostname master</span><br><span class="line"><span class="comment"># Worker01节点</span></span><br><span class="line">hostnamectl set-hostname worker01</span><br><span class="line"><span class="comment"># Worker02节点</span></span><br><span class="line">hostnamectl set-hostname worker02</span><br></pre></td></tr></table></figure>
+
+<h5 id="修改hosts文件"><a href="#修改hosts文件" class="headerlink" title="修改hosts文件"></a>修改hosts文件</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/hosts</span><br></pre></td></tr></table></figure>
+
+<p>添加以下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">192.168.118.101 master</span><br><span class="line">192.168.118.104 worker01</span><br><span class="line">192.168.118.105 worker02</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203160638769.png" alt="image-20251203160638769"></p>
+<h5 id="调整内核参数"><a href="#调整内核参数" class="headerlink" title="调整内核参数"></a>调整内核参数</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> &gt; /etc/sysctl.d/kubernetes.conf &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">net.bridge.bridge-nf-call-ip6tables=1</span></span><br><span class="line"><span class="string">net.bridge.bridge-nf-call-iptables=1</span></span><br><span class="line"><span class="string">net.ipv6.conf.all.disable_ipv6=1</span></span><br><span class="line"><span class="string">net.ipv4.ip_forward=1</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 生效参数</span></span><br><span class="line">sysctl --system</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203160937046.png" alt="image-20251203160937046"></p>
+<h3 id="2-所有节点安装-Docker"><a href="#2-所有节点安装-Docker" class="headerlink" title="2. 所有节点安装 Docker"></a>2. 所有节点安装 Docker</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载对应依赖</span></span><br><span class="line">yum install -y yum-utils device-mapper-persistent-data lvm2</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置镜像源</span></span><br><span class="line"><span class="comment"># 创建并写入清华源的 Docker 专属配置（docker-ce.repo）</span></span><br><span class="line"><span class="built_in">cat</span> &gt; /etc/yum.repos.d/docker-ce.repo &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">[docker-ce-stable]</span></span><br><span class="line"><span class="string">name=Docker CE Stable - \$basearch</span></span><br><span class="line"><span class="string">baseurl=https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/\$releasever/\$basearch/stable</span></span><br><span class="line"><span class="string">enabled=1</span></span><br><span class="line"><span class="string">gpgcheck=1</span></span><br><span class="line"><span class="string">gpgkey=https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/gpg</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[docker-ce-stable-source]</span></span><br><span class="line"><span class="string">name=Docker CE Stable - Sources</span></span><br><span class="line"><span class="string">baseurl=https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/\$releasever/source/stable</span></span><br><span class="line"><span class="string">enabled=0</span></span><br><span class="line"><span class="string">gpgcheck=1</span></span><br><span class="line"><span class="string">gpgkey=https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/gpg</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[docker-ce-test]</span></span><br><span class="line"><span class="string">name=Docker CE Test - \$basearch</span></span><br><span class="line"><span class="string">baseurl=https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/\$releasever/\$basearch/test</span></span><br><span class="line"><span class="string">enabled=0</span></span><br><span class="line"><span class="string">gpgcheck=1</span></span><br><span class="line"><span class="string">gpgkey=https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/gpg</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[docker-ce-test-source]</span></span><br><span class="line"><span class="string">name=Docker CE Test - Sources</span></span><br><span class="line"><span class="string">baseurl=https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/\$releasever/source/test</span></span><br><span class="line"><span class="string">enabled=0</span></span><br><span class="line"><span class="string">gpgcheck=1</span></span><br><span class="line"><span class="string">gpgkey=https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/centos/gpg</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装docker</span></span><br><span class="line">yum install -y docker-ce-20.10.18 docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203163025257.png" alt="image-20251203163025257"></p>
+<h4 id="配置Docker-daemon"><a href="#配置Docker-daemon" class="headerlink" title="配置Docker daemon"></a>配置Docker daemon</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> &gt; /etc/docker/daemon.json &lt;&lt;<span class="string">EOF</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">&quot;registry-mirrors&quot;: [</span></span><br><span class="line"><span class="string">    &quot;https://docker.1ms.run&quot;,</span></span><br><span class="line"><span class="string">    &quot;https://docker.domys.cc&quot;,</span></span><br><span class="line"><span class="string">    &quot;https://docker.imgdb.de&quot;,</span></span><br><span class="line"><span class="string">    &quot;https://docker-0.unsee.tech&quot;,</span></span><br><span class="line"><span class="string">    &quot;https://docker.hlmirror.com&quot;,</span></span><br><span class="line"><span class="string">    &quot;https://cjie.eu.org&quot;,</span></span><br><span class="line"><span class="string">    &quot;https://docker.m.daocloud.io&quot;,</span></span><br><span class="line"><span class="string">    &quot;https://hub.rat.dev&quot;,</span></span><br><span class="line"><span class="string">    &quot;https://docker.1panel.live&quot;,</span></span><br><span class="line"><span class="string">    &quot;https://docker.rainbond.cc&quot;</span></span><br><span class="line"><span class="string">  ],</span></span><br><span class="line"><span class="string">&quot;exec-opts&quot;: [&quot;native.cgroupdriver=systemd&quot;],</span></span><br><span class="line"><span class="string">&quot;log-driver&quot;: &quot;json-file&quot;,</span></span><br><span class="line"><span class="string">&quot;log-opts&quot;: &#123;</span></span><br><span class="line"><span class="string">&quot;max-size&quot;: &quot;100m&quot;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">EOF</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="启动Docker"><a href="#启动Docker" class="headerlink" title="启动Docker"></a>启动Docker</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl restart docker.service</span><br><span class="line">systemctl <span class="built_in">enable</span> docker.service</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-所有节点安装-kubeadm、kubelet-和-kubectl"><a href="#3-所有节点安装-kubeadm、kubelet-和-kubectl" class="headerlink" title="3. 所有节点安装 kubeadm、kubelet 和 kubectl"></a>3. 所有节点安装 kubeadm、kubelet 和 kubectl</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> &gt; /etc/yum.repos.d/kubernetes.repo &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">[kubernetes]</span></span><br><span class="line"><span class="string">name=Kubernetes</span></span><br><span class="line"><span class="string">baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64</span></span><br><span class="line"><span class="string">enabled=1</span></span><br><span class="line"><span class="string">gpgcheck=0</span></span><br><span class="line"><span class="string">repo_gpgcheck=0</span></span><br><span class="line"><span class="string">gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg</span></span><br><span class="line"><span class="string">https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg</span></span><br><span class="line"><span class="string">EOF</span></span><br><span class="line"></span><br><span class="line">yum install -y kubelet-1.20.15 kubeadm-1.20.15 kubectl-1.20.15</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开机自启kubelet</span></span><br><span class="line">systemctl <span class="built_in">enable</span> kubelet.service</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203164040020.png" alt="image-20251203164040020"></p>
+<h3 id="4-上传镜像和初始化集群"><a href="#4-上传镜像和初始化集群" class="headerlink" title="4. 上传镜像和初始化集群"></a>4. 上传镜像和初始化集群</h3><h4 id="上传压缩包，导入镜像（所有节点）"><a href="#上传压缩包，导入镜像（所有节点）" class="headerlink" title="上传压缩包，导入镜像（所有节点）"></a>上传压缩包，导入镜像（所有节点）</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker load -i k8s_init.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203164445043.png" alt="image-20251203164445043"></p>
+<p><img src="/./imgs/image-20251203164458895.png" alt="image-20251203164458895"></p>
+<h4 id="kubeadm-初始化集群（Master节点）"><a href="#kubeadm-初始化集群（Master节点）" class="headerlink" title="kubeadm 初始化集群（Master节点）"></a>kubeadm 初始化集群（Master节点）</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">kubeadm init \</span><br><span class="line">--apiserver-advertise-address=192.168.118.101 \</span><br><span class="line">--image-repository registry.aliyuncs.com/google_containers \</span><br><span class="line">--kubernetes-version=v1.20.15 \</span><br><span class="line">--service-cidr=10.96.0.0/16 \</span><br><span class="line">--pod-network-cidr=10.244.0.0/16 \</span><br><span class="line">--token-ttl=0</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203165017971.png" alt="image-20251203165017971"></p>
+<p>按照提示启动集群</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p <span class="variable">$HOME</span>/.kube</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">cp</span> -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">chown</span> $(<span class="built_in">id</span> -u):$(<span class="built_in">id</span> -g) <span class="variable">$HOME</span>/.kube/config</span><br></pre></td></tr></table></figure>
+
+<h4 id="复制-kubeadm-join-命令加入集群"><a href="#复制-kubeadm-join-命令加入集群" class="headerlink" title="复制 kubeadm join 命令加入集群"></a>复制 kubeadm join 命令加入集群</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Master节点初始化完成后会输出加入集群的命令，复制该命令在worker节点执行</span></span><br><span class="line">kubeadm <span class="built_in">join</span> 192.168.118.101:6443 --token xxxxxxx --discovery-token-ca-cert-hash sha256:xxxxxxx</span><br><span class="line"><span class="comment">#################下面是我运行后生成的####################</span></span><br><span class="line">kubeadm <span class="built_in">join</span> 192.168.118.101:6443 --token kxwdsz.r6vv2qtlodc49spn \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:e14578eecc333bf52d1a1951afee01fc3695f0cb24fab06215f72b8107bd9cf0</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203165114383.png" alt="image-20251203165114383"></p>
+<h4 id="Worker节点执行后，在Master节点重启kubelet"><a href="#Worker节点执行后，在Master节点重启kubelet" class="headerlink" title="Worker节点执行后，在Master节点重启kubelet"></a>Worker节点执行后，在Master节点重启kubelet</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart kubelet</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203165731850.png" alt="image-20251203165731850"></p>
+<h3 id="5-集群配置优化"><a href="#5-集群配置优化" class="headerlink" title="5. 集群配置优化"></a>5. 集群配置优化</h3><h4 id="开启-IPVS（Master节点）"><a href="#开启-IPVS（Master节点）" class="headerlink" title="开启 IPVS（Master节点）"></a>开启 IPVS（Master节点）</h4><h5 id="Master节点修改kube-proxy配置"><a href="#Master节点修改kube-proxy配置" class="headerlink" title="Master节点修改kube-proxy配置"></a>Master节点修改kube-proxy配置</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl edit cm kube-proxy -n=kube-system</span><br></pre></td></tr></table></figure>
+
+<p>找到第44行的mode字段，修改相关内容，改为ipvs。</p>
+<p><img src="/./imgs/image-20251203165938171.png" alt="image-20251203165938171"></p>
+<h3 id="kubectl-get-cs-集群不健康问题解决"><a href="#kubectl-get-cs-集群不健康问题解决" class="headerlink" title="kubectl get cs 集群不健康问题解决"></a>kubectl get cs 集群不健康问题解决</h3><h4 id="修改Master节点配置文件"><a href="#修改Master节点配置文件" class="headerlink" title="修改Master节点配置文件"></a>修改Master节点配置文件</h4><h5 id="编辑-kube-scheduler-yaml"><a href="#编辑-kube-scheduler-yaml" class="headerlink" title="编辑 kube-scheduler.yaml"></a>编辑 kube-scheduler.yaml</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/kubernetes/manifests/kube-scheduler.yaml</span><br></pre></td></tr></table></figure>
+
+<h5 id="编辑-kube-controller-manager-yaml"><a href="#编辑-kube-controller-manager-yaml" class="headerlink" title="编辑 kube-controller-manager.yaml"></a>编辑 kube-controller-manager.yaml</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/kubernetes/manifests/kube-controller-manager.yaml</span><br></pre></td></tr></table></figure>
+
+<p>修改内容：</p>
+<ul>
+<li>把 <code>--bind-address=127.0.0.1</code> 变成 <code>--bind-address=192.168.118.101</code>（修改成master的IP）</li>
+<li>把 <code>httpGet:</code> 字段下的 <code>host</code> 由 <code>127.0.0.1</code> 变成 <code>192.168.118.101</code>（有两处）</li>
+<li>搜索 <code>port=0</code>，把这一行注释掉：<code>#- --port=0</code></li>
+</ul>
+<p><img src="/./imgs/image-20251203170227999.png" alt="image-20251203170227999"></p>
+<h4 id="安装CNI网络插件（Flannel）"><a href="#安装CNI网络插件（Flannel）" class="headerlink" title="安装CNI网络插件（Flannel）"></a>安装CNI网络插件（Flannel）</h4><h5 id="所有节点上传"><a href="#所有节点上传" class="headerlink" title="所有节点上传"></a>所有节点上传</h5><p><img src="/./imgs/image-20251203170609877.png" alt="image-20251203170609877"></p>
+<p>提取镜像</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker load -i flannel-cni-plugin-v1.1.2.tar</span><br><span class="line">docker load -i flannel-V0.21.5.tar</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203171046269.png" alt="image-20251203171046269"></p>
+<h5 id="上传-kube-flannel-yml-文件到master，执行："><a href="#上传-kube-flannel-yml-文件到master，执行：" class="headerlink" title="上传 kube-flannel.yml 文件到master，执行："></a>上传 kube-flannel.yml 文件到master，执行：</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl apply -f kube-flannel.yml</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203171107768.png" alt="image-20251203171107768"></p>
+<h5 id="等待pod转为ready状态"><a href="#等待pod转为ready状态" class="headerlink" title="等待pod转为ready状态"></a>等待pod转为ready状态</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pod -n kube-flannel</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203171131434.png" alt="image-20251203171131434"></p>
+<h3 id="6-检查集群状态"><a href="#6-检查集群状态" class="headerlink" title="6. 检查集群状态"></a>6. 检查集群状态</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看集群健康状态</span></span><br><span class="line">kubectl get cs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看所有节点</span></span><br><span class="line">kubectl get nodes</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看所有pod</span></span><br><span class="line">kubectl get pods -A</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203171229275.png" alt="image-20251203171229275"></p>
+<h3 id="7-使用docker进行rancher部署"><a href="#7-使用docker进行rancher部署" class="headerlink" title="7. 使用docker进行rancher部署"></a>7. 使用docker进行rancher部署</h3><h4 id="使用Docker部署rancher"><a href="#使用Docker部署rancher" class="headerlink" title="使用Docker部署rancher"></a>使用Docker部署rancher</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --privileged -d --name rancher --restart=unless-stopped -p 80:80 -p 443:443 -v /opt/rancher:/var/lib/rancher rancher/rancher:v2.5.11</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li><code>--privileged</code>：可以使我们启动的容器用 <code>root</code> 的方式启动（在 Rancher 2.5 版本以上需要加）</li>
+<li><code>--restart</code>：重启策略，我们配置的是 <code>unless-stopped</code>，表示当容器退出时，便会重新启动容器（除非容器之前就处于停止）</li>
+</ul>
+</blockquote>
+<p><img src="/./imgs/image-20251203172650658.png" alt="image-20251203172650658"></p>
+<h4 id="查看rancher状态"><a href="#查看rancher状态" class="headerlink" title="查看rancher状态"></a>查看rancher状态</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps | grep rancher</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203172703556.png" alt="image-20251203172703556"></p>
+<p><img src="/./imgs/image-20251203173058406.png" alt="image-20251203173058406"></p>
+<h4 id="在rancher上绑定k8s"><a href="#在rancher上绑定k8s" class="headerlink" title="在rancher上绑定k8s"></a>在rancher上绑定k8s</h4><p>设置完密码后设置url</p>
+<p><img src="/./imgs/image-20251203173136026.png" alt="image-20251203173136026"></p>
+<p>添加集群，选择添加其他集群</p>
+<p><img src="/./imgs/image-20251203173356058.png" alt="image-20251203173356058"></p>
+<p>选择第三个复制并在master上运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl --insecure -sfL https://192.168.118.101/v3/import/dxt2cn8sxdwsc9dp6xp6ldjrhv9d25flddz2hkqnmqcd7d67nn9pjw_c-g2tf4.yaml | kubectl apply -f -</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251203173513295.png" alt="image-20251203173513295"></p>
+<p>可以看到我们的集群，仪表盘以及events事件</p>
+<p><img src="/./imgs/image-20251203173544646.png" alt="image-20251203173544646"></p>
+<p><img src="/./imgs/image-20251203173618171.png" alt="image-20251203173618171"></p>
+<p><img src="/./imgs/image-20251203173709838.png" alt="image-20251203173709838"></p>
+<h2 id="kubectl-命令快速手册"><a href="#kubectl-命令快速手册" class="headerlink" title="kubectl 命令快速手册"></a>kubectl 命令快速手册</h2><h3 id="基础信息查看"><a href="#基础信息查看" class="headerlink" title="基础信息查看"></a>基础信息查看</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kubectl version                          <span class="comment"># 查看版本信息</span></span><br><span class="line">kubectl cluster-info                     <span class="comment"># 查看集群信息</span></span><br><span class="line">kubectl get cs                           <span class="comment"># 查看集群组件状态</span></span><br><span class="line">kubectl get nodes                        <span class="comment"># 查看所有节点</span></span><br><span class="line">kubectl get namespaces / kubectl get ns  <span class="comment"># 查看命名空间</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="命令公式"><a href="#命令公式" class="headerlink" title="命令公式"></a>命令公式</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl [命令类型] [资源类型] [资源名] [-n namespace] [选项]</span><br></pre></td></tr></table></figure>
+
+<h3 id="命名空间管理"><a href="#命名空间管理" class="headerlink" title="命名空间管理"></a>命名空间管理</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl create ns app              <span class="comment"># 创建命名空间</span></span><br><span class="line">kubectl delete namespace app       <span class="comment"># 删除命名空间</span></span><br><span class="line">kubectl get all -n app             <span class="comment"># 查看指定命名空间的所有资源</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="资源查看（增、删、改、查）"><a href="#资源查看（增、删、改、查）" class="headerlink" title="资源查看（增、删、改、查）"></a>资源查看（增、删、改、查）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看</span></span><br><span class="line">kubectl get pods [-n kube-system] [-o wide|json|yaml]</span><br><span class="line">kubectl get deployment -n app</span><br><span class="line">kubectl get service -n app</span><br><span class="line">kubectl describe pod &lt;pod-name&gt; -n app              <span class="comment"># 查看详细信息</span></span><br><span class="line">kubectl logs &lt;pod-name&gt; [-c &lt;container&gt;] -n app     <span class="comment"># 查看日志</span></span><br><span class="line">kubectl logs &lt;pod-name&gt; -p -n app                   <span class="comment"># 查看重启前的日志</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Pod-生命周期管理"><a href="#Pod-生命周期管理" class="headerlink" title="Pod 生命周期管理"></a>Pod 生命周期管理</h3><h4 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建 Deployment（推荐）</span></span><br><span class="line">kubectl create deployment nginx-ds --image=nginx:1.20 --port=80 --replicas=3 -n app</span><br><span class="line"></span><br><span class="line"><span class="comment"># 发布 Service</span></span><br><span class="line">kubectl expose deployment nginx-ds --target-port=80 --port=8080 \</span><br><span class="line">  --name=nginx-service --<span class="built_in">type</span>=NodePort -n app</span><br></pre></td></tr></table></figure>
+
+<p><img src="/./imgs/image-20251205092600825.png" alt="image-20251205092600825"></p>
+<h4 id="查看"><a href="#查看" class="headerlink" title="查看"></a>查看</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods -n app                    <span class="comment"># 查看 Pod 列表</span></span><br><span class="line">kubectl describe pod &lt;pod-name&gt; -n app     <span class="comment"># 查看 Pod 详情</span></span><br><span class="line">kubectl get pod -w -n app                  <span class="comment"># 实时监听 Pod 状态</span></span><br><span class="line">kubectl get svc -n app                     <span class="comment"># 查看 Service</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="扩缩容"><a href="#扩缩容" class="headerlink" title="扩缩容"></a>扩缩容</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl scale deployment nginx-ds --replicas=5 -n app    <span class="comment"># 扩容到 5 个副本</span></span><br><span class="line">kubectl scale deployment nginx-ds --replicas=2 -n app    <span class="comment"># 缩容到 2 个副本</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kubectl delete pod &lt;pod-name&gt; -n app                           <span class="comment"># 删除 Pod</span></span><br><span class="line">kubectl delete pod &lt;pod-name&gt; --force --grace-period=0 -n app  <span class="comment"># 强制删除</span></span><br><span class="line">kubectl delete deployment nginx-ds -n app                      <span class="comment"># 删除 Deployment</span></span><br><span class="line">kubectl delete svc nginx-service -n app                        <span class="comment"># 删除 Service</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl <span class="built_in">exec</span> -it &lt;pod-name&gt; bash -n app  <span class="comment"># 进入容器（可跨主机）</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="应用更新与回滚"><a href="#应用更新与回滚" class="headerlink" title="应用更新与回滚"></a>应用更新与回滚</h3><h4 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl <span class="built_in">set</span> image deployment/nginx nginx=nginx:1.15 -n app</span><br><span class="line">kubectl <span class="built_in">set</span> <span class="built_in">env</span> deployment/nginx ENV_VAR=value -n app</span><br></pre></td></tr></table></figure>
+
+<h4 id="滚动更新监听"><a href="#滚动更新监听" class="headerlink" title="滚动更新监听"></a>滚动更新监听</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods -w -n app  <span class="comment"># 监听滚动更新过程</span></span><br><span class="line">curl -I http://NodeIP:NodePort  <span class="comment"># 验证版本</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="回滚"><a href="#回滚" class="headerlink" title="回滚"></a>回滚</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">kubectl rollout <span class="built_in">history</span> deployment/nginx -n app                  <span class="comment"># 查看更新历史</span></span><br><span class="line">kubectl rollout undo deployment/nginx -n app                     <span class="comment"># 回滚到上一版本</span></span><br><span class="line">kubectl rollout undo deployment/nginx --to-revision=1 -n app     <span class="comment"># 回滚到指定版本</span></span><br><span class="line">kubectl rollout status deployment/nginx -n app                   <span class="comment"># 查看回滚状态</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="金丝雀发布"><a href="#金丝雀发布" class="headerlink" title="金丝雀发布"></a>金丝雀发布</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 更新并暂停</span></span><br><span class="line">kubectl <span class="built_in">set</span> image deployment/nginx nginx=nginx:1.14 &amp;&amp; kubectl rollout pause deployment/nginx -n app</span><br><span class="line"></span><br><span class="line"><span class="comment"># 观察更新</span></span><br><span class="line">kubectl get pods -w -n app</span><br><span class="line"></span><br><span class="line"><span class="comment"># 确认无误后继续</span></span><br><span class="line">kubectl rollout resume deployment/nginx -n app</span><br></pre></td></tr></table></figure>
+
+<h3 id="标签与过滤"><a href="#标签与过滤" class="headerlink" title="标签与过滤"></a>标签与过滤</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods --show-labels -n app           <span class="comment"># 显示标签</span></span><br><span class="line">kubectl get pods -l app=nginx -n app            <span class="comment"># 按标签过滤</span></span><br><span class="line">kubectl get pods -l app=nginx,tier=frontend -n app  <span class="comment"># 多标签过滤</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="K8s-排障万金油"><a href="#K8s-排障万金油" class="headerlink" title="K8s 排障万金油"></a>K8s 排障万金油</h2><ol>
+<li><strong>查看简略信息</strong>：<code>kubectl get</code></li>
+<li><strong>查看详细信息与事件</strong>：<code>kubectl describe</code></li>
+<li><strong>查看日志</strong>：<code>kubectl logs</code></li>
+<li><strong>针对性排查</strong>：根据事件与日志分析问题</li>
+</ol>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Kubernetes 的核心在于：</p>
+<ul>
+<li><strong>声明式管理</strong>：定义期望状态，K8s 自动调整</li>
+<li><strong>自动化运维</strong>：自愈、自扩展、自更新</li>
+<li><strong>资源隔离</strong>：Namespace 实现多租户</li>
+<li><strong>高可用</strong>：分布式部署、故障自动转移</li>
+</ul>
+<p>掌握 kubectl 命令和核心概念，就能有效地管理容器化应用。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/12/03/Kubernetes%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%90%AD%E5%BB%BA/">http://example.com/2025/12/03/Kubernetes%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%90%AD%E5%BB%BA/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/12/02/Prometheus%E7%9B%91%E6%8E%A7-%E9%92%89%E9%92%89%E8%AD%A6%E5%91%8A-%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3/" title="Prometheus监控+钉钉警告 部署指南"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Prometheus监控+钉钉警告 部署指南</div></div><div class="info-2"><div class="info-item-1">Prometheus监控+钉钉警告 部署指南一、简介及作用简介Prometheus 是一个开源的监控和告警系统，广泛应用于云原生环境中。它通过拉取模式主动采集目标系统的时间序列指标数据，经过灵活的告警规则处理后，由 AlertManager 统一管理和分发告警。钉钉作为企业级实时通讯工具，可通过自定义机器人接收告警消息，让运维团队在第一时间获知系统异常，大大提高了问题的发现和响应效率。 本指南将指导你整合 Prometheus + AlertManager + 钉钉，构建一套企业级的监控告警系统。 系统作用实时监控  全面采集服务器、应用、数据库等各类系统指标 支持自定义指标和应用埋点 毫秒级的数据采集和存储  智能告警  基于阈值和规则的灵活告警机制 支持告警分组、去重和路由 避免告警风暴，提高信号信噪比  及时通知  与钉钉深度集成，告警实时推送到企业群 支持 Markdown 格式的丰富告警消息 构建完整的告警追踪链路  历史数据  长期保存监控数据用于趋势分析 支持数据查询和离线分析 便于问题根因分析和性能优化  适用场景 服务器监控：CPU、内存、磁盘、网络等资源告警 ...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%90%AD%E5%BB%BA"><span class="toc-number">1.</span> <span class="toc-text">Kubernetes了解与搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes-%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.</span> <span class="toc-text">Kubernetes 介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-Kubernetes%EF%BC%9F"><span class="toc-number">1.1.1.</span> <span class="toc-text">为什么需要 Kubernetes？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#K8s-%E7%9A%84%E6%A0%B8%E5%BF%83%E8%83%BD%E5%8A%9B"><span class="toc-number">1.1.2.</span> <span class="toc-text">K8s 的核心能力</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Kubernetes-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-number">1.1.3.</span> <span class="toc-text">Kubernetes 整体架构</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%9C%A8-Master-%E6%8E%A7%E5%88%B6%E5%B9%B3%E9%9D%A2%E7%BB%84%E4%BB%B6"><span class="toc-number">1.1.3.1.</span> <span class="toc-text">✨ Master 控制平面组件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%A7%B1-Worker-%E8%8A%82%E7%82%B9%E7%BB%84%E4%BB%B6"><span class="toc-number">1.1.3.2.</span> <span class="toc-text">🧱 Worker 节点组件</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#K8s-%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">1.2.</span> <span class="toc-text">K8s 工作流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kubernetes-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.3.</span> <span class="toc-text">Kubernetes 核心概念详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%80-1-Pod%EF%BC%88%E6%9C%80%E5%B0%8F%E8%BF%90%E8%A1%8C%E5%8D%95%E5%85%83%EF%BC%89"><span class="toc-number">1.3.1.</span> <span class="toc-text">🚀 1. Pod（最小运行单元）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%93%A6-2-Deployment%EF%BC%88%E6%97%A0%E7%8A%B6%E6%80%81%E5%BA%94%E7%94%A8%E6%8E%A7%E5%88%B6%E5%99%A8%EF%BC%89"><span class="toc-number">1.3.2.</span> <span class="toc-text">📦 2. Deployment（无状态应用控制器）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%8C%8D-3-Service%EF%BC%88%E6%9C%8D%E5%8A%A1%E8%AE%BF%E9%97%AE%E5%85%A5%E5%8F%A3%EF%BC%89"><span class="toc-number">1.3.3.</span> <span class="toc-text">🌍 3. Service（服务访问入口）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%80-4-Ingress%EF%BC%88%E4%B8%83%E5%B1%82%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%85%A5%E5%8F%A3%EF%BC%89"><span class="toc-number">1.3.4.</span> <span class="toc-text">🔀 4. Ingress（七层负载均衡入口）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%92%A1-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E6%80%BB%E7%BB%93%E5%9B%BE"><span class="toc-number">1.3.5.</span> <span class="toc-text">💡 核心概念总结图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9A%80-%E6%B5%81%E9%87%8F%E8%AE%BF%E9%97%AE%E8%B7%AF%E5%BE%84"><span class="toc-number">1.3.6.</span> <span class="toc-text">🚀 流量访问路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E4%BC%A0%E7%BB%9F%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E5%AF%B9%E6%AF%94"><span class="toc-number">1.3.7.</span> <span class="toc-text">与传统微服务架构对比</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%96%BC-%E4%BC%A0%E7%BB%9F%E6%9E%B6%E6%9E%84%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="toc-number">1.3.7.1.</span> <span class="toc-text">🖼 传统架构示意图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%F0%9F%96%BC-Kubernetes-%E4%BA%91%E5%8E%9F%E7%94%9F%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.7.2.</span> <span class="toc-text">🖼 Kubernetes + 云原生架构</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#k8s%E9%83%A8%E7%BD%B2%E6%B5%81%E7%A8%8B"><span class="toc-number">1.4.</span> <span class="toc-text">k8s部署流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">1.4.1.</span> <span class="toc-text">1. 环境准备</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8A%82%E7%82%B9%E8%A7%92%E8%89%B2%E5%92%8CIP%E9%85%8D%E7%BD%AE"><span class="toc-number">1.4.1.1.</span> <span class="toc-text">节点角色和IP配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%80%E6%9C%89%E8%8A%82%E7%82%B9%E6%89%A7%E8%A1%8C%E4%BB%A5%E4%B8%8B%E6%93%8D%E4%BD%9C"><span class="toc-number">1.4.1.2.</span> <span class="toc-text">所有节点执行以下操作</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99%E3%80%81SELinux-%E5%92%8C-swap"><span class="toc-number">1.4.1.2.1.</span> <span class="toc-text">关闭防火墙、SELinux 和 swap</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD-ip-vs-%E6%A8%A1%E5%9D%97"><span class="toc-number">1.4.1.2.2.</span> <span class="toc-text">加载 ip_vs 模块</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E4%B8%BB%E6%9C%BA%E5%90%8D"><span class="toc-number">1.4.1.2.3.</span> <span class="toc-text">修改主机名</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9hosts%E6%96%87%E4%BB%B6"><span class="toc-number">1.4.1.2.4.</span> <span class="toc-text">修改hosts文件</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%B0%83%E6%95%B4%E5%86%85%E6%A0%B8%E5%8F%82%E6%95%B0"><span class="toc-number">1.4.1.2.5.</span> <span class="toc-text">调整内核参数</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%89%80%E6%9C%89%E8%8A%82%E7%82%B9%E5%AE%89%E8%A3%85-Docker"><span class="toc-number">1.4.2.</span> <span class="toc-text">2. 所有节点安装 Docker</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEDocker-daemon"><span class="toc-number">1.4.2.1.</span> <span class="toc-text">配置Docker daemon</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8Docker"><span class="toc-number">1.4.2.2.</span> <span class="toc-text">启动Docker</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%89%80%E6%9C%89%E8%8A%82%E7%82%B9%E5%AE%89%E8%A3%85-kubeadm%E3%80%81kubelet-%E5%92%8C-kubectl"><span class="toc-number">1.4.3.</span> <span class="toc-text">3. 所有节点安装 kubeadm、kubelet 和 kubectl</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%B8%8A%E4%BC%A0%E9%95%9C%E5%83%8F%E5%92%8C%E5%88%9D%E5%A7%8B%E5%8C%96%E9%9B%86%E7%BE%A4"><span class="toc-number">1.4.4.</span> <span class="toc-text">4. 上传镜像和初始化集群</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E5%8E%8B%E7%BC%A9%E5%8C%85%EF%BC%8C%E5%AF%BC%E5%85%A5%E9%95%9C%E5%83%8F%EF%BC%88%E6%89%80%E6%9C%89%E8%8A%82%E7%82%B9%EF%BC%89"><span class="toc-number">1.4.4.1.</span> <span class="toc-text">上传压缩包，导入镜像（所有节点）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#kubeadm-%E5%88%9D%E5%A7%8B%E5%8C%96%E9%9B%86%E7%BE%A4%EF%BC%88Master%E8%8A%82%E7%82%B9%EF%BC%89"><span class="toc-number">1.4.4.2.</span> <span class="toc-text">kubeadm 初始化集群（Master节点）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%A4%8D%E5%88%B6-kubeadm-join-%E5%91%BD%E4%BB%A4%E5%8A%A0%E5%85%A5%E9%9B%86%E7%BE%A4"><span class="toc-number">1.4.4.3.</span> <span class="toc-text">复制 kubeadm join 命令加入集群</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Worker%E8%8A%82%E7%82%B9%E6%89%A7%E8%A1%8C%E5%90%8E%EF%BC%8C%E5%9C%A8Master%E8%8A%82%E7%82%B9%E9%87%8D%E5%90%AFkubelet"><span class="toc-number">1.4.4.4.</span> <span class="toc-text">Worker节点执行后，在Master节点重启kubelet</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE%E4%BC%98%E5%8C%96"><span class="toc-number">1.4.5.</span> <span class="toc-text">5. 集群配置优化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BC%80%E5%90%AF-IPVS%EF%BC%88Master%E8%8A%82%E7%82%B9%EF%BC%89"><span class="toc-number">1.4.5.1.</span> <span class="toc-text">开启 IPVS（Master节点）</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Master%E8%8A%82%E7%82%B9%E4%BF%AE%E6%94%B9kube-proxy%E9%85%8D%E7%BD%AE"><span class="toc-number">1.4.5.1.1.</span> <span class="toc-text">Master节点修改kube-proxy配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kubectl-get-cs-%E9%9B%86%E7%BE%A4%E4%B8%8D%E5%81%A5%E5%BA%B7%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="toc-number">1.4.6.</span> <span class="toc-text">kubectl get cs 集群不健康问题解决</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9Master%E8%8A%82%E7%82%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">1.4.6.1.</span> <span class="toc-text">修改Master节点配置文件</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BC%96%E8%BE%91-kube-scheduler-yaml"><span class="toc-number">1.4.6.1.1.</span> <span class="toc-text">编辑 kube-scheduler.yaml</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BC%96%E8%BE%91-kube-controller-manager-yaml"><span class="toc-number">1.4.6.1.2.</span> <span class="toc-text">编辑 kube-controller-manager.yaml</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%89%E8%A3%85CNI%E7%BD%91%E7%BB%9C%E6%8F%92%E4%BB%B6%EF%BC%88Flannel%EF%BC%89"><span class="toc-number">1.4.6.2.</span> <span class="toc-text">安装CNI网络插件（Flannel）</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%89%80%E6%9C%89%E8%8A%82%E7%82%B9%E4%B8%8A%E4%BC%A0"><span class="toc-number">1.4.6.2.1.</span> <span class="toc-text">所有节点上传</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0-kube-flannel-yml-%E6%96%87%E4%BB%B6%E5%88%B0master%EF%BC%8C%E6%89%A7%E8%A1%8C%EF%BC%9A"><span class="toc-number">1.4.6.2.2.</span> <span class="toc-text">上传 kube-flannel.yml 文件到master，执行：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AD%89%E5%BE%85pod%E8%BD%AC%E4%B8%BAready%E7%8A%B6%E6%80%81"><span class="toc-number">1.4.6.2.3.</span> <span class="toc-text">等待pod转为ready状态</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E6%A3%80%E6%9F%A5%E9%9B%86%E7%BE%A4%E7%8A%B6%E6%80%81"><span class="toc-number">1.4.7.</span> <span class="toc-text">6. 检查集群状态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E4%BD%BF%E7%94%A8docker%E8%BF%9B%E8%A1%8Crancher%E9%83%A8%E7%BD%B2"><span class="toc-number">1.4.8.</span> <span class="toc-text">7. 使用docker进行rancher部署</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Docker%E9%83%A8%E7%BD%B2rancher"><span class="toc-number">1.4.8.1.</span> <span class="toc-text">使用Docker部署rancher</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8Brancher%E7%8A%B6%E6%80%81"><span class="toc-number">1.4.8.2.</span> <span class="toc-text">查看rancher状态</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%A8rancher%E4%B8%8A%E7%BB%91%E5%AE%9Ak8s"><span class="toc-number">1.4.8.3.</span> <span class="toc-text">在rancher上绑定k8s</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#kubectl-%E5%91%BD%E4%BB%A4%E5%BF%AB%E9%80%9F%E6%89%8B%E5%86%8C"><span class="toc-number">1.5.</span> <span class="toc-text">kubectl 命令快速手册</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E4%BF%A1%E6%81%AF%E6%9F%A5%E7%9C%8B"><span class="toc-number">1.5.1.</span> <span class="toc-text">基础信息查看</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E5%85%AC%E5%BC%8F"><span class="toc-number">1.5.2.</span> <span class="toc-text">命令公式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E7%AE%A1%E7%90%86"><span class="toc-number">1.5.3.</span> <span class="toc-text">命名空间管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E6%9F%A5%E7%9C%8B%EF%BC%88%E5%A2%9E%E3%80%81%E5%88%A0%E3%80%81%E6%94%B9%E3%80%81%E6%9F%A5%EF%BC%89"><span class="toc-number">1.5.4.</span> <span class="toc-text">资源查看（增、删、改、查）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Pod-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%AE%A1%E7%90%86"><span class="toc-number">1.5.5.</span> <span class="toc-text">Pod 生命周期管理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA"><span class="toc-number">1.5.5.1.</span> <span class="toc-text">创建</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B"><span class="toc-number">1.5.5.2.</span> <span class="toc-text">查看</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%A9%E7%BC%A9%E5%AE%B9"><span class="toc-number">1.5.5.3.</span> <span class="toc-text">扩缩容</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A0%E9%99%A4"><span class="toc-number">1.5.5.4.</span> <span class="toc-text">删除</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9B%E5%85%A5%E5%AE%B9%E5%99%A8"><span class="toc-number">1.5.6.</span> <span class="toc-text">进入容器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%94%E7%94%A8%E6%9B%B4%E6%96%B0%E4%B8%8E%E5%9B%9E%E6%BB%9A"><span class="toc-number">1.5.7.</span> <span class="toc-text">应用更新与回滚</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0"><span class="toc-number">1.5.7.1.</span> <span class="toc-text">更新</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BB%9A%E5%8A%A8%E6%9B%B4%E6%96%B0%E7%9B%91%E5%90%AC"><span class="toc-number">1.5.7.2.</span> <span class="toc-text">滚动更新监听</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9E%E6%BB%9A"><span class="toc-number">1.5.7.3.</span> <span class="toc-text">回滚</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%91%E4%B8%9D%E9%9B%80%E5%8F%91%E5%B8%83"><span class="toc-number">1.5.8.</span> <span class="toc-text">金丝雀发布</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%87%E7%AD%BE%E4%B8%8E%E8%BF%87%E6%BB%A4"><span class="toc-number">1.5.9.</span> <span class="toc-text">标签与过滤</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#K8s-%E6%8E%92%E9%9A%9C%E4%B8%87%E9%87%91%E6%B2%B9"><span class="toc-number">1.6.</span> <span class="toc-text">K8s 排障万金油</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">1.7.</span> <span class="toc-text">总结</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/03/Kubernetes%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%90%AD%E5%BB%BA/" title="Kubernetes了解与搭建">Kubernetes了解与搭建</a><time datetime="2025-12-03T06:44:22.000Z" title="Created 2025-12-03 14:44:22">2025-12-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/Prometheus%E7%9B%91%E6%8E%A7-%E9%92%89%E9%92%89%E8%AD%A6%E5%91%8A-%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3/" title="Prometheus监控+钉钉警告 部署指南">Prometheus监控+钉钉警告 部署指南</a><time datetime="2025-12-02T05:39:16.000Z" title="Created 2025-12-02 13:39:16">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/Prometheus/" title="Prometheus监控系统">Prometheus监控系统</a><time datetime="2025-12-02T00:55:58.000Z" title="Created 2025-12-02 08:55:58">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/01/Ansible/" title="Ansible">Ansible</a><time datetime="2025-12-01T00:54:40.000Z" title="Created 2025-12-01 08:54:40">2025-12-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/11/27/Harbor%20%E7%A7%81%E6%9C%89%E9%95%9C%E5%83%8F%E4%BB%93%E5%BA%93%E5%AE%8C%E6%95%B4%E9%83%A8%E7%BD%B2%E6%8C%87%E5%8D%97/" title="Harbor 私有镜像仓库完整部署指南">Harbor 私有镜像仓库完整部署指南</a><time datetime="2025-11-27T10:54:40.000Z" title="Created 2025-11-27 18:54:40">2025-11-27</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
