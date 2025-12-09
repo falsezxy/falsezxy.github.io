@@ -7,7 +7,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/imgs/adater.jpg">
 <meta property="article:published_time" content="2025-10-14T05:41:59.000Z">
-<meta property="article:modified_time" content="2025-12-07T13:54:58.770Z">
+<meta property="article:modified_time" content="2025-12-09T02:32:35.723Z">
 <meta property="article:author" content="Felix">
 <meta property="article:tag" content="学习过程中持续积累的面试题">
 <meta name="twitter:card" content="summary">
@@ -18,7 +18,7 @@
   "url": "http://example.com/2025/10/14/%E4%BA%91%E8%AE%A1%E7%AE%97%E9%9D%A2%E8%AF%95%E9%A2%98%E6%95%B4%E7%90%86%E2%80%94%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/",
   "image": "http://example.com/imgs/adater.jpg",
   "datePublished": "2025-10-14T05:41:59.000Z",
-  "dateModified": "2025-12-07T13:54:58.770Z",
+  "dateModified": "2025-12-09T02:32:35.723Z",
   "author": [
     {
       "@type": "Person",
@@ -159,7 +159,7 @@
   isHighlightShrink: false,
   isToc: true,
   pageType: 'post'
-}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">云计算面试题整理—持续更新</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">云计算面试题整理—持续更新</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-14T05:41:59.000Z" title="Created 2025-10-14 13:41:59">2025-10-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-12-07T13:54:58.770Z" title="Updated 2025-12-07 21:54:58">2025-12-07</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>1.查看资源占用</p>
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">云计算面试题整理—持续更新</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">云计算面试题整理—持续更新</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-10-14T05:41:59.000Z" title="Created 2025-10-14 13:41:59">2025-10-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-12-09T02:32:35.723Z" title="Updated 2025-12-09 10:32:35">2025-12-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>1.查看资源占用</p>
 <p>题目：</p>
 <p>1、当前系统很卡，cpu占用很高，我应该如何排查具体哪个进程占用资源最多 </p>
 <p>2、接上一题，如何定位这个进程的哪个子进程占用CPU资源更大。 </p>
@@ -290,184 +290,385 @@
 <p>35.索引的种类？有什么区别？</p>
 <p>36.mysql的优化（包含创建合适的索引）</p>
 <p>云计算面试题</p>
-<h2 id="docker"><a href="#docker" class="headerlink" title="docker"></a>docker</h2><p>1、docker 常用命令（增删改查）</p>
-<p>增：docker run&#x2F;create<br>删：docker rm&#x2F;rmi<br>改：docker commit、docker build<br>查：docker ps&#x2F;images&#x2F;inspect</p>
-<p>2、docker -i -t -d什么意思 </p>
-<p>-i(交互stdin) -t(分配tty) -d(后台运行detach)</p>
-<p>3、dockerfile 有哪些指令，dockerfile内容怎么写的，写过哪些dockerfile </p>
-<p>FROM WORKDIR COPY RUN EXPOSE ENTRYPOINT CMD ENV ARG等；写过Java项目、Node项目、Python项目的dockerfile</p>
-<p>4、dockerfile中cmd 和entrypoint 有什么区别，copy和add有什么区别 </p>
-<p>CMD：可被覆盖；ENTRYPOINT：容器入口点，难以覆盖<br>COPY：只复制；ADD：复制+解压+拉取</p>
-<p>5、容器和虚拟化的区别是什么，为什么要用容器？</p>
+<h2 id="docker"><a href="#docker" class="headerlink" title="docker"></a>docker</h2><p><strong>1、docker 常用命令（增删改查）</strong></p>
+<p>增：docker run&#x2F;create 删：docker rm&#x2F;rmi 改：docker commit、docker build 查：docker ps&#x2F;images&#x2F;inspect</p>
+<p><strong>2、docker -i -t -d什么意思</strong></p>
+<p><code>-i</code> (interactive)：交互模式，保持标准输入开放。</p>
+<p><code>-t</code> (tty)：分配一个伪终端。</p>
+<p><code>-d</code> (detach)：后台运行容器。</p>
+<p><strong>3、dockerfile 有哪些指令，dockerfile内容怎么写的，写过哪些dockerfile</strong></p>
+<p><strong>常见指令：</strong> <code>FROM</code> (基础镜像), <code>RUN</code> (执行命令), <code>COPY/ADD</code> (拷贝文件), <code>WORKDIR</code> (工作目录), <code>CMD/ENTRYPOINT</code> (启动命令), <code>ENV</code> (环境变量), <code>EXPOSE</code> (暴露端口)。</p>
+<p><strong>写法：</strong> 从基础镜像开始，逐层添加配置和依赖，最后定义启动命令。</p>
+<p><strong>示例：</strong> 编写过 Java (Jar包启动)、Nginx (修改配置)、Python 项目的 Dockerfile。</p>
+<p>1、首先写一个基础镜像<br>FROM 基础镜像 as builder<br>2、使用RUN 执行command 命令，准备依赖环境、执行命令操作<br>3、使用COPY ADD 传入文件<br>4、EXPOSE 暴露端口<br>5、ENV 申明环境变量<br>6、FROM 基础镜像 as runtime<br>7、准备启动环境 CMD ENTRYPOINT </p>
+<p><strong>4、dockerfile中cmd 和entrypoint 有什么区别，copy和add有什么区别</strong></p>
+<p>CMD：可被覆盖；ENTRYPOINT：容器入口点，难以覆盖 COPY：只复制；ADD：复制+解压+拉取</p>
+<p><strong>CMD vs ENTRYPOINT：</strong></p>
+<ul>
+<li><code>CMD</code>：容器启动时的默认参数，<strong>可以</strong>被 <code>docker run</code> 后面的参数覆盖。</li>
+<li><code>ENTRYPOINT</code>：容器启动时执行的命令，<strong>不可</strong>被直接覆盖（参数会追加到后面）。</li>
+</ul>
+<p><strong>COPY vs ADD：</strong></p>
+<ul>
+<li><code>COPY</code>：仅支持本地文件拷贝。</li>
+<li><code>ADD</code>：支持本地文件，<strong>还支持URL下载</strong>，且会自动<strong>解压</strong> tar 包。</li>
+</ul>
+<p><strong>5、容器和虚拟化的区别是什么，为什么要用容器？</strong></p>
 <p>容器共享宿主机内核，秒级启动、轻量级、镜像小；虚拟化每个OS独立，启动慢、资源占用大</p>
-<p>6、docker的底层原理是什么（cgroup namespace）</p>
+<p><strong>区别：</strong> 虚拟机是<strong>硬件模拟</strong>，有完整OS，重；容器是<strong>共享内核</strong>，进程级隔离，轻。</p>
+<p><strong>为什么用：</strong> 启动快（秒级）、占用资源少、移植性强（一次构建，到处运行）、易于交付和扩缩容。</p>
+<p><strong>6、docker的底层原理是什么（cgroup namespace）</strong></p>
 <p>cgroup控制资源；namespace隔离(网络、进程、文件系统、用户、ipc等)</p>
-<p>7、docker的工作流程是什么？</p>
+<p>gemini:</p>
+<p><strong>Cgroup：</strong> 资源限制（限制 CPU、内存使用量）。</p>
+<p><strong>Namespace：</strong> 资源隔离（隔离 PID、网络、挂载点等，也就是通常说的”沙盒”）。</p>
+<p><strong>UnionFS (联合文件系统)：</strong> 镜像分层存储。</p>
+<p><strong>7、docker的工作流程是什么？</strong></p>
 <p>client → docker daemon → 检查镜像 → 不存在下载 → 创建容器 → 运行</p>
-<p>8、docker 怎么发布容器到外面？引申：-p -P区别</p>
-<p>使用-p&#x2F;-P映射端口<br>-p指定映射(宿主机:容器)、-P随机映射所有EXPOSE端口</p>
-<p>9、docker 网络有哪些，有什么特性？</p>
-<p>bridge(默认)、host(共享宿主机网络)、overlay(跨主机)、none(无网络)<br>bridge隔离性好、overhead开销低</p>
-<p>10、docker-compose会写么，有没有用过，在哪用的？</p>
+<p><strong>8、docker 怎么发布容器到外面？引申：-p -P区别</strong></p>
+<p>使用-p&#x2F;-P映射端口 </p>
+<p>-p指定映射(宿主机:容器)、-P随机映射所有EXPOSE端口</p>
+<p><strong>9、docker 网络有哪些，有什么特性？</strong></p>
+<p>bridge(默认)、host(共享宿主机网络)、overlay(跨主机)、none(无网络) bridge隔离性好、overhead开销低</p>
+<p><strong>Bridge (默认)：</strong> 桥接模式，容器有独立IP，通过 docker0 网桥通信。</p>
+<p><strong>Host：</strong> 共享宿主机网络栈，无隔离，性能好但端口易冲突。</p>
+<p><strong>None：</strong> 无网络，需手动配置。</p>
+<p><strong>Container：</strong> 与另一个容器共享网络。</p>
+<p><strong>Overlay：</strong> 跨主机通信（Swarm&#x2F;K8S常用）。</p>
+<p><strong>10、docker-compose会写么，有没有用过，在哪用的？</strong></p>
 <p>会；用于多容器编排(如Web+MySQL)，一个yml定义多个服务</p>
-<p>11、除了docker 有没有用过其他容器？</p>
+<p><strong>会写：</strong> YAML 格式，定义 services, networks, volumes。</p>
+<p><strong>场景：</strong> 开发环境、测试环境、单机部署多容器应用（如 Nginx+App+MySQL 组合）。</p>
+<p><strong>11、除了docker 有没有用过其他容器？</strong></p>
 <p>containerd；去除了docker engine和server，直接与CRI接口交互，K8S高版本标准</p>
-<p>12、docker中 怎么把文件传到运行的容器中</p>
+<p><strong>12、docker中 怎么把文件传到运行的容器中</strong></p>
 <p>docker cp 本地文件 容器id:容器路径</p>
-<p>13、dockerfile 怎么写</p>
+<p><strong>13、dockerfile 怎么写</strong></p>
+<p>核心原则：选择最小基础镜像(Alpine)、合并 RUN 指令减少层数、清理缓存减小体积。</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> nginx:latest</span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /usr/share/nginx/html</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> ./app /usr/share/nginx/html</span></span><br><span class="line"><span class="keyword">EXPOSE</span> <span class="number">80</span></span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;nginx&quot;</span>, <span class="string">&quot;-g&quot;</span>, <span class="string">&quot;daemon off;&quot;</span>]</span></span><br></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="k8s"><a href="#k8s" class="headerlink" title="k8s"></a>k8s</h2><p>①  K8S 核心组件有哪些？每个组件是干嘛的？</p>
+<h2 id="k8s"><a href="#k8s" class="headerlink" title="k8s"></a>k8s</h2><p><strong>①  K8S 核心组件有哪些？每个组件是干嘛的？</strong></p>
 <p>Master：</p>
 <ul>
-<li>apiserver(API接口)</li>
-<li>scheduler(调度)</li>
-<li>controller-manager(控制器)</li>
-<li>etcd(存储)</li>
+<li>apiserver(API接口，集群管理调度任务分配，etcd数据库交互)</li>
+<li>scheduler(调度器，选择最合适创建Pod的节点)</li>
+<li>controller-manager(控制器，管理各类控制器，管理pod生命周期)</li>
+<li>etcd(存储，集群核心库)</li>
+<li>kubectl(管理集群的命令)</li>
+<li>auth(认证鉴权)</li>
 </ul>
 <p>Node：</p>
 <ul>
-<li>kubelet(节点代理)</li>
-<li>kube-proxy(网络代理)</li>
-<li>runtime(容器运行时)</li>
+<li>kubelet(节点代理，管理监控节点中k8s资源与任务的核心组件，将节点信息返回给api-server给etcd保存)</li>
+<li>kube-proxy(网络代理，把pod暴露到集群外，给用户访问)</li>
+<li>pod(资源调度的最小单位，分装了多个容器，业务运行在容器中)</li>
 </ul>
-<p>②  K8S 工作流程是什么？</p>
-<p>用户→apiserver→etcd(存储)<br>scheduler调度Pod<br>controller-manager监视并调整<br>kubelet执行</p>
-<p>③  K8S 搭建用的是什么方式，你们CNI用的是什么？</p>
-<p>kubeadm&#x2F;二进制&#x2F;云平台<br>CNI用flannel&#x2F;calico&#x2F;weave等(如calico支持网络策略)</p>
-<p>④  你们K8S集群规模大概多大（1、节点数量-包括master数量和worker数量 2、Pod数量）</p>
-<p>3个master + 10个worker<br>运行Pod数约500个</p>
-<p>⑤  你们K8S中跑的是什么？</p>
-<p>Web应用、数据处理、中间件(Redis&#x2F;MySQL)等业务系统</p>
-<p>⑥  K8S 云上还是自建（看你们业务）；什么是私有云、公有云、混合云？</p>
-<p>私有云：资源自有，内部用<br>公有云：云厂商提供，付费使用<br>混合云：公有+私有结合</p>
-<p>⑦  K8S 常用命令（简单问）</p>
-<p>kubectl get&#x2F;describe&#x2F;create&#x2F;delete&#x2F;apply&#x2F;edit<br>kubectl logs&#x2F;exec&#x2F;port-forward</p>
-<p>⑧  有哪些控制器</p>
-<p>Deployment、StatefulSet、DaemonSet、Job、CronJob、ReplicaSet等</p>
-<p>⑨  你们项目中的产品&#x2F;业务是怎么更新的</p>
-<p>一套完整流程：开发→git commit→CI(jenkins)→镜像构建push→CD(kubectl apply更新)→验证</p>
-<p>10  容器的重启策略、镜像下载策略</p>
-<p>重启：Always&#x2F;OnFailure&#x2F;Never<br>镜像：Always&#x2F;IfNotPresent&#x2F;Never</p>
-<p>11  Pod内有几种容器，分别是做什么的</p>
-<p>主容器：业务逻辑<br>init容器：初始化(挂载、权限设置等)<br>sidecar：辅助(日志收集、监控)</p>
-<p>12  Pod类型有哪些，有什么区别</p>
-<p>普通Pod：一次性<br>静态Pod：kubelet管理，无需apiserver<br>裸Pod：直接create pod(不推荐)</p>
-<p>13、Pod 删除的工作流程是什么</p>
-<p>① 参与组件：apiserver、etcd、controller-manager、kubelet<br>② 起始位置：kubectl delete → apiserver<br>③ 过程：apiserver更新etcd → controller-manager监听删除事件 → 通知kubelet → kubelet删除容器 → 从etcd移除<br>④ 方向：单向下行(apiserver→kubelet)<br>⑤ 机制：grace period(优雅关闭，默认30s)</p>
-<p>14、pod 增删改查命令是什么，以Nginx 为例</p>
-<p>① 增：<code>kubectl create deployment ng-deploy --replicas=3 --image=nginx:latest --port=80 -n abc</code><br>② 修改镜像：<code>kubectl set image deployment/ng-deploy nginx=nginx:1.20 -n abc</code><br>③ 查询：<code>kubectl get po -l app=nginx -n abc</code><br>④ 删除：<code>kubectl delete deployment ng-deploy -n abc</code></p>
-<p>15、Pod 如何发布的（过程描述）以service 的NodePort 模式为例</p>
+<p><strong>②  K8S 工作流程是什么？</strong></p>
+<p>用户kubct→auth认证鉴权→apiserver→etcd(存储)→list清单给apiserver</p>
+<p>scheduler与scheduler监听apiserver中list（获取需要干的事情）</p>
+<p>scheduler选择合适的节点 controller准备对应的资源 </p>
+<p>apiserver通知调度器选择节点的kubelet执行</p>
+<p><strong>③  K8S 搭建用的是什么方式，你们CNI（容器网络接口）用的是什么？</strong></p>
+<p><strong>搭建：</strong> <code>kubeadm</code> (常用)、二进制 (高难度，方便排错)、云厂商托管 (ACK&#x2F;EKS)。</p>
+<p><strong>CNI (网络插件)：</strong> <code>Calico</code> (性能好，支持BGP&#x2F;IPIP，支持网络策略) 或 <code>Flannel</code> (简单，Overlay模式)。</p>
+<p><strong>④  你们K8S集群规模大概多大（1、节点数量-包括master数量和worker数量 2、Pod数量）</strong></p>
+<p>(参考话术) 测试环境：3 Master + 5 Worker。生产环境：3 Master + 20~50 Worker。Pod 数量：几百上千个。</p>
+<p><strong>⑤  你们K8S中跑的是什么？</strong></p>
+<p>无状态服务 (SpringBoot&#x2F;Go 微服务)、Nginx、前端应用。</p>
+<p>⭐1、微服务（前后端项目）<br>⭐2、配置文件、加密文件<br>⭐3、挂载存储<br>4、管理网络通讯<br>⭐5、管理系统 （OA CRM REPORT 财务系统）<br>6、微服务Pod的调度、控制器<br>7、权限管理<br>⭐8、监控<br>⭐9、注册中心<br>⭐10、网关服务</p>
+<p>PS:除了数据库、部分中间件也不会跑在里面，对资源使用要求特别高的项目&#x2F;技术</p>
+<p>比如：Ruo-Yi ： 前端项目  后端项目 注册中心 网关服务 认证鉴权服务<br>spring cloud&#x2F;spring boot 数据库集群</p>
+<p><strong>⑥  K8S 云上还是自建（看你们业务）；什么是私有云、公有云、混合云？</strong></p>
+<p><strong>私有云：</strong> 自建机房，数据安全，成本高。</p>
+<p><strong>公有云：</strong> 阿里云&#x2F;AWS，弹性伸缩，按需付费。</p>
+<p><strong>混合云：</strong> 核心数据在私有云，业务突发在公有云。</p>
+<p><strong>⑦  K8S 常用命令（简单问）详细参考50</strong></p>
+<p>kubectl get&#x2F;describe&#x2F;create&#x2F;delete&#x2F;apply&#x2F;edit kubectl logs&#x2F;exec&#x2F;port-forward</p>
+<p><strong>⑧  有哪些控制器</strong></p>
+<p><strong>Deployment：</strong> 无状态应用 (Web服务)。</p>
+<p><strong>StatefulSet：</strong> 有状态应用 (DB、Redis，有顺序和固定ID)。</p>
+<p><strong>DaemonSet：</strong> 每个节点跑一个 (日志采集、监控Agent)。</p>
+<p><strong>Job&#x2F;CronJob：</strong> 一次性任务&#x2F;定时任务。</p>
+<p><strong>⑨  你们项目中的产品&#x2F;业务是怎么更新的</strong></p>
+<p>一套完整流程：①开发→git commit(提交代码)→CI(jenkins)→镜像构建push→CD(kubectl apply更新)→验证</p>
+<p>②开发提交代码 -&gt; GitLab -&gt; Jenkins (CI) 构建镜像 -&gt; 推送 Harbor -&gt; 触发 K8S 修改 Deployment 镜像版本 -&gt; 滚动更新。</p>
+<p><strong>10  容器的重启策略、镜像下载策略</strong></p>
+<p><strong>重启策略：</strong> <code>Always</code> (总是重启，默认), <code>OnFailure</code> (失败&#x2F;非正常退出才重启), <code>Never</code>。</p>
+<p><strong>镜像策略：</strong> <code>Always</code> (总是拉), <code>IfNotPresent</code> (本地没有才拉), <code>Never</code>。</p>
+<p><strong>11  Pod内有几种容器，分别是做什么的</strong></p>
+<p>app 主容器：业务逻辑 </p>
+<p>init 容器：初始化(挂载、权限设置等) </p>
+<p>pause容器：为其他容器准备网络和挂载命名空间等 </p>
+<p>补充（主要是上面三个）：Sidecar容器： 辅助功能（如日志搜集、ServiceMesh代理）。</p>
+<p><strong>12  Pod类型有哪些，有什么区别</strong></p>
+<p>自主式：直接由用户创建的独立Pod，没有任何控制器管理，Pod被删除后不会自动重建</p>
+<p>动态（声明式）：<strong>声明式创建</strong> - 通过YAML文件描述期望状态，由控制器（Deployment、StatefulSet、DaemonSet等）管理，Pod被删除后，控制器会自动重建以维持期望副本数，支持自动扩缩容、滚动更新、自愈能力</p>
+<p>静态式：由kubelet直接管理，不需要API Server，不受控制器管理，Kubelet 会自动根据该目录中的 YAML 文件创建静态 Pod</p>
+<p><strong>13、Pod 删除的工作流程是什么</strong></p>
+<p>claude:</p>
+<p>① 参与组件：apiserver、etcd、controller-manager、kubelet ② 起始位置：kubectl delete → apiserver ③ 过程：apiserver更新etcd → controller-manager监听删除事件 → 通知kubelet → kubelet删除容器 → 从etcd移除 ④ 方向：单向下行(apiserver→kubelet) ⑤ 机制：grace period(优雅关闭，默认30s) </p>
+<p>gemini:</p>
+<p>① User 发删请求 -&gt; ② Pod 状态变 Terminating -&gt; ③ <strong>同时进行</strong>：从 Service 端点移除流量 + 容器内执行 <code>preStop</code> 钩子 + 发送 <code>SIGTERM</code> 信号 -&gt; ④ 等待 <code>terminationGracePeriodSeconds</code> (默认30s) -&gt; ⑤ 强制发送 <code>SIGKILL</code> 删除。</p>
+<p><strong>14、pod 增删改查命令是什么，以Nginx 为例</strong></p>
+<p>① 增：<code>kubectl create deployment ng-deploy --replicas=3 --image=nginx:latest --port=80 -n abc</code> </p>
+<p>② 修改镜像：<code>kubectl set image deployment/ng-deploy nginx=nginx:1.20 -n abc</code> ③ 查询：<code>kubectl get po -l app=nginx -n abc</code></p>
+<p>④ 删除：<code>kubectl delete deployment ng-deploy -n abc</code></p>
+<p><strong>15、Pod 如何发布的（过程描述）以service 的NodePort 模式为例</strong></p>
+<p>claude:</p>
 <p>创建deployment→生成Pod→创建service(NodePort)→分配31xxx端口→外部通过NodeIP:31xxx访问→kube-proxy转发到Pod:80</p>
-<p>16、K8S 更新Pod 方法（滚动、蓝绿、金丝雀&#x2F;灰度）分别是怎么发布的</p>
-<p>蓝绿：50%一半部署新版→验证正常→全量切换，回滚快但成本高<br>滚动：按步长(如25%)逐步更新，正常使用标准，默认策略<br>金丝雀：先发小流量到新版→监测反馈→逐步增加比例，风险最小</p>
-<p>17、K8S Pod资源限制怎么做的，参数是什么？</p>
+<p>gemini:</p>
+<p>Pod 启动并拥有 IP -&gt; Service 选择 Pod 标签 -&gt; Service 创建 ClusterIP 和 Endpoints -&gt; NodePort 在每台宿主机开端口 -&gt; 外部访问 NodeIP:NodePort -&gt; 转发给 Service -&gt; 负载均衡到 Pod。</p>
+<p><strong>16、K8S 更新Pod 方法（滚动、蓝绿、金丝雀&#x2F;灰度）分别是怎么发布的</strong></p>
+<p><strong>滚动更新 (Rolling Update)：</strong> K8S 默认。启动一个新版，杀一个旧版，平滑过渡。</p>
+<p><strong>蓝绿发布 (Blue&#x2F;Green)：</strong> 新旧版本并存，测试通过后，Service 流量一次性切到新版。</p>
+<p><strong>金丝雀&#x2F;灰度 (Canary)：</strong> 先发极少量新版（如10%流量），观察无误后，逐步扩大比例直至全量。</p>
+<p><strong>17、K8S Pod资源限制怎么做的，参数是什么？</strong></p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">resources:</span></span><br><span class="line">  <span class="attr">requests:</span> &#123;<span class="attr">cpu:</span> <span class="string">100m</span>, <span class="attr">memory:</span> <span class="string">128Mi</span>&#125;  <span class="comment"># 最低保证</span></span><br><span class="line">  <span class="attr">limits:</span> &#123;<span class="attr">cpu:</span> <span class="string">500m</span>, <span class="attr">memory:</span> <span class="string">512Mi</span>&#125;    <span class="comment"># 上限</span></span><br></pre></td></tr></table></figure>
 
-<p>18、K8S集群的默认驱逐机制中，各个资源的驱逐阈值是多少？</p>
-<p>memory.available&lt;100Mi<br>nodefs.available&lt;10%<br>nodefs.inodesFree&lt;5%等<br>kubelet触发驱逐</p>
-<p>19、Pod 健康检查机制是什么，有哪些（探针）类型，有什么区别</p>
-<p>liveness探针：检测Pod是否存活，失败重启<br>readiness探针：检测是否就绪，失败则从service移除<br>startup探针：检测应用启动完成(新增)</p>
-<p>20、Pod 探针的检查方式有哪些</p>
-<p>exec(执行命令)、httpGet(http请求)、tcpSocket(端口连接)</p>
-<p>21、钩子的使用作为加分项，在容器创建后，启动前，想插入一段指令或准备一个环境，应该怎么做</p>
+<p><strong>18、K8S集群的默认驱逐机制中，各个资源的驱逐阈值是多少？</strong></p>
+<p><strong>memory.available &lt; 100Mi</strong> - 可用内存少于 100M</p>
+<p><strong>nodefs.available &lt; 10%</strong> - 节点文件系统可用空间少于 10%</p>
+<p><strong>nodefs.inodesFree &lt; 5%</strong> - 节点文件系统可用 inode 少于 5%</p>
+<p><strong>imagefs.available &lt; 15%</strong> - 镜像文件系统可用空间少于 15%（如果镜像存储单独分区）</p>
+<p><strong>pid.available &lt; 4%</strong> - 可用 PID 少于 4%</p>
+<p>NodeCondition 为 NotReady等 </p>
+<p>kubelet触发驱逐</p>
+<p><strong>驱逐优先级</strong></p>
+<p>kubelet 驱逐 Pod 时会按照优先级顺序选择：</p>
+<ol>
+<li><strong>Best Effort 类 Pod</strong>（优先驱逐）- 没有 requests&#x2F;limits 定义</li>
+<li><strong>Burstable 类 Pod</strong> - 有 requests 但 limits 高于 requests</li>
+<li><strong>Guaranteed 类 Pod</strong>（最后驱逐）- requests &#x3D; limits</li>
+</ol>
+<p><strong>19、Pod 健康检查机制是什么，有哪些（探针）类型，有什么区别</strong></p>
+<p>健康检查通过探针（Probe）来实现，kubelet 定期执行这些检查来判断容器的健康状态。</p>
+<p><strong>liveness探针</strong>：检测Pod是否存活，失败重启 </p>
+<p><strong>readiness探针</strong>：检测是否就绪，失败则从service移除 </p>
+<p><strong>startup探针</strong>：专为启动慢的应用设计，成功前不执行其他探针。</p>
+<p><strong>20、Pod 探针的检查方式有哪些</strong></p>
+<p>exec(执行命令)、httpGet(http请求，状态码200-399)、tcpSocket(端口连接)</p>
+<p><strong>21、钩子的使用作为加分项，在容器创建后，启动前，想插入一段指令或准备一个环境，应该怎么做</strong></p>
+<p><strong>PreStop：</strong> 容器终止前执行（如：平滑关闭连接、注册中心下线）。</p>
+<p><strong>PostStart：</strong> 容器启动后执行（极少用）。</p>
 <p>使用lifecycle钩子PostStart(启动后)或PreStop(停止前)</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">lifecycle:</span></span><br><span class="line">  <span class="attr">postStart:</span></span><br><span class="line">    <span class="attr">exec:</span></span><br><span class="line">      <span class="attr">command:</span> [<span class="string">&quot;/bin/sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, <span class="string">&quot;echo hello&quot;</span>]</span><br></pre></td></tr></table></figure>
 
-<p>22、第一层面试题：直接问调度策略有哪些，怎么做的</p>
+<p><strong>22、第一层面试题：直接问调度策略有哪些，怎么做的</strong></p>
 <p>nodeSelector、affinity(亲和性)、taints&#x2F;tolerations(污点容忍)、priorityClass(优先级)</p>
-<p>23、第二层面试题：给需求，然后让你使用对应的调度策略完成</p>
+<p><strong>默认调度流程：</strong> 预选 (Predicates, 过滤节点) -&gt; 优选 (Priorities, 打分)。</p>
+<p><strong>NodeSelector：</strong> 简单的节点选择 (key&#x3D;value)。</p>
+<p><strong>Affinity (亲和性)：</strong></p>
+<ul>
+<li><code>NodeAffinity</code>：喜欢调度到哪些节点 (软策略&#x2F;硬策略)。</li>
+<li><code>PodAffinity</code>：喜欢和哪些 Pod 在一起 (如 App 和 Redis)。</li>
+<li><code>PodAntiAffinity</code>：反亲和，<strong>不</strong>和哪些 Pod 在一起 (如高可用部署，两副本不在同一节点)。</li>
+</ul>
+<p><strong>Taints (污点) &amp; Tolerations (容忍)：</strong></p>
+<ul>
+<li>污点是打在<strong>节点</strong>上的 (拒绝 Pod)。</li>
+<li>容忍是打在<strong>Pod</strong>上的 (允许进入污点节点)。</li>
+<li><strong>场景：</strong> Master 节点默认有污点不跑业务；专用 GPU 节点打污点，只让 AI 业务跑。</li>
+</ul>
+<p><strong>23、第二层面试题：给需求，然后让你使用对应的调度策略完成</strong></p>
 <p>例如需求”Pod与app&#x3D;web标签Pod同节点”→用nodeAffinity或podAffinity实现</p>
-<p>24、第三层面试题：实际业务报错场景下，如何排查错误发生的可能性</p>
+<p><strong>24、第三层面试题：实际业务报错场景下，如何排查错误发生的可能性</strong></p>
 <p>查Pod日志→describe Pod查events→检查节点资源→检查污点→检查调度器日志→验证selector匹配</p>
-<p>25、调度器的默认调度规则&#x2F;策略是什么？</p>
-<p>predicates(节点过滤)+ priority(优先级评分)<br>默认按资源、端口、label筛选</p>
-<p>26、污点和容忍的作用是什么，什么时候会使用污点机制？</p>
-<p>污点：标记节点不可用<br>容忍：Pod可在污点节点运行<br>用于隔离特殊节点(GPU节点、专用集群)</p>
-<p>27、存储类型有哪些，你们用的是什么存储，什么场景使用？</p>
-<p>EmptyDir(临时)、HostPath(主机路径)、PV&#x2F;PVC(持久化)、ConfigMap&#x2F;Secret(配置)<br>NFS用于共享存储、Ceph用于块存储、云存储用于云平台</p>
-<p>28、Pod的生命周期有哪些（指的是Pod的状态及对应场景）</p>
-<p>Pending：等待调度或拉取镜像<br>Running：运行中<br>Succeeded：成功完成(Job)<br>Failed：失败<br>Unknown：未知</p>
-<p>29、新建污点的命令</p>
-<p><code>kubectl taint nodes node1 key=value:NoSchedule</code></p>
-<p>30、PV PVC SC 有没有用过，用在哪些场景&#x2F;业务？</p>
-<p>有；PV(持久卷)→PVC(持久卷申请)→SC(存储类自动配置)<br>用于数据库、文件存储、日志等</p>
-<p>31、你们的PV PVC用的是什么？ NFS Ceph 云存储</p>
-<p>NFS(共享存储)或Ceph(分布式)或阿里云NAS<br>根据业务选择</p>
-<p>32、控制器有哪些，分别是干嘛的？</p>
-<p>Deployment(无状态)<br>StatefulSet(有状态)<br>DaemonSet(每节点一个)<br>Job(一次性)<br>CronJob(定时)</p>
-<p>33、控制器+调度器的需求场景，例如我有20个节点，每个节点都需要跑一个pod副本，怎么做？</p>
+<p><strong>25、调度器的默认调度规则&#x2F;策略是什么？</strong></p>
+<p>predicates(节点过滤)+ priority(优先级评分) 默认按资源、端口、label筛选</p>
+<p><strong>26、污点和容忍的作用是什么，什么时候会使用污点机制？</strong></p>
+<p>污点：标记节点不可用 </p>
+<p>容忍：Pod可在污点节点运行 </p>
+<p>用于隔离特殊节点(GPU节点、专用集群)</p>
+<p><strong>27、存储类型有哪些，你们用的是什么存储，什么场景使用？</strong></p>
+<p>EmptyDir(临时)、HostPath(主机路径)、PV&#x2F;PVC(持久化)、ConfigMap&#x2F;Secret(配置) NFS用于共享存储、Ceph用于块存储、云存储用于云平台</p>
+<p><code>EmptyDir</code>：临时存储，Pod 删数据丢 (缓存)。</p>
+<p><code>HostPath</code>：挂载宿主机路径 (日志采集)。</p>
+<p><code>NFS/Ceph/GlusterFS</code>：网络存储，数据持久化 (数据库、文件服务)。</p>
+<p><strong>28、Pod的生命周期有哪些（指的是Pod的状态及对应场景）</strong></p>
+<p><strong>1. Pending（待处理）</strong> Pod 已被创建并存储在 etcd 中，但还未被调度到任何节点上。这个阶段可能是因为集群资源不足、节点选择器不匹配或其他调度限制。</p>
+<p><strong>2. ContainerCreating（容器创建中）</strong> Pod 已被调度到某个节点，kubelet 正在为 Pod 中的容器拉取镜像并启动容器。</p>
+<p><strong>3. Running（运行中）</strong> Pod 中至少有一个容器正在运行。如果 Pod 中有多个容器，这个阶段表示至少一个已经启动。在这个阶段，容器可能会出现失败或重启的情况。</p>
+<p><strong>4. Succeeded（成功）</strong> Pod 中的所有容器都已成功退出，且不会重启。通常用于 Job 和 CronJob 这类一次性任务。</p>
+<p><strong>5. Failed（失败）</strong> Pod 中至少有一个容器异常终止（退出码非零）。此时 Pod 不会自动重启（除非配置了重启策略）。</p>
+<p><strong>6. Unknown（未知）</strong> 由于某种原因，无法获取 Pod 的状态。通常表示 kubelet 与 API 服务器之间的通信出现问题。</p>
+<p><strong>7. CrashLoopBackOff（崩溃回退）</strong> 容器不断崩溃并尝试重启，但重启失败，进入指数级的等待后重试。这通常表示应用程序存在问题。</p>
+<p><strong>8.ImagePullBackOff（镜像拉取回退）</strong> kubelet 尝试拉取容器镜像失败，然后进入指数级退避重试。常见原因包括镜像不存在、镜像仓库网络不可达、镜像仓库认证失败或镜像tag错误。这个状态会持续重试，直到镜像拉取成功或 Pod 被删除。</p>
+<p><strong>9.Terminating（终止中）</strong> Pod 正在被删除。当收到删除请求后，Pod 会进入这个状态。在这个阶段，kubelet 会给容器一个优雅关闭的机会（由 terminationGracePeriodSeconds 指定，默认30秒），超时后会强制杀死容器。</p>
+<p><strong>10.Error（错误）</strong> Pod 处于错误状态，通常表示发生了某种异常。比如 API 对象配置错误、资源不足导致 Pod 无法调度、或者节点状态异常等情况。</p>
+<p><strong>其他补充的常见状态：</strong></p>
+<p><strong>Evicted（驱逐）</strong> 当节点资源不足时（如内存、磁盘），kubelet 会驱逐 Pod 以释放资源。被驱逐的 Pod 会显示这个状态。</p>
+<p><strong>29、新建污点的命令</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kubectl taint nodes node1 key=value:NoSchedule</span><br></pre></td></tr></table></figure>
+
+<p><strong>30、PV PVC SC 有没有用过，用在哪些场景&#x2F;业务？</strong></p>
+<p>有；PV(持久卷)→PVC(持久卷申请)→SC(存储类自动配置) 用于数据库、文件存储、日志等</p>
+<p><strong>PV (持久卷)：</strong> 运维人员定义的存储资源。</p>
+<p><strong>PVC (卷申明)：</strong> 开发人员申请存储的请求。</p>
+<p><strong>SC (StorageClass)：</strong> 动态创建 PV 的模板 (自动化)。</p>
+<p><strong>关系：</strong> Pod 绑定 PVC，PVC 绑定 PV。</p>
+<p><strong>31、你们的PV PVC用的是什么？ NFS Ceph 云存储</strong></p>
+<p>NFS(共享存储)或Ceph(分布式)或阿里云NAS 根据业务选择</p>
+<p><strong>32、控制器有哪些，分别是干嘛的？</strong></p>
+<p>Deployment(无状态) </p>
+<p>StatefulSet(有状态) </p>
+<p>DaemonSet(每节点一个)</p>
+<p> Job(一次性) </p>
+<p>CronJob(定时)</p>
+<p><strong>33、控制器+调度器的需求场景，例如我有20个节点，每个节点都需要跑一个pod副本，怎么做？</strong></p>
 <p>使用DaemonSet，自动在每个节点运行一个Pod副本(如日志收集agent)</p>
-<p>34、以33题为基础，增加一个需求，新增的Pod需要和拥有app&#x3D;a标签的Pod 跑在一起</p>
+<p><strong>34、以33题为基础，增加一个需求，新增的Pod需要和拥有app&#x3D;a标签的Pod 跑在一起</strong></p>
 <p>使用DaemonSet+podAffinity(requiredDuringScheduling)指定与app&#x3D;a同节点</p>
-<p>35、K8S 控制组合题，比如daemonset 搭配调度器的需求场景 </p>
+<p><strong>35、K8S 控制组合题，比如daemonset 搭配调度器的需求场景</strong></p>
 <p>DaemonSet部署监控agent→配合nodeSelector选择特定节点(如GPU节点)+污点容忍</p>
-<p>36、你们业务&#x2F;应用会使用哪些控制器</p>
-<p>Deployment(Web应用)<br>StatefulSet(数据库)<br>DaemonSet(监控&#x2F;日志)<br>CronJob(定时任务)</p>
-<p>37、你们配置文件是怎么管理的&#x2F;或者直接问configmap和secret分别用在什么场景</p>
-<p>ConfigMap(非敏感配置)、Secret(敏感信息如密码)<br>git&#x2F;Helm管理yaml</p>
-<p>38、你们是怎么暴露服务的？</p>
-<p>ClusterIP(内部)<br>NodePort(节点暴露)<br>LoadBalancer(负载均衡)<br>Ingress(七层路由)</p>
-<p>39、你们用的是哪个ingress？</p>
-<p>nginx-ingress-controller(开源)或云平台自带(如阿里云SLB)</p>
-<p>40、ingress的工作原理是什么？</p>
+<p><strong>36、你们业务&#x2F;应用会使用哪些控制器</strong></p>
+<p>Deployment(Web应用) </p>
+<p>StatefulSet(数据库) </p>
+<p>DaemonSet(监控&#x2F;日志)</p>
+<p>CronJob(定时任务)</p>
+<p><strong>37、你们配置文件是怎么管理的&#x2F;或者直接问configmap和secret分别用在什么场景</strong></p>
+<p>ConfigMap(非敏感配置)、Secret(敏感信息如密码) git&#x2F;Helm管理yaml</p>
+<p><strong>ConfigMap：</strong> 存明文配置 (nginx.conf, application.yml)。</p>
+<p><strong>Secret：</strong> 存敏感信息，base64 编码 (密码, 证书, Token)。</p>
+<p><strong>使用：</strong> 环境变量注入，或挂载为文件。</p>
+<p><strong>38、你们是怎么暴露服务的？</strong></p>
+<p>ClusterIP(内部) </p>
+<p>NodePort(节点暴露)</p>
+<p>LoadBalancer(负载均衡) </p>
+<p>Ingress(七层路由)</p>
+<p><strong>39、你们用的是哪个ingress？</strong></p>
+<p>nginx-ingress-controller(开源)</p>
+<p>或云平台自带(如阿里云SLB)</p>
+<p><strong>40、ingress的工作原理是什么？</strong></p>
 <p>ingress-controller监听ingress资源→更新nginx配置→nginx根据规则路由到后端service→转发到Pod</p>
-<p>41、ingress怎么做https转发？</p>
+<p><strong>41、ingress怎么做https转发？</strong></p>
 <p>申请tls证书→创建Secret资源→ingress spec.tls字段指定证书Secret→rules定义443端口</p>
-<p>42、我K8S节点资源充足的，但是为什么我在创建pod的时候一直创建失败呢</p>
-<p>排查：namespace资源限制(ResourceQuota)、Pod数量上限、亲和性冲突、污点无容忍、镜像拉取失败</p>
-<p>43、怎么将http的流量转到https下？</p>
+<p><strong>42、我K8S节点资源充足的，但是为什么我在创建pod的时候一直创建失败呢</strong></p>
+<p>排查：namespace资源限制(ResourceQuota)—是否限制了 Pod 数量或 CPU&#x2F;内存总量、亲和性冲突、污点无容忍、镜像拉取失败</p>
+<p><strong>43、怎么将http的流量转到https下？</strong></p>
 <p>ingress annotations添加<code>nginx.ingress.kubernetes.io/force-ssl-redirect: &quot;true&quot;</code></p>
-<p>44、你们平时是怎么管理K8S集群的？</p>
-<p>Rancher&#x2F;KubeSphere(管理平台)<br>Prometheus(监控)<br>EFK(日志)<br>Helm(资源管理)</p>
-<p>45、你们的K8S安全管理是什么？</p>
-<p>RBAC(认证→role&#x2F;clusterrole、鉴权→rolebinding&#x2F;clusterrolebinding、准入控制)<br>绑定user&#x2F;group&#x2F;sa</p>
-<p>46、低概率问到helm组件、怎么用的?</p>
+<p><strong>44、你们平时是怎么管理K8S集群的？</strong></p>
+<p>Rancher&#x2F;KubeSphere(管理平台) </p>
+<p>Prometheus(监控) </p>
+<p>EFK(日志)ELK </p>
+<p>Helm(资源管理)</p>
+<p><strong>45、你们的K8S安全管理是什么？</strong></p>
+<p>RBAC(认证→role&#x2F;clusterrole、鉴权→rolebinding&#x2F;clusterrolebinding、准入控制) 绑定user&#x2F;group&#x2F;sa</p>
+<p><strong>RBAC (基于角色的访问控制)：</strong></p>
+<ul>
+<li><code>Role/ClusterRole</code>：定义权限 (能干什么)。</li>
+<li><code>RoleBinding/ClusterRoleBinding</code>：绑定 (把权限给谁)。</li>
+<li><code>ServiceAccount</code>：Pod 的身份。</li>
+</ul>
+<p><strong>46、低概率问到helm组件、怎么用的?</strong></p>
+<p><strong>Helm：</strong> K8S 的包管理工具 (类似 Yum&#x2F;Apt)。</p>
+<p><strong>概念：</strong> <code>Chart</code> (包模板), <code>Values</code> (参数配置), <code>Release</code> (运行实例)。</p>
+<p><strong>优势：</strong> 统一管理复杂应用的一堆 YAML，一键部署&#x2F;回滚。</p>
 <p>chart(tgz包)、repository(仓库)、release(实例)</p>
 <p>文件：Chart.yaml(信息)、values.yaml(参数)、template目录(资源模板)</p>
 <p>用法：<code>helm install release-name ./chart-dir -n namespace</code></p>
 <p>场景：CI&#x2F;CD中复杂应用发布</p>
-<p>47、你们采集K8S日志是怎么做的？</p>
-<p>EFK(Elasticsearch+Filebeat+Kibana)或ELK+ Logstash<br>Pod日志→Filebeat采集→Elasticsearch存储→Kibana展示</p>
-<p>48、K8S内的Pod 怎么抓包？</p>
-<p><code>kubectl exec -it pod-name -- tcpdump -i any -w /tmp/capture.pcap</code><br>或在Pod内安装tcpdump</p>
+<p><strong>47、你们采集K8S日志是怎么做的？</strong></p>
+<p><strong>方案1 (Sidecar)：</strong> Pod 里多跑一个 Filebeat 容器搜集日志 (资源消耗大)。</p>
+<p><strong>方案2 (DaemonSet)：</strong> 每个 Node 跑一个 Logstash&#x2F;Fluentd，挂载宿主机日志目录 (推荐)。</p>
+<p><strong>架构：</strong> Pod -&gt; Console&#x2F;File -&gt; Fluentd -&gt; ElasticSearch -&gt; Kibana (EFK)。</p>
+<p>EFK(Elasticsearch+Filebeat+Kibana)或ELK+ Logstash Pod日志→Filebeat采集→Elasticsearch存储→Kibana展示</p>
+<p><strong>48、K8S内的Pod 怎么抓包？</strong></p>
+<p><code>kubectl exec -it pod-name -- tcpdump -i any -w /tmp/capture.pcap</code> 或在Pod内安装tcpdump</p>
+<p>gemini:</p>
+<p><code>kubectl exec</code> 进入容器安装 tcpdump。</p>
+<p>或者进入宿主机，找到容器网卡 (veth pair) 进行抓包。</p>
+<p>使用 <code>ksniff</code> 插件。</p>
+<p><strong>49、怎么排查k8s故障的？</strong></p>
+<p>kubectl get：查看状态</p>
+<p>descibe 资源对象 查看event事件</p>
+<p>logs 查看日志</p>
+<p>详细讲，比如crashloopbackoff，什么环境，怎么做？</p>
+<p>业务问题：观测容器日志</p>
+<p><strong>50、K8S 常用命令</strong></p>
+<p>查看资源</p>
+<p>get - 查看资源列表</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">kubectl get pods              <span class="comment"># 查看 Pod 列表</span></span><br><span class="line">kubectl get svc               <span class="comment"># 查看 Service 列表</span></span><br><span class="line">kubectl get nodes             <span class="comment"># 查看集群节点</span></span><br><span class="line">kubectl get deploy            <span class="comment"># 查看 Deployment</span></span><br><span class="line">kubectl get all               <span class="comment"># 查看所有资源</span></span><br><span class="line">kubectl get pods -n kube-system  <span class="comment"># 查看指定命名空间的 Pod</span></span><br><span class="line">kubectl get [资源类型] [资源对象] [-n namespace] [--show-labels] <span class="comment">#查看标签</span></span><br><span class="line">kubectl get [资源类型] [资源对象] [-n namespace] [- 标签名=标签值] <span class="comment">#查看指定标签名/标签名=标签值</span></span><br></pre></td></tr></table></figure>
+
+<p>kubectl get [资源类型] [资源对象] [-n namespace]</p>
+<p>详细查看资源</p>
+<p>describe - 查看资源详细信息</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl describe pod &lt;pod-name&gt;      <span class="comment"># 查看 Pod 详细信息</span></span><br><span class="line">kubectl describe svc &lt;service-name&gt;  <span class="comment"># 查看 Service 详细信息</span></span><br><span class="line">kubectl describe node &lt;node-name&gt;    <span class="comment"># 查看节点详细信息</span></span><br></pre></td></tr></table></figure>
+
+<p>创建和删除资源</p>
+<p>create、delete、apply</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kubectl create -f &lt;file.yaml&gt;    <span class="comment"># 创建资源</span></span><br><span class="line">kubectl delete pod &lt;pod-name&gt;    <span class="comment"># 删除 Pod</span></span><br><span class="line">kubectl delete svc &lt;svc-name&gt;    <span class="comment"># 删除 Service</span></span><br><span class="line">kubectl delete -f &lt;file.yaml&gt;    <span class="comment"># 删除 YAML 文件中定义的资源</span></span><br><span class="line">kubectl apply -f &lt;file.yaml&gt;     <span class="comment"># 创建或更新资源</span></span><br></pre></td></tr></table></figure>
+
+<p>Pod 操作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kubectl logs &lt;pod-name&gt;                    <span class="comment"># 查看 Pod 日志</span></span><br><span class="line">kubectl logs -f &lt;pod-name&gt;                 <span class="comment"># 实时查看 Pod 日志</span></span><br><span class="line">kubectl <span class="built_in">exec</span> -it &lt;pod-name&gt; -- /bin/bash   <span class="comment"># 进入 Pod 容器</span></span><br></pre></td></tr></table></figure>
+
+<p>Deployment 操作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">kubectl scale deployment &lt;deployment-name&gt; --replicas=3          <span class="comment"># 扩缩容</span></span><br><span class="line">kubectl rollout status deployment/&lt;deployment-name&gt;             <span class="comment"># 查看更新状态</span></span><br><span class="line">kubectl rollout <span class="built_in">history</span> deployment/&lt;deployment-name&gt;            <span class="comment"># 查看版本历史</span></span><br><span class="line">kubectl rollout undo deployment/&lt;deployment-name&gt;               <span class="comment"># 回滚到上一版本</span></span><br><span class="line">kubectl expose deployment &lt;deployment-name&gt; --target-port=&lt;port&gt; --port=&lt;port&gt; -n &lt;namespace&gt;  <span class="comment"># 创建 Service 暴露服务</span></span><br></pre></td></tr></table></figure>
+
+<p>标签操作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加标签</span></span><br><span class="line">kubectl label [资源类型] [资源对象] [-n namespace] [标签名=标签值]</span><br><span class="line"><span class="comment"># 修改标签</span></span><br><span class="line">kubectl label [资源类型] [资源对象] [-n namespace] [标签名=标签值] --overwrite</span><br><span class="line"><span class="comment"># 删除标签</span></span><br><span class="line">kubectl label [资源类型] [资源对象] [-n namespace] [标签名=标签值]-</span><br></pre></td></tr></table></figure>
+
 <hr>
-<h2 id="ansible-prometheus-elk"><a href="#ansible-prometheus-elk" class="headerlink" title="ansible prometheus elk"></a>ansible prometheus elk</h2><h3 id="ansible-面试题："><a href="#ansible-面试题：" class="headerlink" title="ansible 面试题："></a>ansible 面试题：</h3><p>1、自动化工具你们用过哪些？</p>
-<p>ansible：批管理&#x2F;配置管理<br>git&#x2F;gitlab：代码管理<br>jenkins：CI&#x2F;CD<br>Docker&#x2F;K8S：容器编排</p>
-<p>2、ansible 你用过哪些模块？</p>
+<h2 id="ansible-prometheus-elk"><a href="#ansible-prometheus-elk" class="headerlink" title="ansible prometheus elk"></a>ansible prometheus elk</h2><h3 id="ansible-面试题："><a href="#ansible-面试题：" class="headerlink" title="ansible 面试题："></a>ansible 面试题：</h3><p><strong>1、自动化工具你们用过哪些？</strong></p>
+<p>ansible：批管理&#x2F;配置管理 </p>
+<p>git&#x2F;gitlab：代码管理 </p>
+<p>jenkins：CI&#x2F;CD </p>
+<p>Docker&#x2F;K8S：容器编排</p>
+<p><strong>2、ansible 你用过哪些模块？</strong></p>
+<p><strong>模块：</strong> <code>shell/command</code> (执行命令), <code>copy</code> (发文件), <code>file</code> (文件属性), <code>yum/apt</code> (装包), <code>service/systemd</code> (服务管理)。</p>
 <p>shell、command、copy、file、yum&#x2F;apt、service、template、script、user等</p>
-<p>3、ansible-playbook是怎么写的？</p>
+<p><strong>3、ansible-playbook是怎么写的？</strong></p>
+<p>剧本，YAML 格式，定义任务编排。</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">hosts:</span> <span class="string">webservers</span></span><br><span class="line">  <span class="attr">become:</span> <span class="literal">yes</span></span><br><span class="line">  <span class="attr">tasks:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Install</span> <span class="string">nginx</span></span><br><span class="line">      <span class="attr">yum:</span> <span class="string">name=nginx</span> <span class="string">state=present</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">Start</span> <span class="string">nginx</span></span><br><span class="line">      <span class="attr">service:</span> <span class="string">name=nginx</span> <span class="string">state=started</span> <span class="string">enabled=yes</span></span><br></pre></td></tr></table></figure>
 
-<p>4、ansible 管理多少台服务器，怎么管理的，用ansible 批量处理什么工作？</p>
-<p>管理100+台<br>通过inventory分组<br>批量处理：系统更新、应用部署、配置管理、巡检等</p>
-<h3 id="prometheus"><a href="#prometheus" class="headerlink" title="prometheus:"></a>prometheus:</h3><p>1、工作流程是什么</p>
+<p><strong>4、ansible 管理多少台服务器，怎么管理的，用ansible 批量处理什么工作？</strong></p>
+<p>管理100+台 </p>
+<p>通过inventory分组 </p>
+<p>批量处理：系统更新、应用部署、配置管理、巡检等</p>
+<h3 id="prometheus"><a href="#prometheus" class="headerlink" title="prometheus:"></a>prometheus:</h3><p><strong>1、工作流程是什么</strong></p>
 <p>exporter暴露指标→prometheus定时(15s)抓取→TSDB时序库存储→alertmanager告警→grafana展示</p>
-<p>2、prometheus 是用什么部署的，怎么监控的项目？</p>
-<p>docker部署或K8S部署<br>通过exporter(node-exporter、mysql-exporter)或内建metrics(cadvisor、metrics-server)</p>
-<p>3、prometheus 监控哪些对象？怎么监控的？</p>
-<p>系统层：CPU、内存、磁盘、网络<br>应用层：QPS、RT、错误率、连接数<br>业务层：订单、用户、交易量<br>方式：exporter、push gateway、内建指标</p>
-<p>4、prometheus 监控了哪些具体指标？</p>
-<p>node_cpu_seconds_total(CPU)<br>node_memory_MemAvailable(内存)<br>http_request_duration_seconds(响应时间)<br>http_requests_total(请求数)<br>container_cpu_usage_seconds(容器CPU)等</p>
-<p>5、PromQL怎么写？用过哪些聚合函数？</p>
-<p>sum(rate(http_requests_total[5m]))：5分钟请求速率求和<br>avg(container_memory_usage_bytes)：平均内存<br>topk(5, rate(…))：排序取top5<br>分组：<code>sum(rate(...)) by (instance, job)</code></p>
-<p>6、PromQL 的数据类型有哪些？</p>
-<p>Instant Vector(瞬时向量)<br>Range Vector(范围向量)<br>Scalar(标量)<br>String(字符串)</p>
-<p>7、你们的pro用的时序数据库是哪个?</p>
-<p>InfluxDB(通用)或OpenTSDB(大规模数据)<br>一般用prometheus内置TSDB</p>
-<p>8、prometheus 监控多少台服务器？prometheus 架构是什么？</p>
-<p>监控100+台<br>架构：多个exporter→prometheus server(单点或高可用)→alertmanager→notification→grafana</p>
-<h3 id="日志分析系统"><a href="#日志分析系统" class="headerlink" title="日志分析系统"></a>日志分析系统</h3><p>1、你们采集哪些日志？</p>
-<p>应用日志(tomcat&#x2F;nginx)<br>系统日志(syslog)<br>容器日志(stdout)<br>数据库日志(慢查询)</p>
-<p>2、你们怎么部署的日志分析系统？</p>
-<p>Docker部署或K8S部署EFK Stack(Elasticsearch+Filebeat&#x2F;Fluentd+Kibana)</p>
-<p>3、你们使用什么方法采集的日志？</p>
+<p><strong>2、prometheus 是用什么部署的，怎么监控的项目？</strong></p>
+<p>docker部署或K8S部署 </p>
+<p>通过exporter(node-exporter、mysql-exporter)</p>
+<p>或内建metrics(cadvisor、metrics-server)</p>
+<p><strong>3、prometheus 监控哪些对象？怎么监控的？</strong></p>
+<p>系统层：CPU、内存、磁盘、网络 </p>
+<p>应用层：QPS、RT、错误率、连接数 </p>
+<p>业务层：订单、用户、交易量 </p>
+<p>方式：exporter、push gateway、内建指标</p>
+<p><strong>4、prometheus 监控了哪些具体指标？</strong></p>
+<p>node_cpu_seconds_total(CPU) </p>
+<p>node_memory_MemAvailable(内存) </p>
+<p>http_request_duration_seconds(响应时间) </p>
+<p>http_requests_total(请求数) </p>
+<p>container_cpu_usage_seconds(容器CPU)等</p>
+<p><strong>5、PromQL怎么写？用过哪些聚合函数？</strong></p>
+<p>sum(rate(http_requests_total[5m]))：5分钟请求速率求和 avg(container_memory_usage_bytes)：平均内存 </p>
+<p>topk(5, rate(…))：排序取top5 分组：<code>sum(rate(...)) by (instance, job)</code></p>
+<p><strong>6、PromQL 的数据类型有哪些？</strong></p>
+<p>Instant Vector(瞬时向量) </p>
+<p>Range Vector(范围向量) </p>
+<p>Scalar(标量) </p>
+<p>String(字符串)</p>
+<p><strong>7、你们的pro用的时序数据库是哪个?</strong></p>
+<p>InfluxDB(通用)或OpenTSDB(大规模数据) </p>
+<p>一般用prometheus内置TSDB</p>
+<p><strong>8、prometheus 监控多少台服务器？prometheus 架构是什么？</strong></p>
+<p>监控100+台 架构：多个exporter→prometheus server(单点或高可用)→alertmanager→notification→grafana</p>
+<h3 id="日志分析系统"><a href="#日志分析系统" class="headerlink" title="日志分析系统"></a>日志分析系统</h3><p><strong>1、你们采集哪些日志？</strong></p>
+<p>应用日志(tomcat&#x2F;nginx) </p>
+<p>系统日志(syslog) </p>
+<p>容器日志(stdout) </p>
+<p>数据库日志(慢查询)</p>
+<p><strong>2、你们怎么部署的日志分析系统？</strong></p>
+<p>Docker部署或K8S部署ELK(Elasticsearch (存储+搜索) + Logstash (收集+过滤) + Kibana (展示))改进后EFK，如下</p>
+<p>EFK Stack(Elasticsearch+Filebeat&#x2F;Fluentd+Kibana)</p>
+<p><strong>3、你们使用什么方法采集的日志？</strong></p>
 <p>Filebeat(轻量级)采集→Logstash&#x2F;Fluentd处理→Elasticsearch存储→Kibana展示</p>
-<p>4、elasticsearch 查询语句是什么？怎么查看索引</p>
-<p>查询：GET &#x2F;index&#x2F;_search {“query”:{“match”:{“field”:”value”}}}<br>查看索引：GET &#x2F;_cat&#x2F;indices</p>
+<p><strong>4、elasticsearch 查询语句是什么？怎么查看索引</strong></p>
+<p>查询：GET &#x2F;index&#x2F;_search {“query”:{“match”:{“field”:”value”}}} 查看索引：GET &#x2F;_cat&#x2F;indices</p>
 <hr>
-<h2 id="CI-CD"><a href="#CI-CD" class="headerlink" title="CI&#x2F;CD"></a>CI&#x2F;CD</h2><p>1、git 工具用过么，git是干嘛的？你是怎么用的？哪些命令?</p>
+<h2 id="CI-CD"><a href="#CI-CD" class="headerlink" title="CI&#x2F;CD"></a>CI&#x2F;CD</h2><p><strong>1、git 工具用过么，git是干嘛的？你是怎么用的？哪些命令?</strong></p>
 <p>版本控制工具；常用命令：</p>
 <ul>
 <li>git init&#x2F;clone：初始化&#x2F;克隆</li>
@@ -477,8 +678,14 @@
 <li>git tag：版本标签</li>
 <li>git reset&#x2F;reflog：版本回退</li>
 </ul>
-<p>2、代码管理的流程是什么？工作原理？</p>
-<p>流程：开发分支→commit→push→code review→merge到main→触发CI<br>工作原理：git分布式存储，本地仓库→远程仓库，通过commit记录完整历史</p>
-<p>3、你们的代码仓库是什么？怎么使用？</p>
-<p>gitlab&#x2F;gitee&#x2F;github<br>创建项目→clone到本地→开发→push→merge request→review→merge</p>
+<p><strong>冲突解决：</strong> 手动修改冲突文件 -&gt; 重新 add&#x2F;commit。</p>
+<p><strong>2、代码管理的流程是什么？工作原理？</strong></p>
+<p>流程：开发分支→commit→push→code review→merge到main→触发CI </p>
+<p>工作原理：git分布式存储，本地仓库→远程仓库，通过commit记录完整历史</p>
+<p><strong>CI (持续集成)：</strong> 代码提交 -&gt; 自动构建 (Maven&#x2F;Go build) -&gt; 单元测试 -&gt; 制作 Docker 镜像。</p>
+<p><strong>CD (持续部署)：</strong> 镜像推送到仓库 -&gt; 自动更新 K8S YAML -&gt; 应用滚动更新。</p>
+<p><strong>工具：</strong> Jenkins, GitLab CI, ArgoCD (GitOps)。</p>
+<p><strong>3、你们的代码仓库是什么？怎么使用？</strong></p>
+<p>gitlab&#x2F;gitee&#x2F;github </p>
+<p>创建项目→clone到本地→开发→push→merge request→review→merge</p>
 </article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/10/14/%E4%BA%91%E8%AE%A1%E7%AE%97%E9%9D%A2%E8%AF%95%E9%A2%98%E6%95%B4%E7%90%86%E2%80%94%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/">http://example.com/2025/10/14/%E4%BA%91%E8%AE%A1%E7%AE%97%E9%9D%A2%E8%AF%95%E9%A2%98%E6%95%B4%E7%90%86%E2%80%94%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AD%A6%E4%B9%A0%E8%BF%87%E7%A8%8B%E4%B8%AD%E6%8C%81%E7%BB%AD%E7%A7%AF%E7%B4%AF%E7%9A%84%E9%9D%A2%E8%AF%95%E9%A2%98/">学习过程中持续积累的面试题</a></div><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/10/15/Git/" title="Git的学习与使用"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">Previous</div><div class="info-item-2">Git的学习与使用</div></div><div class="info-2"><div class="info-item-1">Git一、初识Git它允许您保存不同版本的作品，而无需创建多个文件。您可以轻松地回到任何以前的版本，或创建备用时间线（我们称之为“分支”）来尝试不同的想法。 1.1 git初始化初始化Git储存库 1git init   1.2 git的不同状态查看git状态 1git status     “分支主”：将分支想象成时间线。“主”是项目的主要时间线。 “尚未提交”：提交就像视频游戏中的保存点。我们还没有做出任何保存点。 “nothing to commit”：Git 没有要记录的更改，因为我们还没有创建任何文件。     添加文件后会显示文件未跟踪  使用add命令后告诉git我需要保存这个文件时间点，即git开始跟踪文件 1git add message.txt   执行提交commit后，git暂存区清空，文件传输到git仓库中 1git commit -m &quot;send a message to the future&quot;   1.3 查看git日志1git log    展示的几条信息：  提交的唯一标识符（一长串字母和数字） 谁提交了 提交时间 我们编写的...</div></div></div></a><a class="pagination-related" href="/2025/10/14/Linux%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4/" title="Linux常见命令"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Linux常见命令</div></div><div class="info-2"><div class="info-item-1">Linux的目录结构与常见命令一、引言了解Linux命令前，首先要知道输入命令的工具shell是什么，命令有哪些命令? Shellshell是Linux系统中后台运行的一种特殊程序也可以理解成一种特殊的软件，提供了用户与内核进行交互操作的一种接口。通俗讲，用户使用应用程序发布命令（比如使用浏览器访问网页），Shell去通知操作系统需要进行什么操作（相当于解释层）。 命令种类shell 分为内部命令和外部命令 内部命令：在系统启动时就调入内存中，是常驻内存的，执行效率非常高。 外部命令：是系统软件的功能，用户需要时才从硬盘读取到内存中。 一般先执行内部命令再执行外部命令（别名最大）。 二、目录结构了解完使用命令的工具，其次就需要了解Linux系统中，什么目录是做什么的，存放什么内容。 Linux的目录结构如下图：  1)    &#x2F; (根目录)  ⭐ 整个文件系统的起点 2)    &#x2F;bin ⭐ 存放基本的系统命令，如ls, cp, mv 3)    &#x2F;boot 包含引导加载程序文件和内核 4)    &#x2F;dev ⭐ 设备文件目录，如硬盘、键盘等...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">32</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#docker"><span class="toc-number">1.</span> <span class="toc-text">docker</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#k8s"><span class="toc-number">2.</span> <span class="toc-text">k8s</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ansible-prometheus-elk"><span class="toc-number">3.</span> <span class="toc-text">ansible prometheus elk</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ansible-%E9%9D%A2%E8%AF%95%E9%A2%98%EF%BC%9A"><span class="toc-number">3.1.</span> <span class="toc-text">ansible 面试题：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#prometheus"><span class="toc-number">3.2.</span> <span class="toc-text">prometheus:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90%E7%B3%BB%E7%BB%9F"><span class="toc-number">3.3.</span> <span class="toc-text">日志分析系统</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CI-CD"><span class="toc-number">4.</span> <span class="toc-text">CI&#x2F;CD</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/06/Kubernetes%20Pod%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Kubernetes Pod 学习笔记">Kubernetes Pod 学习笔记</a><time datetime="2025-12-06T00:54:40.000Z" title="Created 2025-12-06 08:54:40">2025-12-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/03/Kubernetes%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%90%AD%E5%BB%BA/" title="Kubernetes了解与搭建">Kubernetes了解与搭建</a><time datetime="2025-12-03T06:44:22.000Z" title="Created 2025-12-03 14:44:22">2025-12-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/Prometheus%E7%9B%91%E6%8E%A7-%E9%92%89%E9%92%89%E8%AD%A6%E5%91%8A-%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3/" title="Prometheus监控+钉钉警告 部署指南">Prometheus监控+钉钉警告 部署指南</a><time datetime="2025-12-02T05:39:16.000Z" title="Created 2025-12-02 13:39:16">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/Prometheus/" title="Prometheus监控系统">Prometheus监控系统</a><time datetime="2025-12-02T00:55:58.000Z" title="Created 2025-12-02 08:55:58">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/01/Ansible/" title="Ansible">Ansible</a><time datetime="2025-12-01T00:54:40.000Z" title="Created 2025-12-01 08:54:40">2025-12-01</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
