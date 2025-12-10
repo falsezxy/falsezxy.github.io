@@ -1,0 +1,633 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Kubernetes集群调度机制Ansible | Felix的个人博客</title><meta name="author" content="Felix"><meta name="copyright" content="Felix"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Kubernetes 集群调度机制第一部分：调度器核心原理1.1 什么是调度器？定义： 调度器是 master 节点上的一个独立程序，负责监听 API Server 中 spec.nodeName 为空的 Pod，通过一系列算法选择最适合的节点并将 Pod 绑定到该节点。 工作模式：   持续监听 API Server（List-Watch 机制） 当发现新的 Pod 时触发调度流程 异步执行，不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes集群调度机制Ansible">
+<meta property="og:url" content="http://example.com/2025/12/09/kubernetes%E9%9B%86%E7%BE%A4%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="Felix的个人博客">
+<meta property="og:description" content="Kubernetes 集群调度机制第一部分：调度器核心原理1.1 什么是调度器？定义： 调度器是 master 节点上的一个独立程序，负责监听 API Server 中 spec.nodeName 为空的 Pod，通过一系列算法选择最适合的节点并将 Pod 绑定到该节点。 工作模式：   持续监听 API Server（List-Watch 机制） 当发现新的 Pod 时触发调度流程 异步执行，不">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/imgs/adater.jpg">
+<meta property="article:published_time" content="2025-12-09T08:54:40.000Z">
+<meta property="article:modified_time" content="2025-12-09T09:04:54.192Z">
+<meta property="article:author" content="Felix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/imgs/adater.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Kubernetes集群调度机制Ansible",
+  "url": "http://example.com/2025/12/09/kubernetes%E9%9B%86%E7%BE%A4%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86/",
+  "image": "http://example.com/imgs/adater.jpg",
+  "datePublished": "2025-12-09T08:54:40.000Z",
+  "dateModified": "2025-12-09T09:04:54.192Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Felix",
+      "url": "http://example.com"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2025/12/09/kubernetes%E9%9B%86%E7%BE%A4%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Kubernetes集群调度机制Ansible',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.0.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/imgs/background_header.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Felix的个人博客</span></a><a class="nav-page-title" href="/"><span class="site-name">Kubernetes集群调度机制Ansible</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  Back to Home</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">Kubernetes集群调度机制Ansible</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-12-09T08:54:40.000Z" title="Created 2025-12-09 16:54:40">2025-12-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-12-09T09:04:54.192Z" title="Updated 2025-12-09 17:04:54">2025-12-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Kubernetes-集群调度机制"><a href="#Kubernetes-集群调度机制" class="headerlink" title="Kubernetes 集群调度机制"></a>Kubernetes 集群调度机制</h1><h2 id="第一部分：调度器核心原理"><a href="#第一部分：调度器核心原理" class="headerlink" title="第一部分：调度器核心原理"></a>第一部分：调度器核心原理</h2><h3 id="1-1-什么是调度器？"><a href="#1-1-什么是调度器？" class="headerlink" title="1.1 什么是调度器？"></a>1.1 什么是调度器？</h3><p><strong>定义：</strong> 调度器是 master 节点上的一个独立程序，负责监听 API Server 中 <code>spec.nodeName</code> 为空的 Pod，通过一系列算法选择最适合的节点并将 Pod 绑定到该节点。</p>
+<p><strong>工作模式：</strong> </p>
+<ul>
+<li>持续监听 API Server（List-Watch 机制）</li>
+<li>当发现新的 Pod 时触发调度流程</li>
+<li>异步执行，不阻塞 API Server</li>
+</ul>
+<p><strong>关键点：</strong> 调度只是将 Pod 分配给节点（更新 <code>spec.nodeName</code>），实际的容器启动由 kubelet 负责。</p>
+<hr>
+<h3 id="1-2-调度过程详解（三个阶段）"><a href="#1-2-调度过程详解（三个阶段）" class="headerlink" title="1.2 调度过程详解（三个阶段）"></a>1.2 调度过程详解（三个阶段）</h3><h4 id="阶段一：Predicate（预选-过滤）"><a href="#阶段一：Predicate（预选-过滤）" class="headerlink" title="阶段一：Predicate（预选&#x2F;过滤）"></a>阶段一：Predicate（预选&#x2F;过滤）</h4><p><strong>目的：</strong> 排除完全不符合条件的节点，得到候选节点列表</p>
+<p><strong>常见检查项（所有检查都必须通过）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>检查项</th>
+<th>说明</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>PodFitsResources</strong></td>
+<td>CPU&#x2F;Memory 是否足够</td>
+<td>节点可用 2C4G，Pod 需要 2C2G ✓</td>
+</tr>
+<tr>
+<td><strong>PodFitsHost</strong></td>
+<td>节点名是否匹配 nodeName</td>
+<td>Pod 指定 node01，只有 node01 通过</td>
+</tr>
+<tr>
+<td><strong>PodFitsHostPorts</strong></td>
+<td>端口是否冲突</td>
+<td>Pod 需要 80 端口，节点该端口已占用 ✗</td>
+</tr>
+<tr>
+<td><strong>PodSelectorMatches</strong></td>
+<td>nodeSelector 标签是否匹配</td>
+<td>Pod 需要 disk&#x3D;ssd，节点无此标签 ✗</td>
+</tr>
+<tr>
+<td><strong>NoDiskConflict</strong></td>
+<td>挂载的 volume 是否冲突</td>
+<td>两个 Pod 不能同时用同一个 PVC</td>
+</tr>
+<tr>
+<td><strong>NodeMemoryPressure</strong></td>
+<td>节点是否有内存压力</td>
+<td>节点剩余内存 &lt; 100Mi ✗</td>
+</tr>
+<tr>
+<td><strong>NodeDiskPressure</strong></td>
+<td>节点是否有磁盘压力</td>
+<td>节点磁盘 &lt; 10% ✗</td>
+</tr>
+</tbody></table>
+<p><strong>重要特性：</strong> 只要有任何一项检查失败，该节点就被排除（ALL-OR-NOTHING）</p>
+<p><strong>示例：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">候选节点池 = [node01, node02, node03]</span><br><span class="line">过滤条件：CPU&gt;=2, memory&gt;=2Gi, label=disk=ssd</span><br><span class="line"></span><br><span class="line">node01: 4C8G, disk=ssd  ✓ 通过</span><br><span class="line">node02: 1C4G, disk=ssd  ✗ CPU 不足，排除</span><br><span class="line">node03: 4C8G, disk=hdd  ✗ 标签不匹配，排除</span><br><span class="line"></span><br><span class="line">预选结果 = [node01]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="阶段二：Priorities（优选-打分）"><a href="#阶段二：Priorities（优选-打分）" class="headerlink" title="阶段二：Priorities（优选&#x2F;打分）"></a>阶段二：Priorities（优选&#x2F;打分）</h4><p><strong>目的：</strong> 在通过预选的节点中，根据多个维度打分，选出最优节点</p>
+<p><strong>常见优先级维度：</strong></p>
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>权重</th>
+<th>说明</th>
+<th>最佳情况</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>LeastRequestedPriority</strong></td>
+<td>高</td>
+<td>优先选择资源使用率低的节点</td>
+<td>Pod 请求 1C，节点剩余 7C（使用率低）</td>
+</tr>
+<tr>
+<td><strong>BalancedResourceAllocation</strong></td>
+<td>高</td>
+<td>优先选择 CPU 和 Memory 使用率接近的节点</td>
+<td>CPU 50%, Mem 50%（均衡） vs CPU 80%, Mem 20%（不均衡）</td>
+</tr>
+<tr>
+<td><strong>ImageLocalityPriority</strong></td>
+<td>低</td>
+<td>优先选择已有所需镜像的节点</td>
+<td>镜像已在本地（无需拉取）可以加分</td>
+</tr>
+<tr>
+<td><strong>NodeAffinityPriority</strong></td>
+<td>中</td>
+<td>根据亲和性配置打分</td>
+<td>软亲和性规则匹配加分</td>
+</tr>
+<tr>
+<td><strong>InterPodAffinityPriority</strong></td>
+<td>中</td>
+<td>根据 Pod 间亲和性打分</td>
+<td>Pod 亲和性规则匹配加分</td>
+</tr>
+<tr>
+<td><strong>TaintTolerationPriority</strong></td>
+<td>中</td>
+<td>根据污点容忍匹配度打分</td>
+<td>容忍越多污点分数越高</td>
+</tr>
+</tbody></table>
+<p><strong>打分逻辑示例：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">预选通过的节点 = [node01, node02]</span><br><span class="line"></span><br><span class="line">打分规则：</span><br><span class="line">- LeastRequestedPriority：node01(80分), node02(60分)</span><br><span class="line">- BalancedResourceAllocation：node01(70分), node02(90分)</span><br><span class="line">- ImageLocalityPriority：node01(100分), node02(0分)</span><br><span class="line"></span><br><span class="line">加权计算（假设权重分别为 10, 10, 5）：</span><br><span class="line">node01 总分 = 80×10 + 70×10 + 100×5 = 1700</span><br><span class="line">node02 总分 = 60×10 + 90×10 + 0×5 = 1500</span><br><span class="line"></span><br><span class="line">结果：选择 node01 ✓</span><br></pre></td></tr></table></figure>
+
+<p><strong>关键点：</strong> </p>
+<ul>
+<li>不同版本的 K8S 优先级不同</li>
+<li>管理员可以自定义优先级和权重</li>
+<li>同分情况下随机选择</li>
+</ul>
+<hr>
+<h4 id="阶段三：Binding（绑定）"><a href="#阶段三：Binding（绑定）" class="headerlink" title="阶段三：Binding（绑定）"></a>阶段三：Binding（绑定）</h4><p><strong>操作：</strong> 调度器将 Pod 的 <code>spec.nodeName</code> 字段更新为选定的节点名称，并写入 etcd</p>
+<p><strong>结果：</strong> kubelet 监听到 Pod 被分配到自己的节点后，开始执行容器拉取和启动</p>
+<hr>
+<h2 id="第二部分：四种自定义调度方式"><a href="#第二部分：四种自定义调度方式" class="headerlink" title="第二部分：四种自定义调度方式"></a>第二部分：四种自定义调度方式</h2><h3 id="2-1-nodeName-直接指定（最强制）"><a href="#2-1-nodeName-直接指定（最强制）" class="headerlink" title="2.1 nodeName 直接指定（最强制）"></a>2.1 nodeName 直接指定（最强制）</h3><p><strong>特点：</strong> 完全绕过调度器，直接指定节点</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">myapp</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">nodeName:</span> <span class="string">node01</span>  <span class="comment"># 直接指定</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">app</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">myapp:v1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>工作原理：</strong></p>
+<ul>
+<li>API Server 收到请求后，直接跳过 Scheduler</li>
+<li>kubelet 看到 <code>spec.nodeName</code> 已填充，立即启动容器</li>
+<li>即使指定的节点不存在或资源不足，Pod 仍会尝试启动</li>
+</ul>
+<p><strong>问题：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nodeName: node-that-doesnt-exist  → Pod 会一直处于 Pending</span><br><span class="line">nodeName: node01 (资源不足)        → Pod 启动失败，无法自动重新调度</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用场景：</strong> 静态 Pod 管理、特殊调度需求</p>
+<hr>
+<h3 id="2-2-nodeSelector-标签选择（简单匹配）"><a href="#2-2-nodeSelector-标签选择（简单匹配）" class="headerlink" title="2.2 nodeSelector 标签选择（简单匹配）"></a>2.2 nodeSelector 标签选择（简单匹配）</h3><p><strong>特点：</strong> 通过标签匹配选择节点，调度器仍会参与过滤和优选</p>
+<p><strong>第一步：为节点打标签</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kubectl label nodes node01 disk=ssd</span><br><span class="line">kubectl label nodes node02 disk=hdd</span><br><span class="line">kubectl label nodes node03 gpu=nvidia</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看标签</span></span><br><span class="line">kubectl get nodes --show-labels</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二步：Pod 中指定 nodeSelector</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">db-pod</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">nodeSelector:</span></span><br><span class="line">    <span class="attr">disk:</span> <span class="string">ssd</span>      <span class="comment"># 必须匹配这个标签</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">mysql</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:5.7</span></span><br><span class="line">    <span class="attr">resources:</span></span><br><span class="line">      <span class="attr">requests:</span></span><br><span class="line">        <span class="attr">memory:</span> <span class="string">&quot;2Gi&quot;</span></span><br><span class="line">        <span class="attr">cpu:</span> <span class="string">&quot;1&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>调度流程：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">预选阶段：</span><br><span class="line">1. 检查所有节点</span><br><span class="line">2. 过滤出拥有 disk=ssd 标签的节点 → [node01]</span><br><span class="line">3. 检查其他条件（CPU、Memory 等）</span><br><span class="line"></span><br><span class="line">优选阶段：</span><br><span class="line">1. 对通过的节点打分</span><br><span class="line">2. 选择分数最高的节点</span><br><span class="line"></span><br><span class="line">结果：Pod 调度到 node01</span><br></pre></td></tr></table></figure>
+
+<p><strong>局限性：</strong></p>
+<ul>
+<li>只支持等值匹配（<code>key=value</code>）</li>
+<li>不支持复杂逻辑（如 <code>!=</code>, <code>in</code>, <code>not in</code>）</li>
+<li>不支持布尔运算</li>
+</ul>
+<hr>
+<h3 id="2-3-节点亲和性（Node-Affinity）-复杂逻辑"><a href="#2-3-节点亲和性（Node-Affinity）-复杂逻辑" class="headerlink" title="2.3 节点亲和性（Node Affinity）- 复杂逻辑"></a>2.3 节点亲和性（Node Affinity）- 复杂逻辑</h3><p><strong>特点：</strong> 支持复杂的标签匹配规则，分硬&#x2F;软两种策略</p>
+<h4 id="硬策略示例：必须满足，否则-Pending"><a href="#硬策略示例：必须满足，否则-Pending" class="headerlink" title="硬策略示例：必须满足，否则 Pending"></a>硬策略示例：必须满足，否则 Pending</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">web-pod</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">affinity:</span></span><br><span class="line">    <span class="attr">nodeAffinity:</span></span><br><span class="line">      <span class="comment"># 硬策略：必须满足以下条件之一</span></span><br><span class="line">      <span class="attr">requiredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">        <span class="attr">nodeSelectorTerms:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">matchExpressions:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">kubernetes.io/hostname</span></span><br><span class="line">            <span class="attr">operator:</span> <span class="string">NotIn</span>          <span class="comment"># 操作符</span></span><br><span class="line">            <span class="attr">values:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">node02</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">node03</span></span><br><span class="line">          <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">disk-type</span></span><br><span class="line">            <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">            <span class="attr">values:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">ssd</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">nvme</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">app</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">myapp:v1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>逻辑解读：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">选择满足以下条件的节点：</span><br><span class="line">AND (同一个 matchExpression 内是 AND 关系)</span><br><span class="line">  - hostname NOT IN [node02, node03]</span><br><span class="line">  AND</span><br><span class="line">  - disk-type IN [ssd, nvme]</span><br><span class="line"></span><br><span class="line">OR (多个 nodeSelectorTerms 之间是 OR 关系)</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例：</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">nodeSelectorTerms:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">matchExpressions:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">zone</span></span><br><span class="line">    <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">    <span class="attr">values:</span> [<span class="string">zone-a</span>, <span class="string">zone-b</span>]</span><br><span class="line"><span class="bullet">-</span> <span class="attr">matchExpressions:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">node-type</span></span><br><span class="line">    <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">    <span class="attr">values:</span> [<span class="string">compute</span>]</span><br></pre></td></tr></table></figure>
+<p>解读：(zone 属于 zone-a&#x2F;zone-b) OR (node-type 属于 compute)</p>
+<hr>
+<h4 id="软策略示例：优先满足，但不强制"><a href="#软策略示例：优先满足，但不强制" class="headerlink" title="软策略示例：优先满足，但不强制"></a>软策略示例：优先满足，但不强制</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">affinity:</span></span><br><span class="line">  <span class="attr">nodeAffinity:</span></span><br><span class="line">    <span class="comment"># 软策略：优先选择满足条件的节点</span></span><br><span class="line">    <span class="attr">preferredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">weight:</span> <span class="number">100</span>        <span class="comment"># 权重范围 1-100</span></span><br><span class="line">      <span class="attr">preference:</span></span><br><span class="line">        <span class="attr">matchExpressions:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">disk-type</span></span><br><span class="line">          <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">          <span class="attr">values:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">ssd</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">weight:</span> <span class="number">50</span></span><br><span class="line">      <span class="attr">preference:</span></span><br><span class="line">        <span class="attr">matchExpressions:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">zone</span></span><br><span class="line">          <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">          <span class="attr">values:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">zone-a</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>打分逻辑：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">候选节点：</span><br><span class="line">- node01: disk=ssd, zone=zone-b</span><br><span class="line">- node02: disk=hdd, zone=zone-a</span><br><span class="line"></span><br><span class="line">根据软策略打分：</span><br><span class="line">node01: ssd 匹配(100分) + zone 不匹配(0分) = 100</span><br><span class="line">node02: ssd 不匹配(0分) + zone 匹配(50分) = 50</span><br><span class="line"></span><br><span class="line">选择：node01（更高分数）</span><br><span class="line"></span><br><span class="line">注意：即使得 0 分，Pod 仍会被调度（不像硬策略会 Pending）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="硬策略-软策略结合"><a href="#硬策略-软策略结合" class="headerlink" title="硬策略 + 软策略结合"></a>硬策略 + 软策略结合</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">affinity:</span></span><br><span class="line">  <span class="attr">nodeAffinity:</span></span><br><span class="line">    <span class="comment"># 硬策略先过滤</span></span><br><span class="line">    <span class="attr">requiredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">      <span class="attr">nodeSelectorTerms:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">matchExpressions:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">disk</span></span><br><span class="line">          <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">          <span class="attr">values:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">ssd</span></span><br><span class="line">    <span class="comment"># 在硬策略通过的基础上，再用软策略优选</span></span><br><span class="line">    <span class="attr">preferredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">weight:</span> <span class="number">100</span></span><br><span class="line">      <span class="attr">preference:</span></span><br><span class="line">        <span class="attr">matchExpressions:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">zone</span></span><br><span class="line">          <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">          <span class="attr">values:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">zone-a</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>流程：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 预选：只保留 disk=ssd 的节点</span><br><span class="line">2. 优选：在 disk=ssd 的节点中，优先选 zone=zone-a</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>操作符详解：</strong></p>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>说明</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>In</code></td>
+<td>值在列表中</td>
+<td>zone In [zone-a, zone-b] → zone 为 zone-a 或 zone-b</td>
+</tr>
+<tr>
+<td><code>NotIn</code></td>
+<td>值不在列表中</td>
+<td>disk NotIn [hdd] → disk 不是 hdd</td>
+</tr>
+<tr>
+<td><code>Exists</code></td>
+<td>标签键存在（不检查值）</td>
+<td>gpu Exists → 节点有 gpu 标签即可</td>
+</tr>
+<tr>
+<td><code>DoesNotExist</code></td>
+<td>标签键不存在</td>
+<td>beta Exists → 节点没有 beta 标签</td>
+</tr>
+<tr>
+<td><code>Gt</code></td>
+<td>数值大于</td>
+<td>memory-gb Gt 10 → 内存大于 10G</td>
+</tr>
+<tr>
+<td><code>Lt</code></td>
+<td>数值小于</td>
+<td>cpu-cores Lt 4 → CPU 核数小于 4</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="2-4-Pod-亲和性-反亲和性（Pod-Affinity-Anti-Affinity）"><a href="#2-4-Pod-亲和性-反亲和性（Pod-Affinity-Anti-Affinity）" class="headerlink" title="2.4 Pod 亲和性&#x2F;反亲和性（Pod Affinity&#x2F;Anti-Affinity）"></a>2.4 Pod 亲和性&#x2F;反亲和性（Pod Affinity&#x2F;Anti-Affinity）</h3><p><strong>核心概念：</strong> 根据已有 Pod 的位置来决定新 Pod 的调度</p>
+<h4 id="理解拓扑域（Topology-Domain）"><a href="#理解拓扑域（Topology-Domain）" class="headerlink" title="理解拓扑域（Topology Domain）"></a>理解拓扑域（Topology Domain）</h4><p><strong>问题：</strong> 两个 Pod 在同一”域”是什么意思？</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Pod 亲和性配置</span></span><br><span class="line"><span class="attr">topologyKey:</span> <span class="string">kubernetes.io/hostname</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>拓扑域判断规则：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">topologyKey 是节点的一个标签键</span><br><span class="line"></span><br><span class="line">如果两个节点的 topologyKey 标签值相同 → 属于同一拓扑域</span><br><span class="line"></span><br><span class="line">示例：</span><br><span class="line">node01: kubernetes.io/hostname=node01, zone=zone-a</span><br><span class="line">node02: kubernetes.io/hostname=node02, zone=zone-a</span><br><span class="line"></span><br><span class="line">当 topologyKey=kubernetes.io/hostname 时：</span><br><span class="line">- node01 和 node02 属于不同拓扑域（hostname 不同）</span><br><span class="line"></span><br><span class="line">当 topologyKey=zone 时：</span><br><span class="line">- node01 和 node02 属于同一拓扑域（zone 都是 zone-a）</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="Pod-亲和性示例"><a href="#Pod-亲和性示例" class="headerlink" title="Pod 亲和性示例"></a>Pod 亲和性示例</h4><p><strong>场景：</strong> Redis 缓存要与 Web 应用部署在同一机器上（减少网络延迟）</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 第一步：先部署 Web Pod</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">web-app</span></span><br><span class="line">  <span class="attr">labels:</span></span><br><span class="line">    <span class="attr">app:</span> <span class="string">web</span></span><br><span class="line">    <span class="attr">tier:</span> <span class="string">frontend</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">web</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">nginx:1.14</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="comment"># 第二步：部署 Redis，指定要与 web-app 在同一拓扑域</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">redis</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">affinity:</span></span><br><span class="line">    <span class="attr">podAffinity:</span></span><br><span class="line">      <span class="attr">requiredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">labelSelector:</span></span><br><span class="line">          <span class="attr">matchExpressions:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">app</span></span><br><span class="line">            <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">            <span class="attr">values:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">web</span></span><br><span class="line">        <span class="attr">topologyKey:</span> <span class="string">kubernetes.io/hostname</span>  <span class="comment"># 表示同一主机</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">redis</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">redis:5.0</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>调度过程：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1. API Server 收到 redis Pod 请求</span><br><span class="line">2. Scheduler 查询 labelSelector 匹配的 Pod：找到 web-app</span><br><span class="line">3. 获取 web-app 所在节点：node01</span><br><span class="line">4. 获取 node01 的 topologyKey (kubernetes.io/hostname) 值：node01</span><br><span class="line">5. 查找其他所有节点中，kubernetes.io/hostname=node01 的节点</span><br><span class="line">6. 结果：只有 node01 符合</span><br><span class="line">7. redis Pod 调度到 node01 ✓</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="Pod-反亲和性示例"><a href="#Pod-反亲和性示例" class="headerlink" title="Pod 反亲和性示例"></a>Pod 反亲和性示例</h4><p><strong>场景：</strong> 同一应用的多个副本要分散到不同节点（高可用）</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">web-app-1</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">affinity:</span></span><br><span class="line">    <span class="attr">podAntiAffinity:</span></span><br><span class="line">      <span class="comment"># 硬策略：必须不在同一个节点</span></span><br><span class="line">      <span class="attr">requiredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">labelSelector:</span></span><br><span class="line">          <span class="attr">matchExpressions:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">app</span></span><br><span class="line">            <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">            <span class="attr">values:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">web</span></span><br><span class="line">        <span class="attr">topologyKey:</span> <span class="string">kubernetes.io/hostname</span>  <span class="comment"># 节点级分散</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">web</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">myapp:v1</span></span><br><span class="line"></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">web-app-2</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">affinity:</span></span><br><span class="line">    <span class="attr">podAntiAffinity:</span></span><br><span class="line">      <span class="attr">requiredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">labelSelector:</span></span><br><span class="line">          <span class="attr">matchExpressions:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">app</span></span><br><span class="line">            <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">            <span class="attr">values:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">web</span></span><br><span class="line">        <span class="attr">topologyKey:</span> <span class="string">kubernetes.io/hostname</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">web</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">myapp:v1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>调度过程：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">web-app-1 调度到 node01</span><br><span class="line"></span><br><span class="line">web-app-2 的需求：</span><br><span class="line">- 必须找标签 app=web 的 Pod</span><br><span class="line">- 查询结果：web-app-1 在 node01</span><br><span class="line">- topologyKey=kubernetes.io/hostname，说明要按节点级分散</span><br><span class="line">- web-app-2 不能调度到 node01</span><br><span class="line">- 调度到 node02 或 node03</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h4 id="软策略-vs-硬策略"><a href="#软策略-vs-硬策略" class="headerlink" title="软策略 vs 硬策略"></a>软策略 vs 硬策略</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 软策略：尽量分散，但资源不足时可以接受在同一节点</span></span><br><span class="line"><span class="attr">podAntiAffinity:</span></span><br><span class="line">  <span class="attr">preferredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">weight:</span> <span class="number">100</span></span><br><span class="line">    <span class="attr">podAffinityTerm:</span></span><br><span class="line">      <span class="attr">labelSelector:</span></span><br><span class="line">        <span class="attr">matchExpressions:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">app</span></span><br><span class="line">          <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">          <span class="attr">values:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">web</span></span><br><span class="line">      <span class="attr">topologyKey:</span> <span class="string">kubernetes.io/hostname</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 硬策略：必须分散，否则 Pending</span></span><br><span class="line"><span class="attr">podAntiAffinity:</span></span><br><span class="line">  <span class="attr">requiredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">labelSelector:</span></span><br><span class="line">      <span class="attr">matchExpressions:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">app</span></span><br><span class="line">        <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">        <span class="attr">values:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">web</span></span><br><span class="line">    <span class="attr">topologyKey:</span> <span class="string">kubernetes.io/hostname</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第三部分：污点与容忍"><a href="#第三部分：污点与容忍" class="headerlink" title="第三部分：污点与容忍"></a>第三部分：污点与容忍</h2><h3 id="3-1-污点机制详解"><a href="#3-1-污点机制详解" class="headerlink" title="3.1 污点机制详解"></a>3.1 污点机制详解</h3><p><strong>核心概念：</strong> 污点是节点的属性，用来<strong>拒绝</strong>不想要的 Pod</p>
+<p><strong>为什么需要污点？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">问题：Master 节点不应该运行业务 Pod，怎么保证？</span><br><span class="line">方案1：用 nodeSelector/亲和性 → 每个 Pod 都要配置，容易遗漏</span><br><span class="line">方案2：给 Master 打污点 → 默认拒绝，除非 Pod 主动容忍</span><br><span class="line"></span><br><span class="line">显然方案2 更简单、更安全</span><br></pre></td></tr></table></figure>
+
+<p><strong>污点格式：</strong> <code>key=value:effect</code></p>
+<p><strong>三种污点效果详解：</strong></p>
+<h4 id="NoSchedule（不调度新-Pod）"><a href="#NoSchedule（不调度新-Pod）" class="headerlink" title="NoSchedule（不调度新 Pod）"></a>NoSchedule（不调度新 Pod）</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">作用范围：仅影响新 Pod</span><br><span class="line">影响对象：Scheduler 调度时的决策</span><br><span class="line"></span><br><span class="line">例：</span><br><span class="line">kubectl taint node node01 update=true:NoSchedule</span><br><span class="line"></span><br><span class="line">结果：</span><br><span class="line">- 新 Pod 无法调度到 node01（除非有容忍）</span><br><span class="line">- node01 上已有的 Pod 继续运行，不被驱逐</span><br><span class="line">- 场景：更新前期，防止新 Pod 被调度过来</span><br></pre></td></tr></table></figure>
+
+<h4 id="PreferNoSchedule（尽量不调度）"><a href="#PreferNoSchedule（尽量不调度）" class="headerlink" title="PreferNoSchedule（尽量不调度）"></a>PreferNoSchedule（尽量不调度）</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">作用范围：优先级，不是强制</span><br><span class="line">影响对象：Scheduler 的优选打分阶段</span><br><span class="line"></span><br><span class="line">例：</span><br><span class="line">kubectl taint node master node-role.kubernetes.io/master=:PreferNoSchedule</span><br><span class="line"></span><br><span class="line">结果：</span><br><span class="line">- Scheduler 会尽量避免调度 Pod 到 master</span><br><span class="line">- 如果其他节点资源不足，仍会调度到 master</span><br><span class="line">- 场景：Master 节点可以运行 Pod，但不是首选</span><br></pre></td></tr></table></figure>
+
+<h4 id="NoExecute（不调度-驱逐现有）"><a href="#NoExecute（不调度-驱逐现有）" class="headerlink" title="NoExecute（不调度 + 驱逐现有）"></a>NoExecute（不调度 + 驱逐现有）</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">作用范围：新 Pod 和现有 Pod</span><br><span class="line">影响对象：Scheduler + kubelet</span><br><span class="line"></span><br><span class="line">例：</span><br><span class="line">kubectl taint node node01 emergency=true:NoExecute</span><br><span class="line"></span><br><span class="line">结果：</span><br><span class="line">1. 新 Pod 无法调度到 node01</span><br><span class="line">2. node01 上所有 Pod 都被立即驱逐（除非有容忍）</span><br><span class="line">3. 场景：节点故障、需要关闭、灾难恢复</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3-2-容忍机制详解"><a href="#3-2-容忍机制详解" class="headerlink" title="3.2 容忍机制详解"></a>3.2 容忍机制详解</h3><p><strong>核心概念：</strong> 容忍是 Pod 的属性，允许 Pod 调度到有污点的节点</p>
+<p><strong>为什么需要容忍？</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Master 有 NoSchedule 污点</span><br><span class="line">普通 Pod 被拒绝（好事）</span><br><span class="line">但 kube-dns, kube-proxy 等系统 Pod 必须在 Master 运行</span><br><span class="line">解决：给这些 Pod 加上容忍</span><br></pre></td></tr></table></figure>
+
+<p><strong>容忍配置：</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">apiVersion:</span> <span class="string">v1</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Pod</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">special-app</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">tolerations:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">&quot;update&quot;</span>              <span class="comment"># 污点的 key</span></span><br><span class="line">    <span class="attr">operator:</span> <span class="string">&quot;Equal&quot;</span>          <span class="comment"># Equal 或 Exists</span></span><br><span class="line">    <span class="attr">value:</span> <span class="string">&quot;true&quot;</span>              <span class="comment"># 当 operator=Equal 时必须指定</span></span><br><span class="line">    <span class="attr">effect:</span> <span class="string">&quot;NoSchedule&quot;</span>       <span class="comment"># 污点的 effect</span></span><br><span class="line">    <span class="attr">tolerationSeconds:</span> <span class="number">3600</span>    <span class="comment"># 仅对 NoExecute 有效</span></span><br><span class="line">  <span class="attr">containers:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">app</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">myapp:v1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>operator 说明：</strong></p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>说明</th>
+<th>容忍规则</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Equal</code></td>
+<td>精确匹配</td>
+<td>key 和 value 都要相等</td>
+</tr>
+<tr>
+<td><code>Exists</code></td>
+<td>存在即可</td>
+<td>只要 key 存在，value 可任意（无需指定 value 字段）</td>
+</tr>
+</tbody></table>
+<p><strong>对应污点的容忍：</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 污点：update=true:NoSchedule</span></span><br><span class="line"><span class="string">容忍1（精确匹配）：</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">key:</span> <span class="string">&quot;update&quot;</span></span><br><span class="line">  <span class="attr">operator:</span> <span class="string">&quot;Equal&quot;</span></span><br><span class="line">  <span class="attr">value:</span> <span class="string">&quot;true&quot;</span></span><br><span class="line">  <span class="attr">effect:</span> <span class="string">&quot;NoSchedule&quot;</span>  <span class="string">✓</span></span><br><span class="line"></span><br><span class="line"><span class="string">容忍2（存在匹配）：</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">key:</span> <span class="string">&quot;update&quot;</span></span><br><span class="line">  <span class="attr">operator:</span> <span class="string">&quot;Exists&quot;</span></span><br><span class="line">  <span class="attr">effect:</span> <span class="string">&quot;NoSchedule&quot;</span>  <span class="string">✓（不检查</span> <span class="string">value）</span></span><br><span class="line"></span><br><span class="line"><span class="string">容忍3（key</span> <span class="string">错误）：</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">key:</span> <span class="string">&quot;release&quot;</span>        <span class="string">✗</span> <span class="string">不匹配</span></span><br><span class="line">  <span class="attr">operator:</span> <span class="string">&quot;Equal&quot;</span></span><br><span class="line">  <span class="attr">value:</span> <span class="string">&quot;true&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="string">容忍4（effect</span> <span class="string">错误）：</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">key:</span> <span class="string">&quot;update&quot;</span></span><br><span class="line">  <span class="attr">operator:</span> <span class="string">&quot;Equal&quot;</span></span><br><span class="line">  <span class="attr">value:</span> <span class="string">&quot;true&quot;</span></span><br><span class="line">  <span class="attr">effect:</span> <span class="string">&quot;PreferNoSchedule&quot;</span>  <span class="string">✗</span> <span class="string">不匹配</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3-3-特殊用法"><a href="#3-3-特殊用法" class="headerlink" title="3.3 特殊用法"></a>3.3 特殊用法</h3><h4 id="容忍所有污点"><a href="#容忍所有污点" class="headerlink" title="容忍所有污点"></a>容忍所有污点</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tolerations:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">operator:</span> <span class="string">&quot;Exists&quot;</span>          <span class="comment"># 没有指定 key，表示所有 key</span></span><br><span class="line">                              <span class="comment"># 没有指定 effect，表示所有 effect</span></span><br></pre></td></tr></table></figure>
+<p><strong>含义：</strong> 该 Pod 可以调度到任何有任何污点的节点</p>
+<h4 id="容忍所有-effect"><a href="#容忍所有-effect" class="headerlink" title="容忍所有 effect"></a>容忍所有 effect</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">tolerations:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">key:</span> <span class="string">&quot;update&quot;</span></span><br><span class="line">  <span class="attr">operator:</span> <span class="string">&quot;Exists&quot;</span>          <span class="comment"># 不指定 effect</span></span><br></pre></td></tr></table></figure>
+<p><strong>含义：</strong> 只要 key 是 update，无论 effect 是什么都容忍</p>
+<hr>
+<h3 id="3-4-tolerationSeconds-详解"><a href="#3-4-tolerationSeconds-详解" class="headerlink" title="3.4 tolerationSeconds 详解"></a>3.4 tolerationSeconds 详解</h3><p><strong>仅对 NoExecute 有效：</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">kubectl</span> <span class="string">taint</span> <span class="string">node</span> <span class="string">node01</span> <span class="string">emergency=true:NoExecute</span></span><br><span class="line"></span><br><span class="line"><span class="string">Pod</span> <span class="string">配置：</span></span><br><span class="line"><span class="attr">tolerations:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">key:</span> <span class="string">&quot;emergency&quot;</span></span><br><span class="line">  <span class="attr">operator:</span> <span class="string">&quot;Equal&quot;</span></span><br><span class="line">  <span class="attr">value:</span> <span class="string">&quot;true&quot;</span></span><br><span class="line">  <span class="attr">effect:</span> <span class="string">&quot;NoExecute&quot;</span></span><br><span class="line">  <span class="attr">tolerationSeconds:</span> <span class="number">300</span>      <span class="comment"># 驱逐前等待 300 秒</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>驱逐流程：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1. 节点被标记 NoExecute 污点</span><br><span class="line">2. kubelet 检查 Pod 的容忍</span><br><span class="line">3. Pod 有匹配的容忍</span><br><span class="line">4. 不立即驱逐，而是等待 tolerationSeconds(300秒)</span><br><span class="line">5. 300 秒后，kubelet 驱逐该 Pod</span><br><span class="line">6. Pod 可以优雅关闭（执行 preStop hook 等）</span><br><span class="line"></span><br><span class="line">没有 tolerationSeconds：</span><br><span class="line">- 如果 tolerationSeconds 不指定或为 0，Pod 立即被驱逐</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第四部分：污点容忍的实际应用"><a href="#第四部分：污点容忍的实际应用" class="headerlink" title="第四部分：污点容忍的实际应用"></a>第四部分：污点容忍的实际应用</h2><h3 id="场景一：Master-节点配置（高可用集群）"><a href="#场景一：Master-节点配置（高可用集群）" class="headerlink" title="场景一：Master 节点配置（高可用集群）"></a>场景一：Master 节点配置（高可用集群）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Master 默认被设置为不可调度</span></span><br><span class="line"><span class="comment"># K8S 在 Master 初始化时自动添加</span></span><br><span class="line">kubectl describe node master01 | grep Taints</span><br><span class="line"><span class="comment"># 输出：node-role.kubernetes.io/master=:NoSchedule</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 系统 Pod（如 kube-apiserver）有容忍</span></span><br><span class="line">kubectl get pod -n kube-system kube-apiserver-master01 -o yaml | grep toleration</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="场景二：节点维护（优雅下线）"><a href="#场景二：节点维护（优雅下线）" class="headerlink" title="场景二：节点维护（优雅下线）"></a>场景二：节点维护（优雅下线）</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 步骤1：标记节点为不可调度（阻止新 Pod 调度）</span></span><br><span class="line">kubectl cordon node01</span><br><span class="line"><span class="comment"># 本质：Scheduler 不会调度新 Pod，已有 Pod 不受影响</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 步骤2：驱逐节点上的所有 Pod</span></span><br><span class="line">kubectl drain node01 \</span><br><span class="line">  --ignore-daemonsets \           <span class="comment"># DaemonSet 管理的 Pod 不驱逐</span></span><br><span class="line">  --delete-emptydir-data \        <span class="comment"># 删除 emptyDir 数据的 Pod</span></span><br><span class="line">  --force                         <span class="comment"># 强制删除非控制器管理的 Pod</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 本质：</span></span><br><span class="line"><span class="comment"># 1. 添加 node.kubernetes.io/unschedulable=:NoExecute 污点</span></span><br><span class="line"><span class="comment"># 2. 驱逐所有无容忍的 Pod</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 步骤3：维护完成后，恢复节点可调度</span></span><br><span class="line">kubectl uncordon node01</span><br><span class="line"><span class="comment"># 本质：移除上述污点和 cordon 标记</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>drain 的完整行为：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">kubectl drain node01</span><br><span class="line"></span><br><span class="line">1. 标记节点为 unschedulable（cordon）</span><br><span class="line">2. 获取节点上所有 Pod 列表</span><br><span class="line">3. 逐个驱逐 Pod：</span><br><span class="line">   a. DaemonSet Pod → 跳过（--ignore-daemonsets）</span><br><span class="line">   b. emptyDir Pod → 允许删除（--delete-emptydir-data）</span><br><span class="line">   c. 非控制器 Pod → 强制删除（--force）</span><br><span class="line">4. 等待所有 Pod 删除完成</span><br><span class="line">5. 提示用户 uncordon 来恢复节点</span><br><span class="line"></span><br><span class="line">注意：不会删除节点本身，只是清空 Pod</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="场景三：GPU-节点隔离"><a href="#场景三：GPU-节点隔离" class="headerlink" title="场景三：GPU 节点隔离"></a>场景三：GPU 节点隔离</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 步骤1：给 GPU 节点打污点</span></span><br><span class="line">kubectl taint node gpu-node01 nvidia-gpu=<span class="literal">true</span>:NoSchedule</span><br><span class="line"></span><br><span class="line"><span class="comment"># 步骤2：需要 GPU 的 Pod 添加容忍</span></span><br><span class="line">apiVersion: v1</span><br><span class="line">kind: Pod</span><br><span class="line">metadata:</span><br><span class="line">  name: ml-training</span><br><span class="line">spec:</span><br><span class="line">  tolerations:</span><br><span class="line">  - key: <span class="string">&quot;nvidia-gpu&quot;</span></span><br><span class="line">    operator: <span class="string">&quot;Equal&quot;</span></span><br><span class="line">    value: <span class="string">&quot;true&quot;</span></span><br><span class="line">    effect: <span class="string">&quot;NoSchedule&quot;</span></span><br><span class="line">  containers:</span><br><span class="line">  - name: trainer</span><br><span class="line">    image: tensorflow:gpu</span><br><span class="line">    resources:</span><br><span class="line">      limits:</span><br><span class="line">        nvidia.com/gpu: 1</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果：</strong></p>
+<ul>
+<li>普通 Pod 无法调度到 gpu-node01</li>
+<li>需要 GPU 的 Pod 可以调度到 gpu-node01</li>
+<li>防止普通应用占用 GPU 资源</li>
+</ul>
+<hr>
+<h2 id="第五部分：Pod-创建完整流程"><a href="#第五部分：Pod-创建完整流程" class="headerlink" title="第五部分：Pod 创建完整流程"></a>第五部分：Pod 创建完整流程</h2><h3 id="5-1-关键步骤"><a href="#5-1-关键步骤" class="headerlink" title="5.1 关键步骤"></a>5.1 关键步骤</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">1. kubectl apply -f deployment.yaml</span><br><span class="line">   ↓</span><br><span class="line">2. API Server 认证鉴权 (auth)</span><br><span class="line">   ↓</span><br><span class="line">3. API Server 保存到 etcd，生成 ADD 事件，返回list（6443）</span><br><span class="line">   ↓</span><br><span class="line">4. Scheduler 监听到 ADD 事件，触发调度</span><br><span class="line">   - 预选：过滤符合条件的节点</span><br><span class="line">   - 优选：对候选节点打分</span><br><span class="line">   - 绑定：选择最优节点，更新 Pod.spec.nodeName</span><br><span class="line">   ↓</span><br><span class="line">5. kubelet (在 node01) 监听到 Pod 被分配，开始启动</span><br><span class="line">   - 拉取镜像</span><br><span class="line">   - 创建 pause 容器（网络命名空间）</span><br><span class="line">   - 创建 init 容器（初始化）</span><br><span class="line">   - 创建应用容器</span><br><span class="line">   ↓</span><br><span class="line">6. Controller Manager 监听到 Pod 创建，确保副本数</span><br><span class="line">   - Deployment Controller 管理 Deployment</span><br><span class="line">   - ReplicaSet Controller 管理 ReplicaSet</span><br><span class="line">   - 创建/删除 Pod 以满足副本数要求</span><br><span class="line">   ↓</span><br><span class="line">7. kubelet 持续监控 Pod 状态</span><br><span class="line">   - 执行健康检查（liveness, readiness, startup）</span><br><span class="line">   - 上报 Pod 状态到 API Server</span><br><span class="line">   ↓</span><br><span class="line">8. API Server 更新状态到 etcd</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="5-2-List-Watch-机制"><a href="#5-2-List-Watch-机制" class="headerlink" title="5.2 List-Watch 机制"></a>5.2 List-Watch 机制</h3><p><strong>原理：</strong> K8S 组件通过 List-Watch 监听资源变化，而不是轮询</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">初始化：</span><br><span class="line">kubelet: List /api/v1/pods → 获取当前所有 Pod</span><br><span class="line">scheduler: List /api/v1/pods → 获取所有 Pod</span><br><span class="line"></span><br><span class="line">监听变化：</span><br><span class="line">kubelet: Watch /api/v1/pods → 阻塞式监听</span><br><span class="line">           收到 ADDED/MODIFIED/DELETED 事件</span><br><span class="line"></span><br><span class="line">新 Pod 创建时：</span><br><span class="line">1. API Server 调用 etcd Watch，获得 ADD 事件</span><br><span class="line">2. API Server 本地维护事件队列</span><br><span class="line">3. kubelet/scheduler 的 Watch 连接收到该事件</span><br><span class="line">4. 各组件开始执行相应动作</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第六部分：面试题深度解析"><a href="#第六部分：面试题深度解析" class="headerlink" title="第六部分：面试题深度解析"></a>第六部分：面试题深度解析</h2><h3 id="题目1：两个-Pod-需要部署在同一区域，怎么做？"><a href="#题目1：两个-Pod-需要部署在同一区域，怎么做？" class="headerlink" title="题目1：两个 Pod 需要部署在同一区域，怎么做？"></a>题目1：两个 Pod 需要部署在同一区域，怎么做？</h3><p><strong>错误答案：</strong> 使用 Pod 亲和性硬策略</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ❌ 这样配置有问题</span></span><br><span class="line"><span class="attr">affinity:</span></span><br><span class="line">  <span class="attr">podAffinity:</span></span><br><span class="line">    <span class="attr">requiredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="attr">labelSelector:</span></span><br><span class="line">        <span class="attr">matchExpressions:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">app</span></span><br><span class="line">          <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">          <span class="attr">values:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="string">other-app</span></span><br><span class="line">      <span class="attr">topologyKey:</span> <span class="string">failure-domain.beta.kubernetes.io/zone</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>问题分析：</strong></p>
+<ul>
+<li>如果已有的 Pod 还没调度，新 Pod 就无法调度（循环依赖）</li>
+<li>如果多个 Pod 同时创建，可能都会 Pending</li>
+</ul>
+<p><strong>正确答案（完整方案）：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 给节点打标签，标记所属区域</span></span><br><span class="line">kubectl label nodes node01 zone=zone-a</span><br><span class="line">kubectl label nodes node02 zone=zone-a</span><br><span class="line">kubectl label nodes node03 zone=zone-b</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 确保两个 Pod 都有正确的标签</span></span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: app1</span><br><span class="line">spec:</span><br><span class="line">  replicas: 1</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: app1</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: app1</span><br><span class="line">    spec:</span><br><span class="line">      nodeSelector:</span><br><span class="line">        zone: zone-a    <span class="comment"># 直接指定区域</span></span><br><span class="line">      containers:</span><br><span class="line">      - name: app1</span><br><span class="line">        image: app1:v1</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">apiVersion: apps/v1</span><br><span class="line">kind: Deployment</span><br><span class="line">metadata:</span><br><span class="line">  name: app2</span><br><span class="line">spec:</span><br><span class="line">  replicas: 1</span><br><span class="line">  selector:</span><br><span class="line">    matchLabels:</span><br><span class="line">      app: app2</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: app2</span><br><span class="line">    spec:</span><br><span class="line">      affinity:</span><br><span class="line">        podAffinity:</span><br><span class="line">          requiredDuringSchedulingIgnoredDuringExecution:</span><br><span class="line">          - labelSelector:</span><br><span class="line">              matchExpressions:</span><br><span class="line">              - key: app</span><br><span class="line">                operator: In</span><br><span class="line">                values:</span><br><span class="line">                - app1</span><br><span class="line">            topologyKey: zone    <span class="comment"># 跟随 app1 所在的区域标签</span></span><br><span class="line">      containers:</span><br><span class="line">      - name: app2</span><br><span class="line">        image: app2:v1</span><br></pre></td></tr></table></figure>
+
+<p><strong>设计思路：</strong></p>
+<ol>
+<li>app1 直接指定区域（确保位置固定）</li>
+<li>app2 使用 Pod 亲和性跟随 app1（确保在同一区域）</li>
+</ol>
+<hr>
+<h3 id="题目2：不想让-Pod-调度到某个节点，有几种方法？"><a href="#题目2：不想让-Pod-调度到某个节点，有几种方法？" class="headerlink" title="题目2：不想让 Pod 调度到某个节点，有几种方法？"></a>题目2：不想让 Pod 调度到某个节点，有几种方法？</h3><p><strong>方法1：nodeSelector 排除（不推荐）</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 需要给所有&quot;想要&quot;的节点打标签，比较麻烦</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">nodeSelector:</span></span><br><span class="line">    <span class="attr">node:</span> <span class="string">not-forbidden</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>方法2：节点亲和性排除（推荐）</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">affinity:</span></span><br><span class="line">    <span class="attr">nodeAffinity:</span></span><br><span class="line">      <span class="attr">requiredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">        <span class="attr">nodeSelectorTerms:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">matchExpressions:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">kubernetes.io/hostname</span></span><br><span class="line">            <span class="attr">operator:</span> <span class="string">NotIn</span></span><br><span class="line">            <span class="attr">values:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">forbidden-node</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>方法3：污点容忍排除（最灵活）</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 第1步：给禁止节点打污点</span></span><br><span class="line">kubectl taint node forbidden-node prevent-scheduling=<span class="literal">true</span>:PreferNoSchedule</span><br><span class="line"></span><br><span class="line"><span class="comment"># 第2步：普通 Pod 无需配置，自动不调度</span></span><br><span class="line"><span class="comment"># 如果需要在该节点运行，只需加容忍：</span></span><br><span class="line">tolerations:</span><br><span class="line">- key: <span class="string">&quot;prevent-scheduling&quot;</span></span><br><span class="line">  operator: <span class="string">&quot;Equal&quot;</span></span><br><span class="line">  value: <span class="string">&quot;true&quot;</span></span><br><span class="line">  effect: <span class="string">&quot;PreferNoSchedule&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>对比：</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>灵活性</th>
+<th>维护成本</th>
+<th>场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>nodeSelector</td>
+<td>低</td>
+<td>高</td>
+<td>简单场景</td>
+</tr>
+<tr>
+<td>nodeAffinity</td>
+<td>中</td>
+<td>中</td>
+<td>标签复杂场景</td>
+</tr>
+<tr>
+<td>污点容忍</td>
+<td>高</td>
+<td>低</td>
+<td>大规模集群、需要频繁改变</td>
+</tr>
+</tbody></table>
+<p><strong>最佳实践：</strong> 使用污点容忍，在节点级别做限制，而不在 Pod 级别</p>
+<hr>
+<h3 id="题目3：Pod-因为-ImagePullBackOff-一直没有调度，怎么排查？"><a href="#题目3：Pod-因为-ImagePullBackOff-一直没有调度，怎么排查？" class="headerlink" title="题目3：Pod 因为 ImagePullBackOff 一直没有调度，怎么排查？"></a>题目3：Pod 因为 ImagePullBackOff 一直没有调度，怎么排查？</h3><p><strong>分析过程：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 第1步：查看 Pod 状态</span></span><br><span class="line">kubectl describe pod my-pod</span><br><span class="line"><span class="comment"># 查看 Events 部分，找到具体错误信息</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 可能的错误：</span></span><br><span class="line"><span class="comment"># 1. image: myapp:lateset (typo，应该是 latest)</span></span><br><span class="line"><span class="comment"># 2. 私有仓库认证失败</span></span><br><span class="line"><span class="comment"># 3. 镜像不存在</span></span><br><span class="line"><span class="comment"># 4. 网络问题，无法拉取镜像</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 第2步：检查 node 是否有网络</span></span><br><span class="line">kubectl get node</span><br><span class="line"><span class="comment"># 如果 node STATUS 是 NotReady，说明 node 网络有问题</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 第3步：直接登录 node，尝试拉取镜像</span></span><br><span class="line">ssh node01</span><br><span class="line">docker pull myapp:lateset</span><br><span class="line"><span class="comment"># 如果失败，说明就是镜像问题或网络问题</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 第4步：检查私有仓库认证</span></span><br><span class="line">kubectl get secret -n default | grep docker</span><br><span class="line"><span class="comment"># 如果没有 docker-registry secret，需要创建</span></span><br><span class="line">kubectl create secret docker-registry myregistry \</span><br><span class="line">  --docker-server=registry.example.com \</span><br><span class="line">  --docker-username=user \</span><br><span class="line">  --docker-password=pass</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在 Pod 中指定</span></span><br><span class="line">spec:</span><br><span class="line">  imagePullSecrets:</span><br><span class="line">  - name: myregistry</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="题目4：多-Master-节点情况下，如何避免-Pod-调度到-Master？"><a href="#题目4：多-Master-节点情况下，如何避免-Pod-调度到-Master？" class="headerlink" title="题目4：多 Master 节点情况下，如何避免 Pod 调度到 Master？"></a>题目4：多 Master 节点情况下，如何避免 Pod 调度到 Master？</h3><p><strong>K8S 默认配置：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Master 节点有默认污点</span></span><br><span class="line">kubectl describe node master01 | grep Taints</span><br><span class="line"><span class="comment"># node-role.kubernetes.io/master=:NoSchedule</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Master 上的系统 Pod 有容忍</span></span><br><span class="line">kubectl get pod -n kube-system -o yaml | grep -A 10 tolerations</span><br></pre></td></tr></table></figure>
+
+<p><strong>为什么用 NoSchedule 而不是 PreferNoSchedule？</strong></p>
+<table>
+<thead>
+<tr>
+<th>Effect</th>
+<th>行为</th>
+<th>场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NoSchedule</td>
+<td>严格禁止</td>
+<td>真的不想 Pod 跑在 Master</td>
+</tr>
+<tr>
+<td>PreferNoSchedule</td>
+<td>尽量不跑</td>
+<td>Master 可以临时运行 Pod（集群缩容）</td>
+</tr>
+</tbody></table>
+<p><strong>实际配置（如果 Master 被意外修改）：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 恢复 Master 污点</span></span><br><span class="line">kubectl taint node master01 node-role.kubernetes.io/master=:NoSchedule</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果要允许特定 Pod 在 Master 运行</span></span><br><span class="line">tolerations:</span><br><span class="line">- key: <span class="string">&quot;node-role.kubernetes.io/master&quot;</span></span><br><span class="line">  operator: <span class="string">&quot;Exists&quot;</span></span><br><span class="line">  effect: <span class="string">&quot;NoSchedule&quot;</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第七部分：常见错误总结"><a href="#第七部分：常见错误总结" class="headerlink" title="第七部分：常见错误总结"></a>第七部分：常见错误总结</h2><h3 id="错误1：nodeSelector-和亲和性同时用"><a href="#错误1：nodeSelector-和亲和性同时用" class="headerlink" title="错误1：nodeSelector 和亲和性同时用"></a>错误1：nodeSelector 和亲和性同时用</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">nodeSelector:</span></span><br><span class="line">    <span class="attr">disk:</span> <span class="string">ssd</span></span><br><span class="line">  <span class="attr">affinity:</span></span><br><span class="line">    <span class="attr">nodeAffinity:</span></span><br><span class="line">      <span class="attr">requiredDuringSchedulingIgnoredDuringExecution:</span></span><br><span class="line">        <span class="attr">nodeSelectorTerms:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">matchExpressions:</span></span><br><span class="line">          <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">cpu</span></span><br><span class="line">            <span class="attr">operator:</span> <span class="string">In</span></span><br><span class="line">            <span class="attr">values:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">high</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>逻辑是 AND：</strong> 必须同时满足 <code>disk=ssd</code> 和 <code>cpu=high</code></p>
+<p><strong>正确做法：</strong> 用亲和性的硬策略完全替代 nodeSelector</p>
+<hr>
+<h3 id="错误2：Pod-亲和性中-topologyKey-写错"><a href="#错误2：Pod-亲和性中-topologyKey-写错" class="headerlink" title="错误2：Pod 亲和性中 topologyKey 写错"></a>错误2：Pod 亲和性中 topologyKey 写错</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ❌ 错误</span></span><br><span class="line"><span class="attr">topologyKey:</span> <span class="string">kubernetes.io/hostname-typo</span>  <span class="comment"># 这个标签不存在</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ✓ 正确</span></span><br><span class="line"><span class="attr">topologyKey:</span> <span class="string">kubernetes.io/hostname</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ✓ 也可以是自定义标签（但必须确实存在）</span></span><br><span class="line"><span class="comment"># 前提：已执行 kubectl label nodes node01 zone=zone-a</span></span><br><span class="line"><span class="attr">topologyKey:</span> <span class="string">zone</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="错误3：硬污点遇到没容忍的-Pod"><a href="#错误3：硬污点遇到没容忍的-Pod" class="headerlink" title="错误3：硬污点遇到没容忍的 Pod"></a>错误3：硬污点遇到没容忍的 Pod</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Pod 无法启动，一直 Pending</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 解决方案1：给 Pod 加容忍</span></span><br><span class="line"><span class="comment"># 解决方案2：移除污点</span></span><br><span class="line">kubectl taint node node01 key1:NoSchedule-</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第八部分：调度优先级总结表"><a href="#第八部分：调度优先级总结表" class="headerlink" title="第八部分：调度优先级总结表"></a>第八部分：调度优先级总结表</h2><table>
+<thead>
+<tr>
+<th>调度方式</th>
+<th>优先级</th>
+<th>强制性</th>
+<th>灵活性</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>nodeName</strong></td>
+<td>最高</td>
+<td>✓ 强制</td>
+<td>低</td>
+<td>静态 Pod</td>
+</tr>
+<tr>
+<td><strong>nodeSelector</strong></td>
+<td>其次</td>
+<td>✓ 强制</td>
+<td>低</td>
+<td>简单标签匹配</td>
+</tr>
+<tr>
+<td><strong>nodeAffinity</strong></td>
+<td>再次</td>
+<td>✓ 强制（硬策略）</td>
+<td>高</td>
+<td>复杂标签逻辑</td>
+</tr>
+<tr>
+<td><strong>podAffinity</strong></td>
+<td>最后</td>
+<td>✓ 强制（硬策略）</td>
+<td>高</td>
+<td>Pod 间关系</td>
+</tr>
+<tr>
+<td><strong>污点容忍</strong></td>
+<td>独立</td>
+<td>✓ 强制（硬污点）</td>
+<td>最高</td>
+<td>节点隔离</td>
+</tr>
+</tbody></table>
+<p><strong>组合策略：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 先用污点在节点级做隔离（管理员层面）</span><br><span class="line">2. 再用 nodeSelector/亲和性在 Pod 级做精细调度</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="第九部分：实用命令速查"><a href="#第九部分：实用命令速查" class="headerlink" title="第九部分：实用命令速查"></a>第九部分：实用命令速查</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ========== 标签操作 ==========</span></span><br><span class="line">kubectl label nodes node01 disk=ssd           <span class="comment"># 添加标签</span></span><br><span class="line">kubectl label nodes node01 disk=ssd --overwrite  <span class="comment"># 修改标签</span></span><br><span class="line">kubectl label nodes node01 disk-            <span class="comment"># 删除标签</span></span><br><span class="line">kubectl get nodes --show-labels              <span class="comment"># 查看所有标签</span></span><br><span class="line">kubectl get nodes -l disk=ssd                <span class="comment"># 按标签过滤</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 污点操作 ==========</span></span><br><span class="line">kubectl taint node node01 key1=value1:NoSchedule    <span class="comment"># 添加污点</span></span><br><span class="line">kubectl taint node node01 key1:NoSchedule-           <span class="comment"># 删除污点</span></span><br><span class="line">kubectl describe node node01 | grep Taints          <span class="comment"># 查看污点</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 节点维护 ==========</span></span><br><span class="line">kubectl cordon node01                               <span class="comment"># 标记不可调度</span></span><br><span class="line">kubectl drain node01 --ignore-daemonsets --force    <span class="comment"># 驱逐 Pod</span></span><br><span class="line">kubectl uncordon node01                             <span class="comment"># 恢复可调度</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== Pod 调试 ==========</span></span><br><span class="line">kubectl describe pod my-pod                  <span class="comment"># 查看 Pod 详情和事件</span></span><br><span class="line">kubectl get pods -o wide                     <span class="comment"># 查看 Pod 所在节点</span></span><br><span class="line">kubectl logs my-pod                          <span class="comment"># 查看 Pod 日志</span></span><br><span class="line">kubectl <span class="built_in">exec</span> -it my-pod -- sh                <span class="comment"># 进入 Pod</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ========== 查询操作 ==========</span></span><br><span class="line">kubectl get nodes -A                         <span class="comment"># 查看所有节点</span></span><br><span class="line">kubectl describe node node01                 <span class="comment"># 查看节点详细信息</span></span><br><span class="line">kubectl get cs                               <span class="comment"># 查看 Master 组件状态</span></span><br></pre></td></tr></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="http://example.com">Felix</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="http://example.com/2025/12/09/kubernetes%E9%9B%86%E7%BE%A4%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86/">http://example.com/2025/12/09/kubernetes%E9%9B%86%E7%BE%A4%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/imgs/adater.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/12/06/Kubernetes%20Pod%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Kubernetes Pod 学习笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">Next</div><div class="info-item-2">Kubernetes Pod 学习笔记</div></div><div class="info-2"><div class="info-item-1">Kubernetes Pod 学习笔记Pod 基础概念Pod 是 Kubernetes 中最小的调度与运行单位，是对一个或多个容器的封装。Kubernetes 直接管理的是 Pod，而不是容器。 Pod 的核心特性 共享资源  同一个 Pod 中的容器运行在同一个 Node 节点上 容器之间通过 localhost 互相通信 共享同一个 IP 地址和端口范围 共享同一个存储卷（Volume），实现容器间的数据共享   生命周期  Pod 内的容器共享生命周期 如果 Pod 被删除，容器也随之消失 Pod 是临时性的，可能被删除或重建     Pod 的三种容器类型图例： 1️⃣ Pause 容器（基础架构容器）定义：Pod 中第一个被启动的容器，也称为 Infrastructure Container、Sandbox Container 核心作用：  持有网络命名空间：为 Pod 分配 IP 地址，所有业务容器通过加入 Pause 容器的网络命名空间来共享这个 IP 生命周期管理：充当 Pod 的”父容器”，如果 Pause 容器挂了，整个 Pod 的网络环境就消失了 僵尸进程回...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/imgs/adater.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Felix</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">33</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/falsezxy"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes-%E9%9B%86%E7%BE%A4%E8%B0%83%E5%BA%A6%E6%9C%BA%E5%88%B6"><span class="toc-number">1.</span> <span class="toc-text">Kubernetes 集群调度机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%9A%E8%B0%83%E5%BA%A6%E5%99%A8%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86"><span class="toc-number">1.1.</span> <span class="toc-text">第一部分：调度器核心原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E4%BB%80%E4%B9%88%E6%98%AF%E8%B0%83%E5%BA%A6%E5%99%A8%EF%BC%9F"><span class="toc-number">1.1.1.</span> <span class="toc-text">1.1 什么是调度器？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E8%B0%83%E5%BA%A6%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3%EF%BC%88%E4%B8%89%E4%B8%AA%E9%98%B6%E6%AE%B5%EF%BC%89"><span class="toc-number">1.1.2.</span> <span class="toc-text">1.2 调度过程详解（三个阶段）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B6%E6%AE%B5%E4%B8%80%EF%BC%9APredicate%EF%BC%88%E9%A2%84%E9%80%89-%E8%BF%87%E6%BB%A4%EF%BC%89"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">阶段一：Predicate（预选&#x2F;过滤）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B6%E6%AE%B5%E4%BA%8C%EF%BC%9APriorities%EF%BC%88%E4%BC%98%E9%80%89-%E6%89%93%E5%88%86%EF%BC%89"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">阶段二：Priorities（优选&#x2F;打分）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%98%B6%E6%AE%B5%E4%B8%89%EF%BC%9ABinding%EF%BC%88%E7%BB%91%E5%AE%9A%EF%BC%89"><span class="toc-number">1.1.2.3.</span> <span class="toc-text">阶段三：Binding（绑定）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%9A%E5%9B%9B%E7%A7%8D%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B0%83%E5%BA%A6%E6%96%B9%E5%BC%8F"><span class="toc-number">1.2.</span> <span class="toc-text">第二部分：四种自定义调度方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-nodeName-%E7%9B%B4%E6%8E%A5%E6%8C%87%E5%AE%9A%EF%BC%88%E6%9C%80%E5%BC%BA%E5%88%B6%EF%BC%89"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1 nodeName 直接指定（最强制）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-nodeSelector-%E6%A0%87%E7%AD%BE%E9%80%89%E6%8B%A9%EF%BC%88%E7%AE%80%E5%8D%95%E5%8C%B9%E9%85%8D%EF%BC%89"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2 nodeSelector 标签选择（简单匹配）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E8%8A%82%E7%82%B9%E4%BA%B2%E5%92%8C%E6%80%A7%EF%BC%88Node-Affinity%EF%BC%89-%E5%A4%8D%E6%9D%82%E9%80%BB%E8%BE%91"><span class="toc-number">1.2.3.</span> <span class="toc-text">2.3 节点亲和性（Node Affinity）- 复杂逻辑</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A1%AC%E7%AD%96%E7%95%A5%E7%A4%BA%E4%BE%8B%EF%BC%9A%E5%BF%85%E9%A1%BB%E6%BB%A1%E8%B6%B3%EF%BC%8C%E5%90%A6%E5%88%99-Pending"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">硬策略示例：必须满足，否则 Pending</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BD%AF%E7%AD%96%E7%95%A5%E7%A4%BA%E4%BE%8B%EF%BC%9A%E4%BC%98%E5%85%88%E6%BB%A1%E8%B6%B3%EF%BC%8C%E4%BD%86%E4%B8%8D%E5%BC%BA%E5%88%B6"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">软策略示例：优先满足，但不强制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%A1%AC%E7%AD%96%E7%95%A5-%E8%BD%AF%E7%AD%96%E7%95%A5%E7%BB%93%E5%90%88"><span class="toc-number">1.2.3.3.</span> <span class="toc-text">硬策略 + 软策略结合</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-Pod-%E4%BA%B2%E5%92%8C%E6%80%A7-%E5%8F%8D%E4%BA%B2%E5%92%8C%E6%80%A7%EF%BC%88Pod-Affinity-Anti-Affinity%EF%BC%89"><span class="toc-number">1.2.4.</span> <span class="toc-text">2.4 Pod 亲和性&#x2F;反亲和性（Pod Affinity&#x2F;Anti-Affinity）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%90%86%E8%A7%A3%E6%8B%93%E6%89%91%E5%9F%9F%EF%BC%88Topology-Domain%EF%BC%89"><span class="toc-number">1.2.4.1.</span> <span class="toc-text">理解拓扑域（Topology Domain）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Pod-%E4%BA%B2%E5%92%8C%E6%80%A7%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.2.4.2.</span> <span class="toc-text">Pod 亲和性示例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Pod-%E5%8F%8D%E4%BA%B2%E5%92%8C%E6%80%A7%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.2.4.3.</span> <span class="toc-text">Pod 反亲和性示例</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BD%AF%E7%AD%96%E7%95%A5-vs-%E7%A1%AC%E7%AD%96%E7%95%A5"><span class="toc-number">1.2.4.4.</span> <span class="toc-text">软策略 vs 硬策略</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E9%83%A8%E5%88%86%EF%BC%9A%E6%B1%A1%E7%82%B9%E4%B8%8E%E5%AE%B9%E5%BF%8D"><span class="toc-number">1.3.</span> <span class="toc-text">第三部分：污点与容忍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%B1%A1%E7%82%B9%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 污点机制详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#NoSchedule%EF%BC%88%E4%B8%8D%E8%B0%83%E5%BA%A6%E6%96%B0-Pod%EF%BC%89"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">NoSchedule（不调度新 Pod）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#PreferNoSchedule%EF%BC%88%E5%B0%BD%E9%87%8F%E4%B8%8D%E8%B0%83%E5%BA%A6%EF%BC%89"><span class="toc-number">1.3.1.2.</span> <span class="toc-text">PreferNoSchedule（尽量不调度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#NoExecute%EF%BC%88%E4%B8%8D%E8%B0%83%E5%BA%A6-%E9%A9%B1%E9%80%90%E7%8E%B0%E6%9C%89%EF%BC%89"><span class="toc-number">1.3.1.3.</span> <span class="toc-text">NoExecute（不调度 + 驱逐现有）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%AE%B9%E5%BF%8D%E6%9C%BA%E5%88%B6%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 容忍机制详解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E7%89%B9%E6%AE%8A%E7%94%A8%E6%B3%95"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.3 特殊用法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%B9%E5%BF%8D%E6%89%80%E6%9C%89%E6%B1%A1%E7%82%B9"><span class="toc-number">1.3.3.1.</span> <span class="toc-text">容忍所有污点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%B9%E5%BF%8D%E6%89%80%E6%9C%89-effect"><span class="toc-number">1.3.3.2.</span> <span class="toc-text">容忍所有 effect</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-tolerationSeconds-%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.3.4.</span> <span class="toc-text">3.4 tolerationSeconds 详解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E9%83%A8%E5%88%86%EF%BC%9A%E6%B1%A1%E7%82%B9%E5%AE%B9%E5%BF%8D%E7%9A%84%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8"><span class="toc-number">1.4.</span> <span class="toc-text">第四部分：污点容忍的实际应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9AMaster-%E8%8A%82%E7%82%B9%E9%85%8D%E7%BD%AE%EF%BC%88%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4%EF%BC%89"><span class="toc-number">1.4.1.</span> <span class="toc-text">场景一：Master 节点配置（高可用集群）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%BA%8C%EF%BC%9A%E8%8A%82%E7%82%B9%E7%BB%B4%E6%8A%A4%EF%BC%88%E4%BC%98%E9%9B%85%E4%B8%8B%E7%BA%BF%EF%BC%89"><span class="toc-number">1.4.2.</span> <span class="toc-text">场景二：节点维护（优雅下线）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%89%EF%BC%9AGPU-%E8%8A%82%E7%82%B9%E9%9A%94%E7%A6%BB"><span class="toc-number">1.4.3.</span> <span class="toc-text">场景三：GPU 节点隔离</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%94%E9%83%A8%E5%88%86%EF%BC%9APod-%E5%88%9B%E5%BB%BA%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B"><span class="toc-number">1.5.</span> <span class="toc-text">第五部分：Pod 创建完整流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%85%B3%E9%94%AE%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.5.1.</span> <span class="toc-text">5.1 关键步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-List-Watch-%E6%9C%BA%E5%88%B6"><span class="toc-number">1.5.2.</span> <span class="toc-text">5.2 List-Watch 机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AD%E9%83%A8%E5%88%86%EF%BC%9A%E9%9D%A2%E8%AF%95%E9%A2%98%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90"><span class="toc-number">1.6.</span> <span class="toc-text">第六部分：面试题深度解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE1%EF%BC%9A%E4%B8%A4%E4%B8%AA-Pod-%E9%9C%80%E8%A6%81%E9%83%A8%E7%BD%B2%E5%9C%A8%E5%90%8C%E4%B8%80%E5%8C%BA%E5%9F%9F%EF%BC%8C%E6%80%8E%E4%B9%88%E5%81%9A%EF%BC%9F"><span class="toc-number">1.6.1.</span> <span class="toc-text">题目1：两个 Pod 需要部署在同一区域，怎么做？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE2%EF%BC%9A%E4%B8%8D%E6%83%B3%E8%AE%A9-Pod-%E8%B0%83%E5%BA%A6%E5%88%B0%E6%9F%90%E4%B8%AA%E8%8A%82%E7%82%B9%EF%BC%8C%E6%9C%89%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95%EF%BC%9F"><span class="toc-number">1.6.2.</span> <span class="toc-text">题目2：不想让 Pod 调度到某个节点，有几种方法？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE3%EF%BC%9APod-%E5%9B%A0%E4%B8%BA-ImagePullBackOff-%E4%B8%80%E7%9B%B4%E6%B2%A1%E6%9C%89%E8%B0%83%E5%BA%A6%EF%BC%8C%E6%80%8E%E4%B9%88%E6%8E%92%E6%9F%A5%EF%BC%9F"><span class="toc-number">1.6.3.</span> <span class="toc-text">题目3：Pod 因为 ImagePullBackOff 一直没有调度，怎么排查？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE4%EF%BC%9A%E5%A4%9A-Master-%E8%8A%82%E7%82%B9%E6%83%85%E5%86%B5%E4%B8%8B%EF%BC%8C%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D-Pod-%E8%B0%83%E5%BA%A6%E5%88%B0-Master%EF%BC%9F"><span class="toc-number">1.6.4.</span> <span class="toc-text">题目4：多 Master 节点情况下，如何避免 Pod 调度到 Master？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%83%E9%83%A8%E5%88%86%EF%BC%9A%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E6%80%BB%E7%BB%93"><span class="toc-number">1.7.</span> <span class="toc-text">第七部分：常见错误总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF1%EF%BC%9AnodeSelector-%E5%92%8C%E4%BA%B2%E5%92%8C%E6%80%A7%E5%90%8C%E6%97%B6%E7%94%A8"><span class="toc-number">1.7.1.</span> <span class="toc-text">错误1：nodeSelector 和亲和性同时用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF2%EF%BC%9APod-%E4%BA%B2%E5%92%8C%E6%80%A7%E4%B8%AD-topologyKey-%E5%86%99%E9%94%99"><span class="toc-number">1.7.2.</span> <span class="toc-text">错误2：Pod 亲和性中 topologyKey 写错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF3%EF%BC%9A%E7%A1%AC%E6%B1%A1%E7%82%B9%E9%81%87%E5%88%B0%E6%B2%A1%E5%AE%B9%E5%BF%8D%E7%9A%84-Pod"><span class="toc-number">1.7.3.</span> <span class="toc-text">错误3：硬污点遇到没容忍的 Pod</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E5%85%AB%E9%83%A8%E5%88%86%EF%BC%9A%E8%B0%83%E5%BA%A6%E4%BC%98%E5%85%88%E7%BA%A7%E6%80%BB%E7%BB%93%E8%A1%A8"><span class="toc-number">1.8.</span> <span class="toc-text">第八部分：调度优先级总结表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B9%9D%E9%83%A8%E5%88%86%EF%BC%9A%E5%AE%9E%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5"><span class="toc-number">1.9.</span> <span class="toc-text">第九部分：实用命令速查</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/09/kubernetes%E9%9B%86%E7%BE%A4%E8%B0%83%E5%BA%A6%E7%AE%A1%E7%90%86/" title="Kubernetes集群调度机制Ansible">Kubernetes集群调度机制Ansible</a><time datetime="2025-12-09T08:54:40.000Z" title="Created 2025-12-09 16:54:40">2025-12-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/06/Kubernetes%20Pod%20%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="Kubernetes Pod 学习笔记">Kubernetes Pod 学习笔记</a><time datetime="2025-12-06T00:54:40.000Z" title="Created 2025-12-06 08:54:40">2025-12-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/03/Kubernetes%E4%BA%86%E8%A7%A3%E4%B8%8E%E6%90%AD%E5%BB%BA/" title="Kubernetes了解与搭建">Kubernetes了解与搭建</a><time datetime="2025-12-03T06:44:22.000Z" title="Created 2025-12-03 14:44:22">2025-12-03</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/Prometheus%E7%9B%91%E6%8E%A7-%E9%92%89%E9%92%89%E8%AD%A6%E5%91%8A-%E9%83%A8%E7%BD%B2%E6%96%87%E6%A1%A3/" title="Prometheus监控+钉钉警告 部署指南">Prometheus监控+钉钉警告 部署指南</a><time datetime="2025-12-02T05:39:16.000Z" title="Created 2025-12-02 13:39:16">2025-12-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/12/02/Prometheus/" title="Prometheus监控系统">Prometheus监控系统</a><time datetime="2025-12-02T00:55:58.000Z" title="Created 2025-12-02 08:55:58">2025-12-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/imgs/background_footer.jpg);"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 By Felix</span><span class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.0.0</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
